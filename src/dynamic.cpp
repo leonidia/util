@@ -302,28 +302,28 @@ struct to_stream_visitor:
 
     void
     operator()(const dynamic_t::null_t&) const {
-        stream << "null";
+        m_stream << "null";
     }
 
     void
     operator()(const dynamic_t::bool_t& v) const {
-        stream << (v ? "true" : "false");
+        m_stream << (v ? "true" : "false");
     }
 
     template<class T>
     void
     operator()(const T& v) const {
-        stream << v;
+        m_stream << v;
     }
 
     void
     operator()(const dynamic_t::string_t& v) const {
-        stream << "\"" << v << "\"";
+        m_stream << "\"" << v << "\"";
     }
 
     void
     operator()(const dynamic_t::array_t& v) const {
-        stream << "[";
+        m_stream << "[";
 
         size_t index = 0;
 
@@ -332,31 +332,31 @@ struct to_stream_visitor:
         }
 
         while(index < v.size()) {
-            stream << ", ";
+            m_stream << ", ";
             v[index++].apply(*this);
         }
 
-        stream << "]";
+        m_stream << "]";
     }
 
     void
     operator()(const dynamic_t::object_t& v) const {
-        stream << "{";
+        m_stream << "{";
 
         dynamic_t::object_t::const_iterator it = v.begin();
 
         if(it != v.end()) {
-            stream << "\"" << it->first << "\":";
+            m_stream << "\"" << it->first << "\":";
             it->second.apply(*this);
             ++it;
         }
 
         for(; it != v.end(); ++it) {
-            stream << ", " << "\"" << it->first << "\":";
+            m_stream << ", " << "\"" << it->first << "\":";
             it->second.apply(*this);
         }
 
-        stream << "}";
+        m_stream << "}";
     }
 
 private:

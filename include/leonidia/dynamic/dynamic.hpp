@@ -43,6 +43,7 @@ template<class To, class = void>
 struct dynamic_converter { };
 
 class dynamic_t {
+public:
     typedef bool                   bool_t;
     typedef int64_t                int_t;
     typedef uint64_t               uint_t;

@@ -1,0 +1,53 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+
+PROJECT(LEONIDIA-UTIL)
+
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+OPTION(ENABLE_TESTING "Enable testing" ON)
+
+FIND_PACKAGE(Boost 1.40.0 REQUIRED)
+
+INCLUDE_DIRECTORIES(
+    ${Boost_INCLUDE_DIRS}
+)
+
+INCLUDE_DIRECTORIES(BEFORE
+    ${PROJECT_SOURCE_DIR}/foreign/backward-cpp
+    ${PROJECT_SOURCE_DIR}/foreign/blackhole/src
+    ${PROJECT_SOURCE_DIR}/foreign/rapidjson/include
+    ${PROJECT_SOURCE_DIR}/include)
+
+ADD_LIBRARY(leonidia-util SHARED
+    src/dynamic
+)
+
+SET_TARGET_PROPERTIES(leonidia-util PROPERTIES
+    VERSION 1
+)
+
+SET_TARGET_PROPERTIES(leonidia-util PROPERTIES
+    COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -pedantic")
+
+IF(NOT LEONIDIA_LIBDIR)
+    SET(LEONIDIA_LIBDIR lib)
+ENDIF()
+
+INSTALL(
+    TARGETS
+        leonidia-util
+    LIBRARY DESTINATION ${LEONIDIA_LIBDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${LEONIDIA_LIBDIR} COMPONENT development
+)
+
+INSTALL(
+    DIRECTORY
+        include/
+    DESTINATION include
+    COMPONENT development
+)
+
+IF(ENABLE_TESTING)
+    ENABLE_TESTING()
+    ADD_SUBDIRECTORY(tests)
+ENDIF()
