@@ -216,7 +216,7 @@ private:
 
 struct rapidjson_ifstream_t {
     rapidjson_ifstream_t(std::istream& backend) :
-        m_backend(&backend)
+        m_backend(&backend), m_offset(0)
     { }
 
     char
@@ -237,13 +237,14 @@ struct rapidjson_ifstream_t {
         if(next == std::char_traits<char>::eof()) {
             return '\0';
         } else {
+            ++m_offset;
             return next;
         }
     }
 
     size_t
     Tell() const {
-        return m_backend->gcount();
+        return m_offset;
     }
 
     char*
@@ -265,6 +266,7 @@ struct rapidjson_ifstream_t {
 
 private:
     std::istream* m_backend;
+    size_t m_offset;
 };
 
 } // namespace
@@ -319,6 +321,8 @@ void config_parser_t::parse(std::istream &stream)
             size_t line_offset = data.find_last_of('\n');
             if (line_offset == std::string::npos)
                 line_offset = 0;
+            else
+                line_offset++;
 
             for (size_t i = line_offset; i < data.size(); ++i) {
                 if (data[i] == '\t') {
@@ -332,13 +336,22 @@ void config_parser_t::parse(std::istream &stream)
             const size_t line_number = std::count(data.begin(), data.end(), '\n') + 1;
             const size_t dash_count = line_offset < offset ? offset - line_offset - 1 : 0;
 
+            for (size_t i = 0; line_offset > 1 && i < 2; ++i) {
+                line_offset = data.find_last_of('\n', line_offset - 2);
+                if (line_offset == std::string::npos) {
+                    line_offset = 0;
+                } else {
+                    line_offset++;
+                }
+            }
+
             std::stringstream error;
             error
                     << "parser error at line " << line_number << ": " << json_reader.GetParseError() << std::endl
-                    << data.substr(std::min(line_offset + 1, data.size())) << std::endl
+                    << data.substr(std::min(line_offset, data.size())) << std::endl
                     << std::string(dash_count, ' ') << '^' << std::endl
                     << std::string(dash_count, '~') << '+' << std::endl;
-            throw config_error(error.str());
+            throw config_parser_error(error.str(), json_reader.GetParseError(), line_number, dash_count + 1);
         }
 
         throw config_error(std::string("parser error: at unknown line: ") + json_reader.GetParseError());

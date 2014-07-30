@@ -23,7 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "leonidia/config.hpp"
 
-TEST(Config, DummyTest) {
+TEST(Config, NumericTest) {
     std::string json =
             "{\n"
             "    \"short_min\": -32768,\n"
@@ -52,4 +52,63 @@ TEST(Config, DummyTest) {
     GTEST_ASSERT_EQ(config.at<int64_t>("int64_max"), std::numeric_limits<int64_t>::max());
     GTEST_ASSERT_EQ(config.at<uint64_t>("uint64_min"), std::numeric_limits<uint64_t>::min());
     GTEST_ASSERT_EQ(config.at<uint64_t>("uint64_max"), std::numeric_limits<uint64_t>::max());
+}
+
+
+TEST(Config, ParseErrorTest) {
+    std::string json =
+            "{\n"
+            "    \"short_min\": -32768,\n"
+            "    \"short_max\": 32767,\n"
+            "    \"ushort_min\": 0,\n"
+            "    \"ushort_max\": 65535,\n"
+            "    \"int64_min\": -9223372036854775808,\n"
+            "    \"int64_max\": 9223372036854775807,\n"
+            "    \"uint64_min\": 0,\n"
+            "    \"uint64_max\": 18446744073709551615-\n"
+            "}\n"
+    ;
+
+    std::istringstream stream(json);
+
+    leonidia::config_parser_t parser;
+    try {
+        parser.parse(stream);
+        GTEST_FAIL();
+    } catch (leonidia::config_parser_error &error) {
+        GTEST_ASSERT_EQ(error.line_number(), 9);
+        GTEST_ASSERT_EQ(error.column_number(), 39);
+    }
+}
+
+TEST(Config, ParseErrorTest_2) {
+    std::string json = "s{\n";
+
+    std::istringstream stream(json);
+
+    leonidia::config_parser_t parser;
+
+    try {
+        parser.parse(stream);
+        GTEST_FAIL();
+    } catch (leonidia::config_parser_error &error) {
+        GTEST_ASSERT_EQ(error.line_number(), 1);
+        GTEST_ASSERT_EQ(error.column_number(), 1);
+    }
+}
+
+TEST(Config, ParseErrorTest_3) {
+    std::string json = "{s\n";
+
+    std::istringstream stream(json);
+
+    leonidia::config_parser_t parser;
+
+    try {
+        parser.parse(stream);
+        GTEST_FAIL();
+    } catch (leonidia::config_parser_error &error) {
+        GTEST_ASSERT_EQ(error.line_number(), 1);
+        GTEST_ASSERT_EQ(error.column_number(), 1);
+    }
 }

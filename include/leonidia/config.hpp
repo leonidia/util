@@ -42,6 +42,38 @@ private:
     std::string m_message;
 };
 
+class config_parser_error : public config_error
+{
+public:
+    config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
+        config_error(std::move(message)),
+        m_parse_error(std::move(parse_error)),
+        m_line_number(line_number),
+        m_column_number(column_number)
+    {
+    }
+
+    const std::string &parse_error() const
+    {
+        return m_parse_error;
+    }
+
+    size_t line_number() const
+    {
+        return m_line_number;
+    }
+
+    size_t column_number() const
+    {
+        return m_column_number;
+    }
+
+private:
+    std::string m_parse_error;
+    size_t m_line_number;
+    size_t m_column_number;
+};
+
 
 namespace detail
 {
@@ -119,16 +151,6 @@ struct config_value_caster_specific_helper<T, integral_type>
 
         throw_limits_error(path);
         return T();
-    }
-
-    template <typename Y>
-    static T safe_cast(const std::string &path, Y value)
-    {
-        try {
-            return boost::numeric_cast<T>(value);
-        } catch (boost::numeric::bad_numeric_cast &) {
-            throw_limits_error(path);
-        }
     }
 
     static void throw_limits_error(const std::string &path)
