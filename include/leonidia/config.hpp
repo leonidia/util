@@ -29,7 +29,7 @@ namespace leonidia {
 class config_error : public std::exception
 {
 public:
-    explicit config_error(const std::string &message) : m_message(message)
+    explicit config_error(std::string message) : m_message(std::move(message))
     {
     }
 
