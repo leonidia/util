@@ -21,6 +21,7 @@ LINK_DIRECTORIES(
 
 ADD_EXECUTABLE(leonidia-tests
     dynamic
+    config
 )
 
 TARGET_LINK_LIBRARIES(leonidia-tests
