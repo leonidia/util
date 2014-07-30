@@ -18,8 +18,13 @@ INCLUDE_DIRECTORIES(BEFORE
     ${PROJECT_SOURCE_DIR}/foreign/rapidjson/include
     ${PROJECT_SOURCE_DIR}/include)
 
+# For better IDE experience
+FILE(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include *.hpp)
+
 ADD_LIBRARY(leonidia-util SHARED
     src/dynamic
+    src/config
+    ${HEADERS}
 )
 
 SET_TARGET_PROPERTIES(leonidia-util PROPERTIES

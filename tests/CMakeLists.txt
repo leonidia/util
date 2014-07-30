@@ -28,6 +28,7 @@ TARGET_LINK_LIBRARIES(leonidia-tests
     ${Boost_LIBRARIES}
     gtest_main
     gtest
+    leonidia-util
 )
 
 SET_TARGET_PROPERTIES(leonidia-tests PROPERTIES
