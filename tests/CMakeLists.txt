@@ -21,6 +21,7 @@ LINK_DIRECTORIES(
 
 ADD_EXECUTABLE(leonidia-tests
     dynamic
+    config
 )
 
 TARGET_LINK_LIBRARIES(leonidia-tests
@@ -28,6 +29,7 @@ TARGET_LINK_LIBRARIES(leonidia-tests
     ${Boost_LIBRARIES}
     gtest_main
     gtest
+    leonidia-util
 )
 
 SET_TARGET_PROPERTIES(leonidia-tests PROPERTIES

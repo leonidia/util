@@ -1,6 +1,7 @@
 /*
-Copyright (c) 2013 Andrey Goryachev <andrey.goryachev@gmail.com>
-Copyright (c) 2011-2013 Other contributors as noted in the AUTHORS file.
+Copyright (c) 2014 Andrey Goryachev <andrey.goryachev@gmail.com>
+Copyright (c) 2014 Ruslan Nigmatullin <euroelessar@yandex.ru>
+Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
 This file is part of Leonidia.
 
@@ -20,9 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "leonidia/dynamic.hpp"
+#include "leonidia/dynamic/dynamic.hpp"
 
 TEST(Dynamic, DummyTest) {
     // Empty.
 }
-
