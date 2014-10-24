@@ -167,7 +167,7 @@ struct dynamic_constructor<
         auto& array = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(to).get();
         array.reserve(from.size());
 
-        for(size_t i = 0; i < from.size(); ++i) {
+        for (size_t i = 0; i < from.size(); ++i) {
             array.emplace_back(from[i]);
         }
     }
@@ -180,7 +180,7 @@ struct dynamic_constructor<
         auto& array = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(to).get();
         array.reserve(from.size());
 
-        for(size_t i = 0; i < from.size(); ++i) {
+        for (size_t i = 0; i < from.size(); ++i) {
             array.emplace_back(std::move(from[i]));
         }
     }
@@ -198,7 +198,7 @@ struct dynamic_constructor<T[N]> {
         auto& array = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(to).get();
         array.reserve(N);
 
-        for(size_t i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             array.emplace_back(from[i]);
         }
     }
@@ -211,7 +211,7 @@ struct dynamic_constructor<T[N]> {
         auto& array = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(to).get();
         array.reserve(N);
 
-        for(size_t i = 0; i < N; ++i) {
+        for (size_t i = 0; i < N; ++i) {
             array.emplace_back(std::move(from[i]));
         }
     }
@@ -341,7 +341,7 @@ struct dynamic_constructor<
 
         auto& object = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(to).get();
 
-        for(auto it = from.begin(); it != from.end(); ++it) {
+        for (auto it = from.begin(); it != from.end(); ++it) {
             object.insert(dynamic_t::object_t::value_type(it->first, it->second));
         }
     }
@@ -353,7 +353,7 @@ struct dynamic_constructor<
 
         auto& object = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(to).get();
 
-        for(auto it = from.begin(); it != from.end(); ++it) {
+        for (auto it = from.begin(); it != from.end(); ++it) {
             object.insert(dynamic_t::object_t::value_type(it->first, std::move(it->second)));
         }
     }
@@ -370,7 +370,7 @@ struct dynamic_constructor<std::unordered_map<std::string, T>> {
 
         auto& object = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(to).get();
 
-        for(auto it = from.begin(); it != from.end(); ++it) {
+        for (auto it = from.begin(); it != from.end(); ++it) {
             object.insert(it->first, it->second);
         }
     }
@@ -382,7 +382,7 @@ struct dynamic_constructor<std::unordered_map<std::string, T>> {
 
         auto& object = boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(to).get();
 
-        for(auto it = from.begin(); it != from.end(); ++it) {
+        for (auto it = from.begin(); it != from.end(); ++it) {
             object.insert(it->first, std::move(it->second));
         }
     }

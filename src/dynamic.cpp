@@ -62,7 +62,7 @@ namespace {
 struct move_visitor:
     public boost::static_visitor<>
 {
-    move_visitor(dynamic_t& destination):
+    move_visitor(dynamic_t& destination) :
         m_destination(destination)
     { }
 
@@ -79,7 +79,7 @@ private:
 struct assign_visitor:
     public boost::static_visitor<>
 {
-    assign_visitor(dynamic_t& destination):
+    assign_visitor(dynamic_t& destination) :
         m_destination(destination)
     { }
 
@@ -338,7 +338,7 @@ struct json_to_dynamic_reader_t {
     EndObject(size_t size) {
         dynamic_t::object_t object;
 
-        for(size_t i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             dynamic_t value = std::move(m_stack.top());
             m_stack.pop();
 
@@ -360,7 +360,7 @@ struct json_to_dynamic_reader_t {
     EndArray(size_t size) {
         dynamic_t::array_t array(size);
 
-        for(size_t i = size; i != 0; --i) {
+        for (size_t i = size; i != 0; --i) {
             array[i - 1] = std::move(m_stack.top());
             m_stack.pop();
         }
@@ -387,7 +387,7 @@ struct rapidjson_istream_t {
     Peek() const {
         int next = m_backend->peek();
 
-        if(next == std::char_traits<char>::eof()) {
+        if (next == std::char_traits<char>::eof()) {
             return '\0';
         } else {
             return next;
@@ -398,7 +398,7 @@ struct rapidjson_istream_t {
     Take() {
         int next = m_backend->get();
 
-        if(next == std::char_traits<char>::eof()) {
+        if (next == std::char_traits<char>::eof()) {
             return '\0';
         } else {
             ++m_offset;
@@ -558,8 +558,8 @@ dynamic_t::from_json(std::istream &input) {
         configuration_constructor
     );
 
-    if(!parse_success) {
-        if(json_reader.HasParseError()) {
+    if (!parse_success) {
+        if (json_reader.HasParseError()) {
             throw json_parsing_error_t(json_stream.Tell(), json_reader.GetParseError());
         } else {
             throw json_parsing_error_t(json_stream.Tell(), "unknown error");

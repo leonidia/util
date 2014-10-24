@@ -75,7 +75,7 @@ struct dynamic_converter<
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if(from.is_int()) {
+        if (from.is_int()) {
             return boost::numeric_cast<result_type>(from.as_int());
         } else {
             return boost::numeric_cast<result_type>(from.as_uint());
@@ -85,10 +85,10 @@ struct dynamic_converter<
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(from.is_int()) {
+        if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
-        } else if(from.is_uint()) {
+        } else if (from.is_uint()) {
             boost::numeric::converter<result_type, dynamic_t::uint_t> converter;
             return converter.out_of_range(from.as_uint()) == boost::numeric::cInRange;
         }
@@ -108,9 +108,9 @@ struct dynamic_converter<
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if(from.is_int()) {
+        if (from.is_int()) {
             return boost::numeric_cast<result_type>(from.as_int());
-        } else if(from.is_uint()) {
+        } else if (from.is_uint()) {
             return boost::numeric_cast<result_type>(from.as_uint());
         } else {
             return boost::numeric_cast<result_type>(from.as_double());
@@ -120,13 +120,13 @@ struct dynamic_converter<
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(from.is_int()) {
+        if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
-        } else if(from.is_uint()) {
+        } else if (from.is_uint()) {
             boost::numeric::converter<result_type, dynamic_t::uint_t> converter;
             return converter.out_of_range(from.as_uint()) == boost::numeric::cInRange;
-        } else if(from.is_double()) {
+        } else if (from.is_double()) {
             boost::numeric::converter<result_type, dynamic_t::double_t> converter;
             return converter.out_of_range(from.as_double()) == boost::numeric::cInRange;
         }
@@ -217,7 +217,7 @@ struct dynamic_converter<std::vector<T>> {
         std::vector<T> result;
         const dynamic_t::array_t& array = from.as_array();
 
-        for(size_t i = 0; i < array.size(); ++i) {
+        for (size_t i = 0; i < array.size(); ++i) {
             result.emplace_back(array[i].to<T>());
         }
 
@@ -245,7 +245,7 @@ struct dynamic_converter<std::set<T>> {
         std::set<T> result;
         const dynamic_t::array_t& array = from.as_array();
 
-        for(size_t i = 0; i < array.size(); ++i) {
+        for (size_t i = 0; i < array.size(); ++i) {
             result.insert(array[i].to<T>());
         }
 
@@ -270,8 +270,8 @@ struct dynamic_converter<std::tuple<Args...>> {
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if(sizeof...(Args) == from.as_array().size()) {
-            if(sizeof...(Args) == 0) {
+        if (sizeof...(Args) == from.as_array().size()) {
+            if (sizeof...(Args) == 0) {
                 return result_type();
             } else {
                 return range_applier<sizeof...(Args) - 1>::convert(from.as_array());
@@ -284,8 +284,8 @@ struct dynamic_converter<std::tuple<Args...>> {
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(from.is_array() && sizeof...(Args) == from.as_array().size()) {
-            if(sizeof...(Args) == 0) {
+        if (from.is_array() && sizeof...(Args) == from.as_array().size()) {
+            if (sizeof...(Args) == 0) {
                 return true;
             } else {
                 return range_applier<sizeof...(Args) - 1>::is_convertible(from.as_array());
@@ -337,7 +337,7 @@ struct dynamic_converter<std::pair<First, Second>> {
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if(from.as_array().size() == 2) {
+        if (from.as_array().size() == 2) {
             return std::make_pair(from.as_array()[0].to<First>(), from.as_array()[1].to<Second>());
         } else {
             throw std::bad_cast();
@@ -347,7 +347,7 @@ struct dynamic_converter<std::pair<First, Second>> {
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(from.is_array() && from.as_array().size() == 2) {
+        if (from.is_array() && from.as_array().size() == 2) {
             return from.as_array()[0].convertible_to<First>() &&
                    from.as_array()[1].convertible_to<Second>();
         } else {
@@ -400,7 +400,7 @@ struct dynamic_converter<std::map<std::string, T>> {
         result_type result;
         const dynamic_t::object_t& object = from.as_object();
 
-        for(auto it = object.begin(); it != object.end(); ++it) {
+        for (auto it = object.begin(); it != object.end(); ++it) {
             result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
         }
 
@@ -410,14 +410,14 @@ struct dynamic_converter<std::map<std::string, T>> {
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(!from.is_object()) {
+        if (!from.is_object()) {
             return false;
         }
 
         const dynamic_t::object_t& object = from.as_object();
 
-        for(auto it = object.begin(); it != object.end(); ++it) {
-            if(!it->second.convertible_to<T>()) {
+        for (auto it = object.begin(); it != object.end(); ++it) {
+            if (!it->second.convertible_to<T>()) {
                 return false;
             }
 
@@ -436,7 +436,7 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
         result_type result;
         const dynamic_t::object_t& object = from.as_object();
 
-        for(auto it = object.begin(); it != object.end(); ++it) {
+        for (auto it = object.begin(); it != object.end(); ++it) {
             result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
         }
 
@@ -446,14 +446,14 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
     static inline
     bool
     convertible(const dynamic_t& from) {
-        if(!from.is_object()) {
+        if (!from.is_object()) {
             return false;
         }
 
         const dynamic_t::object_t& object = from.as_object();
 
-        for(auto it = object.begin(); it != object.end(); ++it) {
-            if(!it->second.convertible_to<T>()) {
+        for (auto it = object.begin(); it != object.end(); ++it) {
+            if (!it->second.convertible_to<T>()) {
                 return false;
             }
 
