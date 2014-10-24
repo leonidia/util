@@ -18,10 +18,41 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_HPP
-#define LEONIDIA_DYNAMIC_HPP
+#ifndef LEONIDIA_DYNAMIC_ERROR_HPP
+#define LEONIDIA_DYNAMIC_ERROR_HPP
 
-#include "leonidia/dynamic/dynamic.hpp"
-#include "leonidia/dynamic/error.hpp"
+#include "leonidia/utility.hpp"
+
+#include <stdexcept>
+
+namespace leonidia {
+
+class json_parsing_error_t :
+    public std::invalid_argument
+{
+public:
+    json_parsing_error_t(size_t offset, std::string message) :
+        std::runtime_error("parsing error - " + message),
+        m_offset(offset),
+        m_message(message)
+    { }
+
+    size_t
+    offset() const LEONIDIA_NOEXCEPT {
+        return m_offset;
+    }
+
+    size_t
+    message() const LEONIDIA_NOEXCEPT {
+        return m_message;
+    }
+
+private:
+    size_t m_offset;
+    std::string m_message;
+};
+
+} // namespace leonidia
+
 
 #endif

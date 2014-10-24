@@ -18,7 +18,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <leonidia/dynamic/dynamic.hpp>
+#include "leonidia/dynamic.hpp"
 
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
@@ -564,7 +564,11 @@ dynamic_t::from_json(std::istream &input) {
     );
 
     if(!parse_success) {
-        throw std::runtime_error("JSON is corrupted.");
+        if(json_reader.HasParseError()) {
+            throw json_parsing_error_t(json_reader.GetErrorOffset(), json_reader.GetParseError());
+        } else {
+            throw json_parsing_error_t(json_reader.GetErrorOffset(), "unknown error");
+        }
     }
 
     return configuration_constructor.Result();
