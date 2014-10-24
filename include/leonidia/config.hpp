@@ -74,7 +74,7 @@ private:
     size_t m_column_number;
 };
 
-
+// TODO: Drop this conversion code in favor of dynamic_converter.
 namespace detail
 {
 
