@@ -238,19 +238,11 @@ dynamic_t::as_string() {
 
 dynamic_t::array_t&
 dynamic_t::as_array() {
-    if(is_null()) {
-        *this = array_t();
-    }
-
     return get<detail::dynamic::incomplete_wrapper<array_t>>().get();
 }
 
 dynamic_t::object_t&
 dynamic_t::as_object() {
-    if(is_null()) {
-        *this = object_t();
-    }
-
     return get<detail::dynamic::incomplete_wrapper<object_t>>().get();
 }
 

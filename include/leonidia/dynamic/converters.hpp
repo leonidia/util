@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONVERTERS_HPP
 #define LEONIDIA_DYNAMIC_CONVERTERS_HPP
 
+#include <boost/numeric/conversion/cast.hpp>
+
 #include <algorithm>
 #include <tuple>
 #include <unordered_map>
@@ -65,7 +67,7 @@ struct dynamic_converter<bool> {
 template<class To>
 struct dynamic_converter<
     To,
-    typename std::enable_if<std::is_arithmetic<To>::value>::type
+    typename std::enable_if<std::is_integral<To>::value>::type
 >
 {
     typedef To result_type;
@@ -74,18 +76,62 @@ struct dynamic_converter<
     result_type
     convert(const dynamic_t& from) {
         if(from.is_int()) {
-            return from.as_int();
-        } else if(from.is_uint()) {
-            return from.as_uint();
+            return boost::numeric_cast<result_type>(from.as_int());
         } else {
-            return from.as_double();
+            return boost::numeric_cast<result_type>(from.as_uint());
         }
     }
 
     static inline
     bool
     convertible(const dynamic_t& from) {
-        return from.is_int() || from.is_uint() || from.is_double();
+        if(from.is_int()) {
+            boost::numeric::converter<result_type, dynamic_t::int_t> converter;
+            return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
+        } else if(from.is_uint()) {
+            boost::numeric::converter<result_type, dynamic_t::uint_t> converter;
+            return converter.out_of_range(from.as_uint()) == boost::numeric::cInRange;
+        }
+
+        return false;
+    }
+};
+
+template<class To>
+struct dynamic_converter<
+    To,
+    typename std::enable_if<std::is_floating_point<To>::value>::type
+>
+{
+    typedef To result_type;
+
+    static inline
+    result_type
+    convert(const dynamic_t& from) {
+        if(from.is_int()) {
+            return boost::numeric_cast<result_type>(from.as_int());
+        } else if(from.is_uint()) {
+            return boost::numeric_cast<result_type>(from.as_uint());
+        } else {
+            return boost::numeric_cast<result_type>(from.as_double());
+        }
+    }
+
+    static inline
+    bool
+    convertible(const dynamic_t& from) {
+        if(from.is_int()) {
+            boost::numeric::converter<result_type, dynamic_t::int_t> converter;
+            return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
+        } else if(from.is_uint()) {
+            boost::numeric::converter<result_type, dynamic_t::uint_t> converter;
+            return converter.out_of_range(from.as_uint()) == boost::numeric::cInRange;
+        } else if(from.is_double()) {
+            boost::numeric::converter<result_type, dynamic_t::double_t> converter;
+            return converter.out_of_range(from.as_double()) == boost::numeric::cInRange;
+        }
+
+        return false;
     }
 };
 
@@ -183,7 +229,7 @@ struct dynamic_converter<std::vector<T>> {
     convertible(const dynamic_t& from) {
         return from.is_array() && std::all_of(
             from.as_array().begin(),
-            from.as_array().end(), 
+            from.as_array().end(),
             std::bind(&dynamic_t::convertible_to<T>, std::placeholders::_1)
         );
     }

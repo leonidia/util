@@ -32,7 +32,7 @@ class json_parsing_error_t :
 {
 public:
     json_parsing_error_t(size_t offset, std::string message) :
-        std::runtime_error("parsing error - " + message),
+        std::invalid_argument("parsing error - " + message),
         m_offset(offset),
         m_message(message)
     { }
@@ -42,9 +42,9 @@ public:
         return m_offset;
     }
 
-    size_t
+    const char*
     message() const LEONIDIA_NOEXCEPT {
-        return m_message;
+        return m_message.data();
     }
 
 private:
