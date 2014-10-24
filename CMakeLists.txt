@@ -1,5 +1,4 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-
 PROJECT(LEONIDIA-UTIL)
 
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -13,13 +12,8 @@ INCLUDE_DIRECTORIES(
 )
 
 INCLUDE_DIRECTORIES(BEFORE
-    ${PROJECT_SOURCE_DIR}/foreign/backward-cpp
-    ${PROJECT_SOURCE_DIR}/foreign/blackhole/src
-    ${PROJECT_SOURCE_DIR}/foreign/rapidjson/include
-    ${PROJECT_SOURCE_DIR}/include)
-
-# For better IDE experience
-FILE(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include *.hpp)
+    ${PROJECT_SOURCE_DIR}/include
+)
 
 ADD_LIBRARY(leonidia-util SHARED
     src/dynamic
@@ -27,12 +21,14 @@ ADD_LIBRARY(leonidia-util SHARED
     ${HEADERS}
 )
 
-SET_TARGET_PROPERTIES(leonidia-util PROPERTIES
-    VERSION 1
+TARGET_LINK_LIBRARIES(leonidia-util
+    ${Boost_LIBRARIES}
 )
 
 SET_TARGET_PROPERTIES(leonidia-util PROPERTIES
-    COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -pedantic")
+    VERSION 1
+    COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -pedantic"
+)
 
 IF(NOT LEONIDIA_LIBDIR)
     SET(LEONIDIA_LIBDIR lib)

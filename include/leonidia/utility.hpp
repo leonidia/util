@@ -57,7 +57,7 @@ struct pristine {
 // some nested type.
 // Usage: template<class T> struct some_struct<T, typename depends<T::nested_type>::type> { }
 template<class T, class Result = void>
-struct depends {
+struct requieres_type {
     typedef Result type;
 };
 
@@ -74,4 +74,3 @@ struct requires_method {
 } // namespace leonidia
 
 #endif
-

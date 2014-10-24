@@ -20,6 +20,9 @@
 
 #include <leonidia/dynamic/dynamic.hpp>
 
+#include <rapidjson/reader.h>
+#include <rapidjson/writer.h>
+
 using namespace leonidia;
 
 const dynamic_t dynamic_t::null = dynamic_t::null_t();
@@ -293,80 +296,289 @@ dynamic_t::is_object() const {
 
 namespace {
 
+struct json_to_dynamic_reader_t {
+    void
+    Null() {
+        m_stack.emplace(dynamic_t::null);
+    }
+
+    void
+    Bool(bool v) {
+        m_stack.emplace(v);
+    }
+
+    void
+    Int(int v) {
+        m_stack.emplace(v);
+    }
+
+    void
+    Uint(unsigned v) {
+        m_stack.emplace(dynamic_t::uint_t(v));
+    }
+
+    void
+    Int64(int64_t v) {
+        m_stack.emplace(v);
+    }
+
+    void
+    Uint64(uint64_t v) {
+        m_stack.emplace(dynamic_t::uint_t(v));
+    }
+
+    void
+    Double(double v) {
+        m_stack.emplace(v);
+    }
+
+    void
+    String(const char* data, size_t size, bool) {
+        m_stack.emplace(dynamic_t::string_t(data, size));
+    }
+
+    void
+    StartObject() {
+        // Empty.
+    }
+
+    void
+    EndObject(size_t size) {
+        dynamic_t::object_t object;
+
+        for(size_t i = 0; i < size; ++i) {
+            dynamic_t value = std::move(m_stack.top());
+            m_stack.pop();
+
+            std::string key = std::move(m_stack.top().as_string());
+            m_stack.pop();
+
+            object[key] = std::move(value);
+        }
+
+        m_stack.emplace(std::move(object));
+    }
+
+    void
+    StartArray() {
+        // Empty.
+    }
+
+    void
+    EndArray(size_t size) {
+        dynamic_t::array_t array(size);
+
+        for(size_t i = size; i != 0; --i) {
+            array[i - 1] = std::move(m_stack.top());
+            m_stack.pop();
+        }
+
+        m_stack.emplace(std::move(array));
+    }
+
+    dynamic_t
+    Result() {
+        return m_stack.top();
+    }
+
+private:
+    std::stack<dynamic_t> m_stack;
+};
+
+struct rapidjson_istream_t {
+    rapidjson_istream_t(std::istream *backend) :
+        m_backend(backend)
+    { }
+
+    char
+    Peek() const {
+        int next = m_backend->peek();
+
+        if(next == std::char_traits<char>::eof()) {
+            return '\0';
+        } else {
+            return next;
+        }
+    }
+
+    char
+    Take() {
+        int next = m_backend->get();
+
+        if(next == std::char_traits<char>::eof()) {
+            return '\0';
+        } else {
+            return next;
+        }
+    }
+
+    size_t
+    Tell() const {
+        return m_backend->gcount();
+    }
+
+    char*
+    PutBegin() {
+        assert(false);
+        return 0;
+    }
+
+    void
+    Put(char) {
+        assert(false);
+    }
+
+    size_t
+    PutEnd(char*) {
+        assert(false);
+        return 0;
+    }
+
+private:
+    std::istream *m_backend;
+};
+
+struct rapidjson_ostream_t {
+    rapidjson_ostream_t(std::ostream *backend) :
+        m_backend(backend)
+    { }
+
+    char
+    Peek() const {
+        assert(false);
+        return 0;
+    }
+
+    char
+    Take() {
+        assert(false);
+        return 0;
+    }
+
+    size_t
+    Tell() const {
+        assert(false);
+        return 0;
+    }
+
+    char*
+    PutBegin() {
+        assert(false);
+        return 0;
+    }
+
+    void
+    Put(char c) {
+        m_backend->put(c);
+    }
+
+    size_t
+    PutEnd(char*) {
+        assert(false);
+        return 0;
+    }
+
+private:
+    std::ostream *m_backend;
+};
+
+typedef rapidjson::Writer<rapidjson_ostream_t> ostream_writer_t;
+
 struct to_stream_visitor:
     public boost::static_visitor<>
 {
-    to_stream_visitor(std::ostream &stream) :
-        m_stream(stream)
+    to_stream_visitor(ostream_writer_t *writer) :
+        m_writer(writer)
     { }
 
     void
     operator()(const dynamic_t::null_t&) const {
-        m_stream << "null";
+        m_writer->Null();
     }
 
     void
     operator()(const dynamic_t::bool_t& v) const {
-        m_stream << (v ? "true" : "false");
+        m_writer->Bool(v);
     }
 
-    template<class T>
     void
-    operator()(const T& v) const {
-        m_stream << v;
+    operator()(const dynamic_t::int_t& v) const {
+        m_writer->Int64(v);
+    }
+
+    void
+    operator()(const dynamic_t::uint_t& v) const {
+        m_writer->Uint64(v);
+    }
+
+    void
+    operator()(const dynamic_t::double_t& v) const {
+        m_writer->Double(v);
     }
 
     void
     operator()(const dynamic_t::string_t& v) const {
-        m_stream << "\"" << v << "\"";
+        m_writer->String(v.data(), v.size());
     }
 
     void
     operator()(const dynamic_t::array_t& v) const {
-        m_stream << "[";
+        m_writer->StartArray();
 
-        size_t index = 0;
-
-        if(!v.empty()) {
-            v[index++].apply(*this);
+        for(auto it = v.begin(); it != v.end(); ++it) {
+            it->apply(*this);
         }
 
-        while(index < v.size()) {
-            m_stream << ", ";
-            v[index++].apply(*this);
-        }
-
-        m_stream << "]";
+        m_writer->EndArray();
     }
 
     void
     operator()(const dynamic_t::object_t& v) const {
-        m_stream << "{";
+        m_writer->StartObject();
 
-        dynamic_t::object_t::const_iterator it = v.begin();
-
-        if(it != v.end()) {
-            m_stream << "\"" << it->first << "\":";
-            it->second.apply(*this);
-            ++it;
-        }
-
-        for(; it != v.end(); ++it) {
-            m_stream << ", " << "\"" << it->first << "\":";
+        for(auto it = v.begin(); it != v.end(); ++it) {
+            it->first.apply(*this);
             it->second.apply(*this);
         }
 
-        m_stream << "}";
+        m_writer->EndObject();
     }
 
 private:
-    std::ostream &m_stream;
+    ostream_writer_t *m_writer;
 };
 
 } // namespace
 
+dynamic_t
+dynamic_t::from_json(std::istream &input) {
+    rapidjson::MemoryPoolAllocator<> json_allocator;
+    rapidjson::Reader json_reader(&json_allocator);
+    rapidjson_istream_t json_stream(&stream);
+
+    json_to_dynamic_reader_t configuration_constructor;
+
+    bool parse_success = json_reader.Parse<rapidjson::kParseDefaultFlags | rapidjson::kParseStreamFlag>(
+        json_stream,
+        configuration_constructor
+    );
+
+    if(!parse_success) {
+        throw std::runtime_error("JSON is corrupted.");
+    }
+
+    return configuration_constructor.Result();
+}
+
+void
+dynamic_t::to_json(std::ostream &output) {
+    rapidjson_ostream_t rapidjson_stream = &output;
+    ostream_writer_t writer = rapidjson_stream;
+    this->apply(to_stream_visitor(&writer));
+}
+
 std::ostream&
 leonidia::operator<<(std::ostream& stream, const dynamic_t& value) {
-    value.apply(to_stream_visitor(stream));
+    value.to_json(stream);
     return stream;
 }

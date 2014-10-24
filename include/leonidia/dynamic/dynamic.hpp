@@ -18,19 +18,19 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_TYPE_HPP
-#define LEONIDIA_DYNAMIC_TYPE_HPP
+#ifndef LEONIDIA_DYNAMIC_DYNAMIC_HPP
+#define LEONIDIA_DYNAMIC_DYNAMIC_HPP
 
-#include <string>
-#include <utility>
-#include <vector>
+#include "leonidia/dynamic/detail.hpp"
+
+#include "leonidia/utility.hpp"
 
 #include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 
-#include "leonidia/utility.hpp"
-
-#include "leonidia/dynamic/detail.hpp"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace leonidia {
 
@@ -201,6 +201,14 @@ public:
     template<class T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to() const;
+
+public:
+    static
+    dynamic_t
+    from_json(std::istream &input);
+
+    void
+    to_json(std::ostream &output) const;
 
 private:
     template<class T>

@@ -29,19 +29,4 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     #include <cstdatomic>
 #endif
 
-namespace leonidia {
-
-inline
-void
-acquire_memory_barrier() {
-#if defined(__GNUC__) && !defined(DESPAIR_HAVE_GCC47)
-    __sync_synchronize();
-#else
-    std::atomic_thread_fence(std::memory_order_acquire);
 #endif
-}
-
-} // namespace leonidia
-
-#endif
-
