@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include "dynamic/dynamic.hpp"
+#include "leonidia/dynamic.hpp"
 #include <boost/numeric/conversion/cast.hpp>
 
 namespace leonidia {

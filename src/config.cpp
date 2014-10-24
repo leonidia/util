@@ -21,9 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "leonidia/config.hpp"
 
-#include <rapidjson/reader.h>
-#include <rapidjson/filestream.h>
-
 #include <fstream>
 #include <stack>
 
@@ -123,154 +120,6 @@ void config_t::assert_object() const
         throw config_error(m_path + " must be an object");
 }
 
-namespace {
-
-struct dynamic_reader_t {
-    void
-    Null() {
-        m_stack.emplace(dynamic_t::null);
-    }
-
-    void
-    Bool(bool v) {
-        m_stack.emplace(v);
-    }
-
-    void
-    Int(int v) {
-        m_stack.emplace(v);
-    }
-
-    void
-    Uint(unsigned v) {
-        m_stack.emplace(dynamic_t::uint_t(v));
-    }
-
-    void
-    Int64(int64_t v) {
-        m_stack.emplace(v);
-    }
-
-    void
-    Uint64(uint64_t v) {
-        m_stack.emplace(dynamic_t::uint_t(v));
-    }
-
-    void
-    Double(double v) {
-        m_stack.emplace(v);
-    }
-
-    void
-    String(const char* data, size_t size, bool) {
-        m_stack.emplace(dynamic_t::string_t(data, size));
-    }
-
-    void
-    StartObject() {
-        // Empty.
-    }
-
-    void
-    EndObject(size_t size) {
-        dynamic_t::object_t object;
-
-        for(size_t i = 0; i < size; ++i) {
-            dynamic_t value = std::move(m_stack.top());
-            m_stack.pop();
-
-            std::string key = std::move(m_stack.top().as_string());
-            m_stack.pop();
-
-            object[key] = std::move(value);
-        }
-
-        m_stack.emplace(std::move(object));
-    }
-
-    void
-    StartArray() {
-        // Empty.
-    }
-
-    void
-    EndArray(size_t size) {
-        dynamic_t::array_t array(size);
-
-        for(size_t i = size; i != 0; --i) {
-            array[i - 1] = std::move(m_stack.top());
-            m_stack.pop();
-        }
-
-        m_stack.emplace(std::move(array));
-    }
-
-    dynamic_t
-    Result() {
-        return m_stack.top();
-    }
-
-private:
-    std::stack<dynamic_t> m_stack;
-};
-
-struct rapidjson_ifstream_t {
-    rapidjson_ifstream_t(std::istream& backend) :
-        m_backend(&backend), m_offset(0)
-    { }
-
-    char
-    Peek() const {
-        int next = m_backend->peek();
-
-        if(next == std::char_traits<char>::eof()) {
-            return '\0';
-        } else {
-            return next;
-        }
-    }
-
-    char
-    Take() {
-        int next = m_backend->get();
-
-        if(next == std::char_traits<char>::eof()) {
-            return '\0';
-        } else {
-            ++m_offset;
-            return next;
-        }
-    }
-
-    size_t
-    Tell() const {
-        return m_offset;
-    }
-
-    char*
-    PutBegin() {
-        assert(false);
-        return 0;
-    }
-
-    void
-    Put(char) {
-        assert(false);
-    }
-
-    size_t
-    PutEnd(char*) {
-        assert(false);
-        return 0;
-    }
-
-private:
-    std::istream* m_backend;
-    size_t m_offset;
-};
-
-} // namespace
-
 config_parser_t::config_parser_t()
 {
 }
@@ -292,17 +141,12 @@ void config_parser_t::open(const std::string &path)
 
 void config_parser_t::parse(std::istream &stream)
 {
-    rapidjson::MemoryPoolAllocator<> json_allocator;
-    rapidjson::Reader json_reader(&json_allocator);
-    rapidjson_ifstream_t config_stream(stream);
-    dynamic_reader_t config_constructor;
-
-    json_reader.Parse<rapidjson::kParseDefaultFlags>(config_stream, config_constructor);
-
-    if (json_reader.HasParseError()) {
+    try {
+        m_root = leonidia::dynamic_t::from_json(stream);
+    } catch (const leonidia::json_parsing_error_t& e) {
         stream.seekg(0);
         if (stream) {
-            size_t offset = json_reader.GetErrorOffset();
+            size_t offset = e.offset();
             std::vector<char> buffer(offset);
             stream.read(buffer.data(), offset);
 
@@ -347,17 +191,15 @@ void config_parser_t::parse(std::istream &stream)
 
             std::stringstream error;
             error
-                    << "parser error at line " << line_number << ": " << json_reader.GetParseError() << std::endl
+                    << "parser error at line " << line_number << ": " << e.message() << std::endl
                     << data.substr(std::min(line_offset, data.size())) << std::endl
                     << std::string(dash_count, ' ') << '^' << std::endl
                     << std::string(dash_count, '~') << '+' << std::endl;
-            throw config_parser_error(error.str(), json_reader.GetParseError(), line_number, dash_count + 1);
+            throw config_parser_error(error.str(), e.message(), line_number, dash_count + 1);
         }
 
-        throw config_error(std::string("parser error: at unknown line: ") + json_reader.GetParseError());
+        throw config_error(std::string("parser error: at unknown line: ") + e.message());
     }
-
-    m_root = config_constructor.Result();
 
     if (!m_root.is_object())
         throw config_error("root must be an object");

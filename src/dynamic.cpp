@@ -379,7 +379,8 @@ private:
 
 struct rapidjson_istream_t {
     rapidjson_istream_t(std::istream *backend) :
-        m_backend(backend)
+        m_backend(backend),
+        m_offset(0)
     { }
 
     char
@@ -400,13 +401,14 @@ struct rapidjson_istream_t {
         if(next == std::char_traits<char>::eof()) {
             return '\0';
         } else {
+            ++m_offset;
             return next;
         }
     }
 
     size_t
     Tell() const {
-        return m_backend->gcount();
+        return m_offset;
     }
 
     char*
@@ -428,6 +430,7 @@ struct rapidjson_istream_t {
 
 private:
     std::istream *m_backend;
+    size_t m_offset;
 };
 
 struct rapidjson_ostream_t {
@@ -557,9 +560,9 @@ dynamic_t::from_json(std::istream &input) {
 
     if(!parse_success) {
         if(json_reader.HasParseError()) {
-            throw json_parsing_error_t(json_reader.GetErrorOffset(), json_reader.GetParseError());
+            throw json_parsing_error_t(json_stream.Tell(), json_reader.GetParseError());
         } else {
-            throw json_parsing_error_t(json_reader.GetErrorOffset(), "unknown error");
+            throw json_parsing_error_t(json_stream.Tell(), "unknown error");
         }
     }
 
