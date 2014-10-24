@@ -1,3 +1,6 @@
 [submodule "foreign/gtest"]
 	path = foreign/gtest
 	url = https://chromium.googlesource.com/external/googletest
+[submodule "foreign/rapidjson"]
+	path = foreign/rapidjson
+	url = https://github.com/leonidia/rapidjson.git
