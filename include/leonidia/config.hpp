@@ -26,7 +26,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace leonidia {
 
-class config_error : public std::exception
+class LEONIDIA_API config_error : public std::exception
 {
 public:
     explicit config_error(std::string message) : m_message(std::move(message))
@@ -42,7 +42,7 @@ private:
     std::string m_message;
 };
 
-class config_parser_error : public config_error
+class LEONIDIA_API config_parser_error : public config_error
 {
 public:
     config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
@@ -207,7 +207,7 @@ struct config_value_caster_specific_helper<T, vector_type>
 
 }
 
-class config_t
+class LEONIDIA_API config_t
 {
 public:
     config_t(const std::string &path, const dynamic_t *value);
@@ -269,7 +269,7 @@ protected:
     const dynamic_t &m_value;
 };
 
-class config_parser_t
+class LEONIDIA_API config_parser_t
 {
 public:
     config_parser_t();

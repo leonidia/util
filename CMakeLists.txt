@@ -27,7 +27,7 @@ TARGET_LINK_LIBRARIES(leonidia-util
 
 SET_TARGET_PROPERTIES(leonidia-util PROPERTIES
     VERSION 1
-    COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -pedantic"
+    COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -pedantic -fvisibility=hidden"
 )
 
 IF(NOT LEONIDIA_LIBDIR)

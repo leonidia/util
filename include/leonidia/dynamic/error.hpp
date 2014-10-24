@@ -27,7 +27,7 @@
 
 namespace leonidia {
 
-class json_parsing_error_t :
+class LEONIDIA_API json_parsing_error_t :
     public std::invalid_argument
 {
 public:

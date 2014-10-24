@@ -21,8 +21,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "leonidia/dynamic/dynamic.hpp"
+#include "leonidia/dynamic.hpp"
 
 TEST(Dynamic, DummyTest) {
+    leonidia::dynamic_t::object_t obj;
+    leonidia::dynamic_t dynamic(obj);
+    EXPECT_EQ(obj.at("dcdc", 5), 5);
+
     // Empty.
 }

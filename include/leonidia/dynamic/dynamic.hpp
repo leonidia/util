@@ -43,7 +43,7 @@ struct dynamic_constructor {
 template<class To, class = void>
 struct dynamic_converter { };
 
-class dynamic_t {
+class LEONIDIA_API dynamic_t {
 public:
     typedef bool                   bool_t;
     typedef int64_t                int_t;
@@ -264,6 +264,7 @@ dynamic_t::to() const {
     return dynamic_converter<typename pristine<T>::type>::convert(*this);
 }
 
+LEONIDIA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
 

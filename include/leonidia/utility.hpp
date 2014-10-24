@@ -43,6 +43,8 @@ type& operator=(const type&) = delete;
     #define nullptr __null
 #endif
 
+#define LEONIDIA_API __attribute__ ((visibility ("default")))
+
 namespace leonidia {
 
 // It's like std::decay, but doesn't convert arrays to pointers.
