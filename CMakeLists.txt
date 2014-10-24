@@ -13,12 +13,12 @@ INCLUDE_DIRECTORIES(
 
 INCLUDE_DIRECTORIES(BEFORE
     ${PROJECT_SOURCE_DIR}/include
+    SYSTEM ${PROJECT_SOURCE_DIR}/foreign/rapidjson/include
 )
 
 ADD_LIBRARY(leonidia-util SHARED
     src/dynamic
     src/config
-    ${HEADERS}
 )
 
 TARGET_LINK_LIBRARIES(leonidia-util

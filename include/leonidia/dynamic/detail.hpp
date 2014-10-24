@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_DETAIL_HPP
 #define LEONIDIA_DYNAMIC_DETAIL_HPP
 
+#include <boost/variant.hpp>
+
 #include <map>
 #include <memory>
 

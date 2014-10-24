@@ -537,7 +537,7 @@ struct to_stream_visitor:
         m_writer->StartObject();
 
         for(auto it = v.begin(); it != v.end(); ++it) {
-            it->first.apply(*this);
+            m_writer->String(it->first.data(), it->first.size());
             it->second.apply(*this);
         }
 
@@ -554,7 +554,7 @@ dynamic_t
 dynamic_t::from_json(std::istream &input) {
     rapidjson::MemoryPoolAllocator<> json_allocator;
     rapidjson::Reader json_reader(&json_allocator);
-    rapidjson_istream_t json_stream(&stream);
+    rapidjson_istream_t json_stream(&input);
 
     json_to_dynamic_reader_t configuration_constructor;
 
@@ -571,7 +571,7 @@ dynamic_t::from_json(std::istream &input) {
 }
 
 void
-dynamic_t::to_json(std::ostream &output) {
+dynamic_t::to_json(std::ostream &output) const {
     rapidjson_ostream_t rapidjson_stream = &output;
     ostream_writer_t writer = rapidjson_stream;
     this->apply(to_stream_visitor(&writer));

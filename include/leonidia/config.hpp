@@ -167,7 +167,7 @@ struct config_value_caster_specific_helper<T, floating_point_type>
 {
     static T cast(const std::string &path, const dynamic_t &value)
     {
-        if (!value.is<dynamic_t::double_t>())
+        if (!value.is_double())
             throw config_error(path + " must be a floating point number");
 
         return value.to<dynamic_t::double_t>();

@@ -28,6 +28,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 
+#include <stack>
 #include <string>
 #include <utility>
 #include <vector>
