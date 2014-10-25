@@ -18,8 +18,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef LEONIDIA_CONFIG_HPP
+#define LEONIDIA_CONFIG_HPP
 
 #include "leonidia/dynamic.hpp"
 
@@ -186,7 +186,7 @@ struct config_value_caster_specific_helper<T, vector_type>
     }
 };
 
-}
+} // namespace detail
 
 class config_t
 {
@@ -267,4 +267,4 @@ private:
 
 } // namespace leonidia
 
-#endif // CONFIG_HPP
+#endif
