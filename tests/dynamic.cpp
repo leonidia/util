@@ -442,10 +442,10 @@ TEST(Dynamic, MoveAssignment) {
     }
 }
 
-TEST(Dynamic, Equality) {
+TEST(Dynamic, EqualityAfterCopy) {
     {
         leonidia::dynamic_t dyn1;
-        leonidia::dynamic_t dyn2;
+        leonidia::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn1.is_null());
         EXPECT_TRUE(dyn1 == dyn2);
@@ -463,7 +463,6 @@ TEST(Dynamic, Equality) {
 
         EXPECT_TRUE(dyn1.is_int());
         EXPECT_TRUE(dyn1 == dyn2);
-        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::uint_t(20));
     }
     {
         leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
@@ -471,7 +470,6 @@ TEST(Dynamic, Equality) {
 
         EXPECT_TRUE(dyn1.is_uint());
         EXPECT_TRUE(dyn1 == dyn2);
-        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::int_t(20));
     }
     {
         leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
@@ -505,11 +503,128 @@ TEST(Dynamic, Equality) {
     }
 }
 
+TEST(Dynamic, Equality) {
+    {
+        leonidia::dynamic_t dyn1;
+
+        EXPECT_TRUE(dyn1.is_null());
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(false);
+
+        EXPECT_TRUE(dyn1.is_bool());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_TRUE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == true);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(leonidia::dynamic_t::int_t(20));
+
+        EXPECT_TRUE(dyn1.is_int());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(21));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(21));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
+
+        EXPECT_TRUE(dyn1.is_uint());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(21));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(21));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
+
+        EXPECT_TRUE(dyn1.is_double());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(21));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(leonidia::dynamic_t::string_t("xd"));
+
+        EXPECT_TRUE(dyn1.is_string());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::string_t("xd"));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1(leonidia::dynamic_t::array_t(3, 4));
+
+        EXPECT_TRUE(dyn1.is_array());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_TRUE(dyn1 == leonidia::dynamic_t::array_t(3, 4));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+    {
+        leonidia::dynamic_t dyn1 = leonidia::dynamic_t::object_t();
+        dyn1.as_object()["key"] = 42;
+
+        EXPECT_TRUE(dyn1.is_object());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 == false);
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::array_t());
+        EXPECT_FALSE(dyn1 == leonidia::dynamic_t::object_t());
+    }
+}
+
 TEST(Dynamic, Inequality) {
     {
         leonidia::dynamic_t dyn1;
 
         EXPECT_TRUE(dyn1.is_null());
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::null);
         EXPECT_TRUE(dyn1 != false);
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::int_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(20));
@@ -523,6 +638,7 @@ TEST(Dynamic, Inequality) {
 
         EXPECT_TRUE(dyn1.is_bool());
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::null);
+        EXPECT_FALSE(dyn1 != false);
         EXPECT_TRUE(dyn1 != true);
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::int_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(20));
@@ -537,6 +653,8 @@ TEST(Dynamic, Inequality) {
         EXPECT_TRUE(dyn1.is_int());
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::null);
         EXPECT_TRUE(dyn1 != false);
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::uint_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::int_t(21));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(21));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::double_t(20));
@@ -550,6 +668,8 @@ TEST(Dynamic, Inequality) {
         EXPECT_TRUE(dyn1.is_uint());
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::null);
         EXPECT_TRUE(dyn1 != false);
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::int_t(20));
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::uint_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::int_t(21));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(21));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::double_t(20));
@@ -579,6 +699,7 @@ TEST(Dynamic, Inequality) {
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::int_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::string_t("xd"));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::string_t("._______."));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::array_t());
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::object_t());
@@ -593,6 +714,7 @@ TEST(Dynamic, Inequality) {
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::uint_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::double_t(20));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dyn1 != leonidia::dynamic_t::array_t(3, 4));
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::array_t());
         EXPECT_TRUE(dyn1 != leonidia::dynamic_t::object_t());
     }
