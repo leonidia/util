@@ -715,55 +715,138 @@ namespace {
         }
     };
 
+    void
+    test_apply_values(leonidia::dynamic_t &dynamic) {
+        // At the moment, const and non-const apply's are different methods, so I test both.
+        dynamic.apply(values_tester_t());
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(values_tester_t());
+    }
+
+    struct mutate_tester_t:
+        public boost::static_visitor<>
+    {
+        void
+        operator()(leonidia::dynamic_t::null_t& v) const {
+            v = leonidia::dynamic_t::null_t();
+        }
+
+        void
+        operator()(leonidia::dynamic_t::bool_t& v) const {
+            v = false;
+        }
+
+        void
+        operator()(leonidia::dynamic_t::int_t& v) const {
+            v = 18;
+        }
+
+        void
+        operator()(leonidia::dynamic_t::uint_t& v) const {
+            v = 18;
+        }
+
+        void
+        operator()(leonidia::dynamic_t::double_t& v) const {
+            v = 18;
+        }
+
+        void
+        operator()(leonidia::dynamic_t::string_t& v) const {
+            v = "-_-";
+        }
+
+        void
+        operator()(leonidia::dynamic_t::array_t& v) const {
+            v = leonidia::dynamic_t::array_t(2, 8);
+        }
+
+        void
+        operator()(leonidia::dynamic_t::object_t& v) const {
+            v["key2"] = 18;
+        }
+    };
+
 } // namespace
 
-TEST(Dynamic, ApplyTypeTest) {
+TEST(Dynamic, Apply) {
     {
         SCOPED_TRACE("Null");
 
         leonidia::dynamic_t dynamic;
         test_apply_types<leonidia::dynamic_t::null_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
     }
     {
         SCOPED_TRACE("Bool");
 
         leonidia::dynamic_t dynamic(true);
         test_apply_types<leonidia::dynamic_t::bool_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, false);
     }
     {
         SCOPED_TRACE("Int");
 
         leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(20));
         test_apply_types<leonidia::dynamic_t::int_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, leonidia::dynamic_t::int_t(18));
     }
     {
         SCOPED_TRACE("Uint");
 
         leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(20));
         test_apply_types<leonidia::dynamic_t::uint_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, leonidia::dynamic_t::uint_t(18));
     }
     {
         SCOPED_TRACE("Double");
 
         leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(20));
         test_apply_types<leonidia::dynamic_t::double_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, leonidia::dynamic_t::double_t(18));
     }
     {
         SCOPED_TRACE("String");
 
         leonidia::dynamic_t dynamic("xd");
         test_apply_types<leonidia::dynamic_t::string_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, "-_-");
     }
     {
         SCOPED_TRACE("Array");
 
         leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
         test_apply_types<leonidia::dynamic_t::array_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic, leonidia::dynamic_t::array_t(2, 8));
     }
     {
         SCOPED_TRACE("Object");
 
         leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+        dynamic.as_object()["key"] = 20;
         test_apply_types<leonidia::dynamic_t::object_t>(dynamic);
+        test_apply_values(dynamic);
+
+        dynamic.apply(mutate_tester_t());
+        EXPECT_EQ(dynamic.as_object()["key2"], 18);
     }
 }
