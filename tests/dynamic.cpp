@@ -484,7 +484,7 @@ namespace {
         EXPECT_FALSE(dynamic == false);
         EXPECT_FALSE(dynamic == leonidia::dynamic_t::int_t(20));
         EXPECT_FALSE(dynamic == leonidia::dynamic_t::uint_t(20));
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::double_t(20));
+        EXPECT_FALSE(dynamic == leonidia::dynamic_t::double_t(20.7));
         EXPECT_FALSE(dynamic == leonidia::dynamic_t::string_t("._______."));
         EXPECT_FALSE(dynamic == leonidia::dynamic_t::array_t());
         EXPECT_FALSE(dynamic == leonidia::dynamic_t::object_t());
@@ -518,7 +518,7 @@ TEST(Dynamic, EqualityInt) {
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
-    EXPECT_FALSE(dynamic == leonidia::dynamic_t::double_t(21));
+    EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, EqualityUint) {
@@ -527,15 +527,15 @@ TEST(Dynamic, EqualityUint) {
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
-    EXPECT_FALSE(dynamic == leonidia::dynamic_t::double_t(21));
+    EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, EqualityDouble) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic == leonidia::dynamic_t::int_t(21));
-    EXPECT_FALSE(dynamic == leonidia::dynamic_t::uint_t(21));
+    EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
+    EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
 }
 
@@ -567,7 +567,7 @@ namespace {
         EXPECT_TRUE(dynamic != false);
         EXPECT_TRUE(dynamic != leonidia::dynamic_t::int_t(20));
         EXPECT_TRUE(dynamic != leonidia::dynamic_t::uint_t(20));
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::double_t(20));
+        EXPECT_TRUE(dynamic != leonidia::dynamic_t::double_t(20.7));
         EXPECT_TRUE(dynamic != leonidia::dynamic_t::string_t("._______."));
         EXPECT_TRUE(dynamic != leonidia::dynamic_t::array_t());
         EXPECT_TRUE(dynamic != leonidia::dynamic_t::object_t());
@@ -601,7 +601,7 @@ TEST(Dynamic, InequalityInt) {
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
-    EXPECT_TRUE(dynamic != leonidia::dynamic_t::double_t(21));
+    EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, InequalityUint) {
@@ -610,15 +610,15 @@ TEST(Dynamic, InequalityUint) {
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
-    EXPECT_TRUE(dynamic != leonidia::dynamic_t::double_t(21));
+    EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, InequalityDouble) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic != leonidia::dynamic_t::int_t(21));
-    EXPECT_TRUE(dynamic != leonidia::dynamic_t::uint_t(21));
+    EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
+    EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
 }
 

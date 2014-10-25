@@ -112,25 +112,35 @@ struct equals_visitor:
 
     bool
     operator()(const dynamic_t::int_t& v) const {
-        if(m_other.is_int()) {
+        if (m_other.is_int()) {
             return v == m_other.as_int();
+        } else if (m_other.is_uint()) {
+            return v >= 0 && static_cast<dynamic_t::uint_t>(v) == m_other.as_uint();
         } else {
-            return m_other.is_uint() && v >= 0 && static_cast<dynamic_t::uint_t>(v) == m_other.as_uint();
+            return m_other.is_double() && dynamic_t::double_t(v) == m_other.as_double();
         }
     }
 
     bool
     operator()(const dynamic_t::uint_t& v) const {
-        if(m_other.is_uint()) {
+        if (m_other.is_uint()) {
             return v == m_other.as_uint();
+        } else if (m_other.is_int()) {
+            return m_other.as_int() >= 0 && v == m_other.to<dynamic_t::uint_t>();
         } else {
-            return m_other.is_int() && m_other.as_int() >= 0 && v == m_other.to<dynamic_t::uint_t>();
+            return m_other.is_double() && dynamic_t::double_t(v) == m_other.as_double();
         }
     }
 
     bool
     operator()(const dynamic_t::double_t& v) const {
-        return m_other.is_double() && m_other.as_double() == v;
+        if (m_other.is_uint()) {
+            return v == dynamic_t::double_t(m_other.as_uint());
+        } else if (m_other.is_int()) {
+            return v == dynamic_t::double_t(m_other.as_int());
+        } else {
+            return m_other.is_double() && m_other.as_double() == v;
+        }
     }
 
     bool
