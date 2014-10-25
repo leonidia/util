@@ -84,6 +84,7 @@ public:
 
     LEONIDIA_API
     dynamic_t(const dynamic_t& other);
+    
     LEONIDIA_API
     dynamic_t(dynamic_t&& other);
 

@@ -50,7 +50,7 @@ dynamic_t&
 dynamic_t::object_t::at(const std::string& key, dynamic_t& default_) {
     auto it = find(key);
 
-    if(it == end()) {
+    if (it == end()) {
         return default_;
     } else {
         return it->second;
@@ -61,7 +61,7 @@ const dynamic_t&
 dynamic_t::object_t::at(const std::string& key, const dynamic_t& default_) const {
     auto it = find(key);
 
-    if(it == end()) {
+    if (it == end()) {
         return default_;
     } else {
         return it->second;
@@ -255,7 +255,7 @@ dynamic_t::as_object() const {
 
 dynamic_t::string_t&
 dynamic_t::as_string() {
-    if(is_null()) {
+    if (is_null()) {
         *this = string_t();
     }
 
@@ -546,7 +546,7 @@ struct to_stream_visitor:
     operator()(const dynamic_t::array_t& v) const {
         m_writer->StartArray();
 
-        for(auto it = v.begin(); it != v.end(); ++it) {
+        for (auto it = v.begin(); it != v.end(); ++it) {
             it->apply(*this);
         }
 
@@ -557,7 +557,7 @@ struct to_stream_visitor:
     operator()(const dynamic_t::object_t& v) const {
         m_writer->StartObject();
 
-        for(auto it = v.begin(); it != v.end(); ++it) {
+        for (auto it = v.begin(); it != v.end(); ++it) {
             m_writer->String(it->first.data(), it->first.size());
             it->second.apply(*this);
         }
