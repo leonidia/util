@@ -437,7 +437,7 @@ namespace {
         leonidia::dynamic_t copy(original);
         EXPECT_TRUE(original == copy);
     }
-}
+} // namespace
 
 TEST(Dynamic, EqualityAfterCopy) {
     {
@@ -496,7 +496,7 @@ namespace {
         basic_equality_checks(dynamic);
     }
 
-}
+} // namespace
 
 TEST(Dynamic, EqualityNull) {
     leonidia::dynamic_t dynamic;
@@ -579,7 +579,7 @@ namespace {
         basic_inequality_checks(dynamic);
     }
 
-}
+} // namespace
 
 TEST(Dynamic, InequalityNull) {
     leonidia::dynamic_t dynamic;
@@ -641,4 +641,129 @@ TEST(Dynamic, InequalityObject) {
     dynamic.as_object()["key"] = 42;
 
     basic_inequality_checks_nonnull(dynamic);
+}
+
+namespace {
+
+    template<class Expected>
+    struct type_tester_t:
+        public boost::static_visitor<>
+    {
+        void
+        operator()(Expected&) const {
+            SUCCEED();
+        }
+
+        template<class T>
+        void
+        operator()(T&&) const {
+            FAIL();
+        }
+    };
+
+    template<class Expected>
+    void
+    test_apply_types(leonidia::dynamic_t &dynamic) {
+        // At the moment, const and non-const apply's are different methods, so I test both.
+        dynamic.apply(type_tester_t<Expected>());
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(type_tester_t<const Expected>());
+    }
+
+    struct values_tester_t:
+        public boost::static_visitor<>
+    {
+        void
+        operator()(const leonidia::dynamic_t::null_t&) const {
+            // Null is always null. Nothing to test.
+            SUCCEED();
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::bool_t& v) const {
+            EXPECT_EQ(true, v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::int_t& v) const {
+            EXPECT_EQ(20, v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::uint_t& v) const {
+            EXPECT_EQ(20, v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::double_t& v) const {
+            EXPECT_EQ(20, v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::string_t& v) const {
+            EXPECT_EQ("xd", v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::array_t& v) const {
+            EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), v);
+        }
+
+        void
+        operator()(const leonidia::dynamic_t::object_t& v) const {
+            EXPECT_EQ(1, v.size());
+            EXPECT_EQ(v["key"], 20);
+        }
+    };
+
+} // namespace
+
+TEST(Dynamic, ApplyTypeTest) {
+    {
+        SCOPED_TRACE("Null");
+
+        leonidia::dynamic_t dynamic;
+        test_apply_types<leonidia::dynamic_t::null_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Bool");
+
+        leonidia::dynamic_t dynamic(true);
+        test_apply_types<leonidia::dynamic_t::bool_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Int");
+
+        leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(20));
+        test_apply_types<leonidia::dynamic_t::int_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Uint");
+
+        leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(20));
+        test_apply_types<leonidia::dynamic_t::uint_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Double");
+
+        leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(20));
+        test_apply_types<leonidia::dynamic_t::double_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("String");
+
+        leonidia::dynamic_t dynamic("xd");
+        test_apply_types<leonidia::dynamic_t::string_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Array");
+
+        leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
+        test_apply_types<leonidia::dynamic_t::array_t>(dynamic);
+    }
+    {
+        SCOPED_TRACE("Object");
+
+        leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+        test_apply_types<leonidia::dynamic_t::object_t>(dynamic);
+    }
 }

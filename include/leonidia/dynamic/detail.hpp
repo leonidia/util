@@ -77,7 +77,7 @@ struct dynamic_visitor_applier :
     template<class T>
     Result
     operator()(T& v) const {
-        return m_visitor(static_cast<const T&>(v));
+        return m_visitor(v);
     }
 
     template<class T>
