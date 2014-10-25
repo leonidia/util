@@ -667,6 +667,13 @@ namespace {
         // At the moment, const and non-const apply's are different methods, so I test both.
         dynamic.apply(type_tester_t<Expected>());
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(type_tester_t<const Expected>());
+
+        // Non-const visitors.
+        type_tester_t<Expected> tester;
+        dynamic.apply(tester);
+
+        type_tester_t<const Expected> tester_const;
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester_const);
     }
 
     struct values_tester_t:
@@ -720,6 +727,11 @@ namespace {
         // At the moment, const and non-const apply's are different methods, so I test both.
         dynamic.apply(values_tester_t());
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(values_tester_t());
+
+        // Non-const visitor.
+        values_tester_t tester;
+        dynamic.apply(tester);
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester);
     }
 
     struct mutate_tester_t:
@@ -766,6 +778,24 @@ namespace {
         }
     };
 
+    void
+    test_apply_mutate(leonidia::dynamic_t &dynamic) {
+        dynamic.apply(mutate_tester_t());
+
+        mutate_tester_t tester;
+        dynamic.apply(tester);
+    }
+
+    struct nonconst_visitor_t:
+        public boost::static_visitor<>
+    {
+        template<class T>
+        void
+        operator()(T&&) {
+            SUCCEED();
+        }
+    };
+
 } // namespace
 
 TEST(Dynamic, Apply) {
@@ -775,8 +805,7 @@ TEST(Dynamic, Apply) {
         leonidia::dynamic_t dynamic;
         test_apply_types<leonidia::dynamic_t::null_t>(dynamic);
         test_apply_values(dynamic);
-
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
     }
     {
         SCOPED_TRACE("Bool");
@@ -785,7 +814,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::bool_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, false);
     }
     {
@@ -795,7 +824,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::int_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, leonidia::dynamic_t::int_t(18));
     }
     {
@@ -805,7 +834,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::uint_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, leonidia::dynamic_t::uint_t(18));
     }
     {
@@ -815,7 +844,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::double_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, leonidia::dynamic_t::double_t(18));
     }
     {
@@ -825,7 +854,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::string_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, "-_-");
     }
     {
@@ -835,7 +864,7 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::array_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic, leonidia::dynamic_t::array_t(2, 8));
     }
     {
@@ -846,7 +875,14 @@ TEST(Dynamic, Apply) {
         test_apply_types<leonidia::dynamic_t::object_t>(dynamic);
         test_apply_values(dynamic);
 
-        dynamic.apply(mutate_tester_t());
+        test_apply_mutate(dynamic);
         EXPECT_EQ(dynamic.as_object()["key2"], 18);
     }
+}
+
+TEST(Dynamic, ApplyNonConstVisitor) {
+    leonidia::dynamic_t dynamic;
+    nonconst_visitor_t visitor;
+
+    dynamic.apply(visitor);
 }
