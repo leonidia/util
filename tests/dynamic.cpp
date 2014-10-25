@@ -131,19 +131,8 @@ TEST(Dynamic, AssociatedItems) {
 }
 
 TEST(Dynamic, DefaultConstructor) {
-    leonidia::dynamic_t dyn1;
-    EXPECT_TRUE(dyn1.is_null());
-
-    dyn1 = 20;
-    EXPECT_TRUE(dyn1.is_int());
-
-    leonidia::dynamic_t dyn2(dyn1);
-    EXPECT_TRUE(dyn2.is_int());
-    EXPECT_EQ(dyn2.as_int(), 20);
-
-    leonidia::dynamic_t dyn3(std::move(dyn2));
-    EXPECT_TRUE(dyn3.is_int());
-    EXPECT_EQ(dyn3.as_int(), 20);
+    leonidia::dynamic_t default_dynamic;
+    EXPECT_TRUE(default_dynamic.is_null());
 }
 
 TEST(Dynamic, CopyConstructor) {
