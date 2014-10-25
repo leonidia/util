@@ -453,52 +453,37 @@ namespace {
 TEST(Dynamic, EqualityAfterCopy) {
     {
         SCOPED_TRACE("Null");
-        leonidia::dynamic_t dynamic;
-        EXPECT_TRUE(dynamic.is_null());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t());
     }
     {
         SCOPED_TRACE("Bool");
-        leonidia::dynamic_t dynamic(false);
-        EXPECT_TRUE(dynamic.is_bool());
-        test_copy_equality(dynamic);
+        test_copy_equality(false);
     }
     {
         SCOPED_TRACE("Int");
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(20));
-        EXPECT_TRUE(dynamic.is_int());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t::int_t(20));
     }
     {
         SCOPED_TRACE("Uint");
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(20));
-        EXPECT_TRUE(dynamic.is_uint());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t::uint_t(20));
     }
     {
         SCOPED_TRACE("Double");
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(20));
-        EXPECT_TRUE(dynamic.is_double());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t::double_t(20));
     }
     {
         SCOPED_TRACE("String");
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::string_t("xd"));
-        EXPECT_TRUE(dynamic.is_string());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t::string_t("xd"));
     }
     {
         SCOPED_TRACE("Array");
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
-        EXPECT_TRUE(dynamic.is_array());
-        test_copy_equality(dynamic);
+        test_copy_equality(leonidia::dynamic_t::array_t(3, 4));
     }
     {
         SCOPED_TRACE("Object");
         leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
         dynamic.as_object()["key"] = 42;
 
-        EXPECT_TRUE(dynamic.is_object());
         test_copy_equality(dynamic);
     }
 }
@@ -527,7 +512,6 @@ namespace {
 TEST(Dynamic, EqualityNull) {
     leonidia::dynamic_t dynamic;
 
-    EXPECT_TRUE(dynamic.is_null());
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::null);
     basic_equality_checks(dynamic);
 }
@@ -535,7 +519,6 @@ TEST(Dynamic, EqualityNull) {
 TEST(Dynamic, EqualityBool) {
     leonidia::dynamic_t dynamic(true);
 
-    EXPECT_TRUE(dynamic.is_bool());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == true);
 }
@@ -543,7 +526,6 @@ TEST(Dynamic, EqualityBool) {
 TEST(Dynamic, EqualityInt) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(21));
 
-    EXPECT_TRUE(dynamic.is_int());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
@@ -553,7 +535,6 @@ TEST(Dynamic, EqualityInt) {
 TEST(Dynamic, EqualityUint) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(21));
 
-    EXPECT_TRUE(dynamic.is_uint());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
@@ -563,7 +544,6 @@ TEST(Dynamic, EqualityUint) {
 TEST(Dynamic, EqualityDouble) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
 
-    EXPECT_TRUE(dynamic.is_double());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic == leonidia::dynamic_t::int_t(21));
     EXPECT_FALSE(dynamic == leonidia::dynamic_t::uint_t(21));
@@ -573,7 +553,6 @@ TEST(Dynamic, EqualityDouble) {
 TEST(Dynamic, EqualityString) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::string_t("xd"));
 
-    EXPECT_TRUE(dynamic.is_string());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::string_t("xd"));
 }
@@ -581,7 +560,6 @@ TEST(Dynamic, EqualityString) {
 TEST(Dynamic, EqualityArray) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
 
-    EXPECT_TRUE(dynamic.is_array());
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == leonidia::dynamic_t::array_t(3, 4));
 }
@@ -590,7 +568,6 @@ TEST(Dynamic, EqualityObject) {
     leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
     dynamic.as_object()["key"] = 42;
 
-    EXPECT_TRUE(dynamic.is_object());
     basic_equality_checks_nonnull(dynamic);
 }
 
@@ -618,7 +595,6 @@ namespace {
 TEST(Dynamic, InequalityNull) {
     leonidia::dynamic_t dynamic;
 
-    EXPECT_TRUE(dynamic.is_null());
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::null);
     basic_inequality_checks(dynamic);
 }
@@ -626,7 +602,6 @@ TEST(Dynamic, InequalityNull) {
 TEST(Dynamic, InequalityBool) {
     leonidia::dynamic_t dynamic(true);
 
-    EXPECT_TRUE(dynamic.is_bool());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != true);
 }
@@ -634,7 +609,6 @@ TEST(Dynamic, InequalityBool) {
 TEST(Dynamic, InequalityInt) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(21));
 
-    EXPECT_TRUE(dynamic.is_int());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
@@ -644,7 +618,6 @@ TEST(Dynamic, InequalityInt) {
 TEST(Dynamic, InequalityUint) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(21));
 
-    EXPECT_TRUE(dynamic.is_uint());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
@@ -654,7 +627,6 @@ TEST(Dynamic, InequalityUint) {
 TEST(Dynamic, InequalityDouble) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
 
-    EXPECT_TRUE(dynamic.is_double());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic != leonidia::dynamic_t::int_t(21));
     EXPECT_TRUE(dynamic != leonidia::dynamic_t::uint_t(21));
@@ -664,7 +636,6 @@ TEST(Dynamic, InequalityDouble) {
 TEST(Dynamic, InequalityString) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::string_t("xd"));
 
-    EXPECT_TRUE(dynamic.is_string());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::string_t("xd"));
 }
@@ -672,7 +643,6 @@ TEST(Dynamic, InequalityString) {
 TEST(Dynamic, InequalityArray) {
     leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
 
-    EXPECT_TRUE(dynamic.is_array());
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != leonidia::dynamic_t::array_t(3, 4));
 }
@@ -681,6 +651,5 @@ TEST(Dynamic, InequalityObject) {
     leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
     dynamic.as_object()["key"] = 42;
 
-    EXPECT_TRUE(dynamic.is_object());
     basic_inequality_checks_nonnull(dynamic);
 }
