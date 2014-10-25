@@ -72,14 +72,17 @@ public:
 
     using base_type::at;
 
+    LEONIDIA_API
     dynamic_t&
     at(const std::string& key, dynamic_t& default_);
 
+    LEONIDIA_API
     const dynamic_t&
     at(const std::string& key, const dynamic_t& default_) const;
 
     using base_type::operator[];
 
+    LEONIDIA_API
     const dynamic_t&
     operator[](const std::string& key) const;
 };

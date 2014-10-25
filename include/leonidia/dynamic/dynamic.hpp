@@ -43,7 +43,7 @@ struct dynamic_constructor {
 template<class To, class = void>
 struct dynamic_converter { };
 
-class LEONIDIA_API dynamic_t {
+class dynamic_t {
 public:
     typedef bool                   bool_t;
     typedef int64_t                int_t;
@@ -73,14 +73,18 @@ public:
     > value_t;
 
     // Just useful constants which may be accessed by reference from any place of the program.
-    static const dynamic_t null;
-    static const dynamic_t empty_string;
-    static const dynamic_t empty_array;
-    static const dynamic_t empty_object;
+    LEONIDIA_API static const dynamic_t null;
+    LEONIDIA_API static const dynamic_t empty_string;
+    LEONIDIA_API static const dynamic_t empty_array;
+    LEONIDIA_API static const dynamic_t empty_object;
 
 public:
+    LEONIDIA_API
     dynamic_t();
+
+    LEONIDIA_API
     dynamic_t(const dynamic_t& other);
+    LEONIDIA_API
     dynamic_t(dynamic_t&& other);
 
     template<class T>
@@ -89,9 +93,11 @@ public:
         typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
     );
 
+    LEONIDIA_API
     dynamic_t&
     operator=(const dynamic_t& other);
 
+    LEONIDIA_API
     dynamic_t&
     operator=(dynamic_t&& other);
 
@@ -99,9 +105,11 @@ public:
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
 
+    LEONIDIA_API
     bool
     operator==(const dynamic_t& other) const;
 
+    LEONIDIA_API
     bool
     operator!=(const dynamic_t& other) const;
 
@@ -125,57 +133,75 @@ public:
         return boost::apply_visitor(applier_type(std::forward<Visitor>(visitor)), m_value);
     }
 
+    LEONIDIA_API
     bool
     is_null() const;
 
+    LEONIDIA_API
     bool
     is_bool() const;
 
+    LEONIDIA_API
     bool
     is_int() const;
 
+    LEONIDIA_API
     bool
     is_uint() const;
 
+    LEONIDIA_API
     bool
     is_double() const;
 
+    LEONIDIA_API
     bool
     is_string() const;
 
+    LEONIDIA_API
     bool
     is_array() const;
 
+    LEONIDIA_API
     bool
     is_object() const;
 
+    LEONIDIA_API
     bool_t
     as_bool() const;
 
+    LEONIDIA_API
     int_t
     as_int() const;
 
+    LEONIDIA_API
     uint_t
     as_uint() const;
 
+    LEONIDIA_API
     double_t
     as_double() const;
 
+    LEONIDIA_API
     const string_t&
     as_string() const;
 
+    LEONIDIA_API
     const array_t&
     as_array() const;
 
+    LEONIDIA_API
     const object_t&
     as_object() const;
 
+    LEONIDIA_API
     string_t&
     as_string();
 
+    LEONIDIA_API
     array_t&
     as_array();
 
+    LEONIDIA_API
     object_t&
     as_object();
 
@@ -188,10 +214,12 @@ public:
     to() const;
 
 public:
+    LEONIDIA_API
     static
     dynamic_t
     from_json(std::istream &input);
 
+    LEONIDIA_API
     void
     to_json(std::ostream &output) const;
 

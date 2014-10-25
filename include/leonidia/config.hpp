@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define CONFIG_HPP
 
 #include "leonidia/dynamic.hpp"
+
 #include <boost/numeric/conversion/cast.hpp>
 
 namespace leonidia {
@@ -29,14 +30,9 @@ namespace leonidia {
 class LEONIDIA_API config_error : public std::exception
 {
 public:
-    explicit config_error(std::string message) : m_message(std::move(message))
-    {
-    }
+    explicit config_error(std::string message);
 
-    const char *what() const LEONIDIA_NOEXCEPT
-    {
-        return m_message.c_str();
-    }
+    const char *what() const LEONIDIA_NOEXCEPT;
 
 private:
     std::string m_message;
@@ -45,28 +41,13 @@ private:
 class LEONIDIA_API config_parser_error : public config_error
 {
 public:
-    config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
-        config_error(std::move(message)),
-        m_parse_error(std::move(parse_error)),
-        m_line_number(line_number),
-        m_column_number(column_number)
-    {
-    }
+    config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number);
 
-    const std::string &parse_error() const
-    {
-        return m_parse_error;
-    }
+    const std::string &parse_error() const;
 
-    size_t line_number() const
-    {
-        return m_line_number;
-    }
+    size_t line_number() const;
 
-    size_t column_number() const
-    {
-        return m_column_number;
-    }
+    size_t column_number() const;
 
 private:
     std::string m_parse_error;
@@ -207,13 +188,13 @@ struct config_value_caster_specific_helper<T, vector_type>
 
 }
 
-class LEONIDIA_API config_t
+class config_t
 {
 public:
-    config_t(const std::string &path, const dynamic_t *value);
+    LEONIDIA_API config_t(const std::string &path, const dynamic_t *value);
 
-    bool has(const std::string &name) const;
-    config_t at(const std::string &name) const;
+    LEONIDIA_API bool has(const std::string &name) const;
+    LEONIDIA_API config_t at(const std::string &name) const;
 
     template <typename T>
     T at(const std::string &name, const T &default_value) const
@@ -230,9 +211,9 @@ public:
         return at(name).as<T>();
     }
 
-    size_t size() const;
-    bool has(size_t index) const;
-    config_t at(size_t index) const;
+    LEONIDIA_API size_t size() const;
+    LEONIDIA_API bool has(size_t index) const;
+    LEONIDIA_API config_t at(size_t index) const;
 
     template <typename T>
     T at(size_t index, const T &default_value) const
@@ -256,29 +237,29 @@ public:
         return detail::config_value_caster<T>::cast(m_path, m_value);
     }
 
-    const std::string &path() const;
+    LEONIDIA_API const std::string &path() const;
 
-    std::string to_string() const;
+    LEONIDIA_API std::string to_string() const;
 
-    void assert_valid() const;
-    void assert_array() const;
-    void assert_object() const;
+    LEONIDIA_API void assert_valid() const;
+    LEONIDIA_API void assert_array() const;
+    LEONIDIA_API void assert_object() const;
 
 protected:
     std::string m_path;
     const dynamic_t &m_value;
 };
 
-class LEONIDIA_API config_parser_t
+class config_parser_t
 {
 public:
-    config_parser_t();
-    ~config_parser_t();
+    LEONIDIA_API config_parser_t();
+    LEONIDIA_API ~config_parser_t();
 
-    void open(const std::string &path);
-    void parse(std::istream &stream);
+    LEONIDIA_API void open(const std::string &path);
+    LEONIDIA_API void parse(std::istream &stream);
 
-    config_t root() const;
+    LEONIDIA_API config_t root() const;
 
 private:
     dynamic_t m_root;

@@ -25,6 +25,22 @@
 
 using namespace leonidia;
 
+json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :
+    std::invalid_argument("parsing error - " + message),
+    m_offset(offset),
+    m_message(message)
+{ }
+
+size_t
+json_parsing_error_t::offset() const LEONIDIA_NOEXCEPT {
+    return m_offset;
+}
+
+const char*
+json_parsing_error_t::message() const LEONIDIA_NOEXCEPT {
+    return m_message.data();
+}
+
 const dynamic_t dynamic_t::null = dynamic_t::null_t();
 const dynamic_t dynamic_t::empty_string = dynamic_t::string_t();
 const dynamic_t dynamic_t::empty_array = dynamic_t::array_t();

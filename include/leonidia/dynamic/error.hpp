@@ -31,21 +31,13 @@ class LEONIDIA_API json_parsing_error_t :
     public std::invalid_argument
 {
 public:
-    json_parsing_error_t(size_t offset, std::string message) :
-        std::invalid_argument("parsing error - " + message),
-        m_offset(offset),
-        m_message(message)
-    { }
+    json_parsing_error_t(size_t offset, std::string message);
 
     size_t
-    offset() const LEONIDIA_NOEXCEPT {
-        return m_offset;
-    }
+    offset() const LEONIDIA_NOEXCEPT;
 
     const char*
-    message() const LEONIDIA_NOEXCEPT {
-        return m_message.data();
-    }
+    message() const LEONIDIA_NOEXCEPT;
 
 private:
     size_t m_offset;

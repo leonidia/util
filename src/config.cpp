@@ -26,6 +26,39 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 using namespace leonidia;
 
+config_error::config_error(std::string message) : m_message(std::move(message))
+{
+}
+
+const char *config_error::what() const LEONIDIA_NOEXCEPT
+{
+    return m_message.c_str();
+}
+
+config_parser_error::config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
+    config_error(std::move(message)),
+    m_parse_error(std::move(parse_error)),
+    m_line_number(line_number),
+    m_column_number(column_number)
+{
+}
+
+const std::string &config_parser_error::parse_error() const
+{
+    return m_parse_error;
+}
+
+size_t config_parser_error::line_number() const
+{
+    return m_line_number;
+}
+
+size_t config_parser_error::column_number() const
+{
+    return m_column_number;
+}
+
+
 config_t::config_t(const std::string &path, const dynamic_t *value) :
     m_path(path), m_value(*value)
 {
