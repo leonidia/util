@@ -66,6 +66,16 @@ private:
     std::unique_ptr<T> m_data;
 };
 
+template<class T>
+struct reference_type {
+    typedef const T& type;
+};
+
+template<class T>
+struct reference_type<T&> {
+    typedef T& type;
+};
+
 template<class Visitor, class Result>
 struct dynamic_visitor_applier :
     public boost::static_visitor<Result>

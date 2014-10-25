@@ -665,15 +665,25 @@ namespace {
     void
     test_apply_types(leonidia::dynamic_t &dynamic) {
         // At the moment, const and non-const apply's are different methods, so I test both.
+        // And there is some template magic, so it's better to test apply with all types
+        // of a visitor reference.
+
+        // Rvalue visitor.
         dynamic.apply(type_tester_t<Expected>());
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(type_tester_t<const Expected>());
 
-        // Non-const visitors.
+        // Non-const visitor.
         type_tester_t<Expected> tester;
         dynamic.apply(tester);
 
         type_tester_t<const Expected> tester_const;
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester_const);
+
+        // Const visitor.
+        dynamic.apply(const_cast<const type_tester_t<Expected>&>(tester));
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(
+            const_cast<const type_tester_t<const Expected>&>(tester_const)
+        );
     }
 
     struct values_tester_t:
@@ -725,6 +735,10 @@ namespace {
     void
     test_apply_values(leonidia::dynamic_t &dynamic) {
         // At the moment, const and non-const apply's are different methods, so I test both.
+        // And there is some template magic, so it's better to test apply with all types
+        // of a visitor reference.
+
+        // Rvalue visitor.
         dynamic.apply(values_tester_t());
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(values_tester_t());
 
@@ -732,6 +746,12 @@ namespace {
         values_tester_t tester;
         dynamic.apply(tester);
         const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester);
+
+        // Const visitor.
+        dynamic.apply(const_cast<const values_tester_t&>(tester));
+        const_cast<const leonidia::dynamic_t&>(dynamic).apply(
+            const_cast<const values_tester_t&>(tester)
+        );
     }
 
     struct mutate_tester_t:
@@ -784,6 +804,7 @@ namespace {
 
         mutate_tester_t tester;
         dynamic.apply(tester);
+        dynamic.apply(const_cast<const mutate_tester_t&>(tester));
     }
 
     struct nonconst_visitor_t:

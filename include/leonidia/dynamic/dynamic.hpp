@@ -106,39 +106,23 @@ public:
     operator!=(const dynamic_t& other) const;
 
     template<class Visitor>
-    typename Visitor::result_type
-    apply(const Visitor& visitor) {
-        return boost::apply_visitor(
-            detail::dynamic::dynamic_visitor_applier<const Visitor&, typename Visitor::result_type>(visitor),
-            m_value
-        );
+    typename std::decay<Visitor>::type::result_type
+    apply(Visitor&& visitor) {
+        typedef typename std::decay<Visitor>::type::result_type result_type;
+        typedef typename detail::dynamic::reference_type<Visitor>::type reference_type;
+        typedef detail::dynamic::dynamic_visitor_applier<reference_type, result_type> applier_type;
+
+        return boost::apply_visitor(applier_type(std::forward<Visitor>(visitor)), m_value);
     }
 
     template<class Visitor>
-    typename Visitor::result_type
-    apply(Visitor& visitor) {
-        return boost::apply_visitor(
-            detail::dynamic::dynamic_visitor_applier<Visitor&, typename Visitor::result_type>(visitor),
-            m_value
-        );
-    }
+    typename std::decay<Visitor>::type::result_type
+    apply(Visitor&& visitor) const {
+        typedef typename std::decay<Visitor>::type::result_type result_type;
+        typedef typename detail::dynamic::reference_type<Visitor>::type reference_type;
+        typedef detail::dynamic::const_visitor_applier<reference_type, result_type> applier_type;
 
-    template<class Visitor>
-    typename Visitor::result_type
-    apply(const Visitor& visitor) const {
-        return boost::apply_visitor(
-            detail::dynamic::const_visitor_applier<const Visitor&, typename Visitor::result_type>(visitor),
-            m_value
-        );
-    }
-
-    template<class Visitor>
-    typename Visitor::result_type
-    apply(Visitor& visitor) const {
-        return boost::apply_visitor(
-            detail::dynamic::const_visitor_applier<Visitor&, typename Visitor::result_type>(visitor),
-            m_value
-        );
+        return boost::apply_visitor(applier_type(std::forward<Visitor>(visitor)), m_value);
     }
 
     bool
