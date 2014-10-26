@@ -604,6 +604,9 @@ dynamic_t::to_json(std::ostream &output) const {
 
 std::ostream&
 leonidia::operator<<(std::ostream& stream, const dynamic_t& value) {
-    value.to_json(stream);
+    rapidjson_ostream_t rapidjson_stream = &stream;
+    ostream_writer_t writer = rapidjson_stream;
+    writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
+    value.apply(to_stream_visitor(&writer));
     return stream;
 }

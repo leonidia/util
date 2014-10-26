@@ -40,7 +40,7 @@ TEST(Dynamic, JsonObjectParsing) {
     "    \"true_key\": true,\n"
     "    \"false_key\": false,\n"
     "    \"int_key\": 5,\n"
-    "    \"double_key\": 25.3,\n"
+    "    \"double_key\": 25.2,\n"
     "    \"string_key\": \"xdd\",\n"
     "    \"array_key\": [\n"
     "        true,\n"
@@ -75,7 +75,7 @@ TEST(Dynamic, JsonObjectParsing) {
     EXPECT_EQ(parsed.as_object()["int_key"], 5);
 
     EXPECT_EQ(parsed.as_object().count("double_key"), 1);
-    EXPECT_TRUE(compare_double(parsed.as_object()["double_key"].as_double(), 25.3));
+    EXPECT_TRUE(compare_double(parsed.as_object()["double_key"].as_double(), 25.2));
 
     EXPECT_EQ(parsed.as_object().count("string_key"), 1);
     EXPECT_EQ(parsed.as_object()["string_key"], "xdd");
