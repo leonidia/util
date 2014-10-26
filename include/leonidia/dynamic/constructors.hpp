@@ -22,6 +22,8 @@
 #define LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 
 #include <tuple>
+#include <type_traits>
+#include <utility>
 #include <unordered_map>
 
 namespace leonidia {
@@ -93,8 +95,8 @@ struct dynamic_constructor<char[N]> {
     static inline
     void
     convert(const char* from, dynamic_t& to) {
-        to = dynamic_t::string_t();
-        to.as_string().assign(from, N - 1);
+        dynamic_t::string_t buffer(from, N - 1);
+        to = std::move(buffer);
     }
 };
 
@@ -109,58 +111,27 @@ struct dynamic_constructor<
     static inline
     void
     convert(const std::vector<T>& from, dynamic_t& to) {
-        to = dynamic_t::array_t();
-
-        auto& array = to.as_array();
-        array.reserve(from.size());
+        dynamic_t::array_t buffer;
+        buffer.reserve(from.size());
 
         for (size_t i = 0; i < from.size(); ++i) {
-            array.emplace_back(from[i]);
+            buffer.emplace_back(from[i]);
         }
+
+        to = std::move(buffer);
     }
 
     static inline
     void
     convert(std::vector<T>&& from, dynamic_t& to) {
-        to = dynamic_t::array_t();
-
-        auto& array = to.as_array();
-        array.reserve(from.size());
+        dynamic_t::array_t buffer;
+        buffer.reserve(from.size());
 
         for (size_t i = 0; i < from.size(); ++i) {
-            array.emplace_back(std::move(from[i]));
+            buffer.emplace_back(std::move_if_noexcept(from[i]));
         }
-    }
-};
 
-template<class T, size_t N>
-struct dynamic_constructor<T[N]> {
-    static const bool enable = true;
-
-    static inline
-    void
-    convert(const T (&from)[N], dynamic_t& to) {
-        to = dynamic_t::array_t();
-
-        auto& array = to.as_array();
-        array.reserve(N);
-
-        for (size_t i = 0; i < N; ++i) {
-            array.emplace_back(from[i]);
-        }
-    }
-
-    static inline
-    void
-    convert(T (&&from)[N], dynamic_t& to) {
-        to = dynamic_t::array_t();
-
-        auto& array = to.as_array();
-        array.reserve(N);
-
-        for (size_t i = 0; i < N; ++i) {
-            array.emplace_back(std::move(from[i]));
-        }
+        to = std::move(buffer);
     }
 };
 
@@ -225,25 +196,42 @@ struct dynamic_constructor<std::tuple<Args...>> {
     };
 
     static inline
+    bool
+    for_all(bool value) {
+        return value;
+    }
+
+    template<class First, class... Others>
+    static inline
+    bool
+    for_all(First head, Others... tail) {
+        return head && for_all(tail...);
+    }
+
+    static inline
     void
     convert(const std::tuple<Args...>& from, dynamic_t& to) {
-        to = dynamic_t::array_t();
+        dynamic_t::array_t buffer;
+        buffer.reserve(sizeof...(Args));
 
-        auto& array = to.as_array();
-        array.reserve(sizeof...(Args));
+        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
 
-        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, array);
+        to = std::move(buffer);
     }
 
     static inline
     void
     convert(std::tuple<Args...>&& from, dynamic_t& to) {
-        to = dynamic_t::array_t();
+        dynamic_t::array_t buffer;
+        buffer.reserve(sizeof...(Args));
 
-        auto& array = to.as_array();
-        array.reserve(sizeof...(Args));
+        if (for_all(std::is_nothrow_move_constructible<Args>::value...)) {
+            move_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
+        } else {
+            copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
+        }
 
-        move_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, array);
+        to = std::move(buffer);
     }
 };
 
@@ -270,25 +258,13 @@ struct dynamic_constructor<
     static inline
     void
     convert(const std::map<std::string, T>& from, dynamic_t& to) {
-        to = dynamic_t::object_t();
-
-        auto& object = to.as_object();
+        dynamic_t::object_t buffer;
 
         for (auto it = from.begin(); it != from.end(); ++it) {
-            object.insert(dynamic_t::object_t::value_type(it->first, it->second));
+            buffer.insert(dynamic_t::object_t::value_type(it->first, it->second));
         }
-    }
 
-    static inline
-    void
-    convert(std::map<std::string, T>&& from, dynamic_t& to) {
-        to = dynamic_t::object_t();
-
-        auto& object = to.as_object();
-
-        for (auto it = from.begin(); it != from.end(); ++it) {
-            object.insert(dynamic_t::object_t::value_type(it->first, std::move(it->second)));
-        }
+        to = std::move(buffer);
     }
 };
 
@@ -299,24 +275,13 @@ struct dynamic_constructor<std::unordered_map<std::string, T>> {
     static inline
     void
     convert(const std::unordered_map<std::string, T>& from, dynamic_t& to) {
-        to = dynamic_t::object_t();
-
-        auto& object = to.as_object();
-        for (auto it = from.begin(); it != from.end(); ++it) {
-            object.insert(it->first, it->second);
-        }
-    }
-
-    static inline
-    void
-    convert(std::unordered_map<std::string, T>&& from, dynamic_t& to) {
-        to = dynamic_t::object_t();
-
-        auto& object = to.as_object();
+        dynamic_t::object_t buffer;
 
         for (auto it = from.begin(); it != from.end(); ++it) {
-            object.insert(it->first, std::move(it->second));
+            buffer.insert(dynamic_t::object_t::value_type(it->first, it->second));
         }
+
+        to = std::move(buffer);
     }
 };
 

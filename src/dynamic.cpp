@@ -182,7 +182,7 @@ private:
 
 } // namespace
 
-dynamic_t::dynamic_t() :
+dynamic_t::dynamic_t() LEONIDIA_NOEXCEPT :
     m_value(null_t())
 { }
 
@@ -198,27 +198,27 @@ dynamic_t::dynamic_t(dynamic_t&& other) :
     other.apply(move_visitor(*this));
 }
 
-dynamic_t::dynamic_t(dynamic_t::null_t value) :
+dynamic_t::dynamic_t(dynamic_t::null_t value) LEONIDIA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::bool_t value) :
+dynamic_t::dynamic_t(dynamic_t::bool_t value) LEONIDIA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::int_t value) :
+dynamic_t::dynamic_t(dynamic_t::int_t value) LEONIDIA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::uint_t value) :
+dynamic_t::dynamic_t(dynamic_t::uint_t value) LEONIDIA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::double_t value) :
+dynamic_t::dynamic_t(dynamic_t::double_t value) LEONIDIA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::string_t value) :
+dynamic_t::dynamic_t(dynamic_t::string_t value) LEONIDIA_NOEXCEPT :
     m_value(dynamic_t::string_t())
 {
     as_string() = std::move(value);

@@ -66,7 +66,7 @@ public:
 
 public:
     LEONIDIA_API
-    dynamic_t();
+    dynamic_t() LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
     dynamic_t(const dynamic_t& other);
@@ -75,22 +75,22 @@ public:
     dynamic_t(dynamic_t&& other);
 
     LEONIDIA_API
-    dynamic_t(null_t value);
+    dynamic_t(null_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
-    dynamic_t(bool_t value);
+    dynamic_t(bool_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
-    dynamic_t(int_t value);
+    dynamic_t(int_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
-    dynamic_t(uint_t value);
+    dynamic_t(uint_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
-    dynamic_t(double_t value);
+    dynamic_t(double_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
-    dynamic_t(string_t value);
+    dynamic_t(string_t value) LEONIDIA_NOEXCEPT;
 
     LEONIDIA_API
     dynamic_t(array_t value);
