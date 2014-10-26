@@ -23,6 +23,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "leonidia/dynamic.hpp"
 
+#include <boost/lexical_cast.hpp>
+
 #include <sstream>
 
 namespace {
@@ -297,4 +299,11 @@ TEST(Dynamic, ArrayToStream) {
 
     std::istringstream input(output.str());
     check_parsed_array(leonidia::dynamic_t::from_json(input));
+}
+
+TEST(Dynamic, BoostLexicalCast) {
+    std::string serialized = boost::lexical_cast<std::string>(construct_object());
+
+    std::istringstream input(serialized);
+    check_parsed_object(leonidia::dynamic_t::from_json(input));
 }
