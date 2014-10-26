@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 #define LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 
+#include <boost/numeric/conversion/cast.hpp>
+
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -39,7 +41,7 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = dynamic_t::uint_t(from);
+        to = boost::numeric_cast<dynamic_t::uint_t>(from);
     }
 };
 
@@ -54,7 +56,7 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = dynamic_t::int_t(from);
+        to = boost::numeric_cast<dynamic_t::int_t>(from);
     }
 };
 
@@ -69,7 +71,7 @@ struct dynamic_constructor<
     static inline
     void
     convert(const From& from, dynamic_t& to) {
-        to = dynamic_t::int_t(from);
+        to = static_cast<dynamic_t::int_t>(from);
     }
 };
 
@@ -84,7 +86,7 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = dynamic_t::double_t(from);
+        to = boost::numeric_cast<dynamic_t::double_t>(from);
     }
 };
 
