@@ -27,6 +27,7 @@
 
 #include <memory>
 #include <type_traits>
+#include <utility>
 
 namespace leonidia {
 
@@ -67,47 +68,37 @@ private:
     std::unique_ptr<T> m_data;
 };
 
-/*
- * If you apply it to some T deduced in template<class T> foo bar(T&&),
- * you'll get non-const reference if the template is called with lvalue reference,
- * and const reference otherwise.
- * It's a helper to write one template function bar(T&&)
- * which behaves like two overloads bar(T&) and bar(const T&).
- */
-template<class T>
-struct reference_type {
-    typedef typename std::add_const<T>::type const_type;
-    typedef typename std::add_lvalue_reference<const_type>::type type;
-};
-
-template<class Visitor, class Result>
+template<class VisitorReference>
 struct dynamic_visitor_applier :
-    public boost::static_visitor<Result>
+    public boost::static_visitor<typename std::decay<VisitorReference>::type::result_type>
 {
-    dynamic_visitor_applier(Visitor v) :
+    typedef typename std::remove_reference<VisitorReference>::type visitor_type;
+    typedef typename std::decay<VisitorReference>::type::result_type result_type;
+
+    dynamic_visitor_applier(visitor_type *v) :
         m_visitor(v)
     { }
 
     template<class T>
-    Result
+    result_type
     operator()(T& v) const {
-        return m_visitor(v);
+        return std::forward<VisitorReference>(*m_visitor)(v);
     }
 
     template<class T>
-    Result
+    result_type
     operator()(incomplete_wrapper<T>& v) const {
-        return m_visitor(v.get());
+        return std::forward<VisitorReference>(*m_visitor)(v.get());
     }
 
     template<class T>
-    Result
+    result_type
     operator()(const incomplete_wrapper<T>& v) const {
-        return m_visitor(v.get());
+        return std::forward<VisitorReference>(*m_visitor)(v.get());
     }
 
 private:
-    Visitor m_visitor;
+    visitor_type *m_visitor;
 };
 
 }}} // namespace leonidia::detail::dynamic
