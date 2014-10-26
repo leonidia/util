@@ -133,6 +133,56 @@ TEST(Dynamic, DefaultConstructor) {
     EXPECT_TRUE(default_dynamic.is_null());
 }
 
+TEST(Dynamic, NullConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::null_t();
+    EXPECT_TRUE(dynamic.is_null());
+}
+
+TEST(Dynamic, BoolConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::bool_t(true);
+    EXPECT_TRUE(dynamic.is_bool());
+    EXPECT_EQ(true, dynamic.as_bool());
+}
+
+TEST(Dynamic, IntConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::int_t(5);
+    EXPECT_TRUE(dynamic.is_int());
+    EXPECT_EQ(5, dynamic.as_int());
+}
+
+TEST(Dynamic, UintConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::uint_t(5);
+    EXPECT_TRUE(dynamic.is_uint());
+    EXPECT_EQ(5, dynamic.as_uint());
+}
+
+TEST(Dynamic, DoubleConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::double_t(5.0);
+    EXPECT_TRUE(dynamic.is_double());
+    EXPECT_EQ(5.0, dynamic.as_double());
+}
+
+TEST(Dynamic, StringConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::string_t("xdd");
+    EXPECT_TRUE(dynamic.is_string());
+    EXPECT_EQ("xdd", dynamic.as_string());
+}
+
+TEST(Dynamic, ArrayConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::array_t(3, 4);
+    EXPECT_TRUE(dynamic.is_array());
+    EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), dynamic.as_array());
+}
+
+TEST(Dynamic, ObjectConstructor) {
+    leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+    dynamic.as_object()["key"] = 43;
+
+    EXPECT_TRUE(dynamic.is_object());
+    EXPECT_EQ(1, dynamic.as_object().count("key"));
+    EXPECT_EQ(dynamic.as_object()["key"], 43);
+}
+
 TEST(Dynamic, CopyConstructor) {
     {
         leonidia::dynamic_t dyn1;
@@ -270,6 +320,64 @@ TEST(Dynamic, MoveConstructor) {
         EXPECT_EQ(dyn2.as_object().size(), 1);
         EXPECT_EQ(dyn2.as_object()["key"], 42);
     }
+}
+
+TEST(Dynamic, NullAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::null_t();
+    EXPECT_TRUE(dynamic.is_null());
+}
+
+TEST(Dynamic, BoolAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::bool_t(true);
+    EXPECT_TRUE(dynamic.is_bool());
+    EXPECT_EQ(true, dynamic.as_bool());
+}
+
+TEST(Dynamic, IntAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::int_t(5);
+    EXPECT_TRUE(dynamic.is_int());
+    EXPECT_EQ(5, dynamic.as_int());
+}
+
+TEST(Dynamic, UintAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::uint_t(5);
+    EXPECT_TRUE(dynamic.is_uint());
+    EXPECT_EQ(5, dynamic.as_uint());
+}
+
+TEST(Dynamic, DoubleAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::double_t(5.0);
+    EXPECT_TRUE(dynamic.is_double());
+    EXPECT_EQ(5.0, dynamic.as_double());
+}
+
+TEST(Dynamic, StringAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::string_t("xdd");
+    EXPECT_TRUE(dynamic.is_string());
+    EXPECT_EQ("xdd", dynamic.as_string());
+}
+
+TEST(Dynamic, ArrayAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::array_t(3, 4);
+    EXPECT_TRUE(dynamic.is_array());
+    EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), dynamic.as_array());
+}
+
+TEST(Dynamic, ObjectAssignment) {
+    leonidia::dynamic_t dynamic;
+    dynamic = leonidia::dynamic_t::object_t();
+    dynamic.as_object()["key"] = 43;
+
+    EXPECT_TRUE(dynamic.is_object());
+    EXPECT_EQ(1, dynamic.as_object().count("key"));
+    EXPECT_EQ(dynamic.as_object()["key"], 43);
 }
 
 TEST(Dynamic, CopyAssignment) {
