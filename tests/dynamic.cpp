@@ -117,8 +117,6 @@ TEST(Dynamic, AssociatedItems) {
     (void)null_variable;
     leonidia::dynamic_t::object_t object_variable;
     (void)object_variable;
-    leonidia::dynamic_t::value_t variant_variable;
-    (void)variant_variable;
 
     const leonidia::dynamic_t &null_reference = leonidia::dynamic_t::null;
     (void)null_reference;

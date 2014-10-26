@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_DETAIL_HPP
 #define LEONIDIA_DYNAMIC_DETAIL_HPP
 
+#include "leonidia/utility.hpp"
+
 #include <boost/variant.hpp>
 
 #include <memory>
@@ -32,34 +34,33 @@ class dynamic_t;
 
 namespace detail { namespace dynamic {
 
-// Helps to use STL containers
+// Helps to use STL containers with incomplete dynamic_t.
 template<class T>
 class incomplete_wrapper {
 public:
     // These constructors are needed just to satisfy the requirements of boost::variant.
     incomplete_wrapper() = default;
 
-    incomplete_wrapper(const incomplete_wrapper&) { }
+    incomplete_wrapper(const incomplete_wrapper&) LEONIDIA_NOEXCEPT { }
 
     incomplete_wrapper&
-    operator=(const incomplete_wrapper&) {
+    operator=(const incomplete_wrapper&) LEONIDIA_NOEXCEPT {
         return *this;
     }
 
     T&
-    get() {
+    get() LEONIDIA_NOEXCEPT {
         return *m_data;
     }
 
     const T&
-    get() const {
+    get() const LEONIDIA_NOEXCEPT {
         return *m_data;
     }
 
-    template<class... Args>
     void
-    set(Args&&... args) {
-        m_data.reset(new T(std::forward<Args>(args)...));
+    set(T* object) LEONIDIA_NOEXCEPT {
+        m_data.reset(object);
     }
 
 private:

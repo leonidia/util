@@ -43,7 +43,7 @@ json_parsing_error_t::message() const LEONIDIA_NOEXCEPT {
     return m_message.data();
 }
 
-const dynamic_t dynamic_t::null = dynamic_t::null_t();
+const dynamic_t dynamic_t::null;
 const dynamic_t dynamic_t::empty_string = dynamic_t::string_t();
 const dynamic_t dynamic_t::empty_array = dynamic_t::array_t();
 const dynamic_t dynamic_t::empty_object = dynamic_t::object_t();
@@ -198,6 +198,48 @@ dynamic_t::dynamic_t(dynamic_t&& other) :
     other.apply(move_visitor(*this));
 }
 
+dynamic_t::dynamic_t(dynamic_t::null_t value) :
+    m_value(value)
+{ }
+
+dynamic_t::dynamic_t(dynamic_t::bool_t value) :
+    m_value(value)
+{ }
+
+dynamic_t::dynamic_t(dynamic_t::int_t value) :
+    m_value(value)
+{ }
+
+dynamic_t::dynamic_t(dynamic_t::uint_t value) :
+    m_value(value)
+{ }
+
+dynamic_t::dynamic_t(dynamic_t::double_t value) :
+    m_value(value)
+{ }
+
+dynamic_t::dynamic_t(dynamic_t::string_t value) :
+    m_value(dynamic_t::string_t())
+{
+    as_string() = std::move(value);
+}
+
+dynamic_t::dynamic_t(dynamic_t::array_t value) :
+    m_value(detail::dynamic::incomplete_wrapper<dynamic_t::array_t>())
+{
+    boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(m_value).set(
+        new dynamic_t::array_t(std::move(value))
+    );
+}
+
+dynamic_t::dynamic_t(dynamic_t::object_t value) :
+    m_value(detail::dynamic::incomplete_wrapper<dynamic_t::object_t>())
+{
+    boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(m_value).set(
+        new dynamic_t::object_t(std::move(value))
+    );
+}
+
 dynamic_t&
 dynamic_t::operator=(const dynamic_t& other) {
     other.apply(assign_visitor(*this));
@@ -207,6 +249,59 @@ dynamic_t::operator=(const dynamic_t& other) {
 dynamic_t&
 dynamic_t::operator=(dynamic_t&& other) {
     other.apply(move_visitor(*this));
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::null_t value) {
+    m_value = value;
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::bool_t value) {
+    m_value = value;
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::int_t value) {
+    m_value = value;
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::uint_t value) {
+    m_value = value;
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::double_t value) {
+    m_value = value;
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::string_t value) {
+    m_value = dynamic_t::string_t();
+    as_string() = std::move(value);
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::array_t value) {
+    std::unique_ptr<dynamic_t::array_t> buffer(new dynamic_t::array_t(std::move(value)));
+    m_value = detail::dynamic::incomplete_wrapper<dynamic_t::array_t>();
+    boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::array_t>>(m_value).set(buffer.release());
+    return *this;
+}
+
+dynamic_t&
+dynamic_t::operator=(dynamic_t::object_t value) {
+    std::unique_ptr<dynamic_t::object_t> buffer(new dynamic_t::object_t(std::move(value)));
+    m_value = detail::dynamic::incomplete_wrapper<dynamic_t::object_t>();
+    boost::get<detail::dynamic::incomplete_wrapper<dynamic_t::object_t>>(m_value).set(buffer.release());
     return *this;
 }
 

@@ -23,8 +23,6 @@
 
 #include "leonidia/dynamic/detail.hpp"
 
-#include "leonidia/utility.hpp"
-
 #include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 
@@ -60,17 +58,6 @@ public:
 
     class object_t;
 
-    typedef boost::variant<
-        null_t,
-        bool_t,
-        int_t,
-        uint_t,
-        double_t,
-        string_t,
-        detail::dynamic::incomplete_wrapper<array_t>,
-        detail::dynamic::incomplete_wrapper<object_t>
-    > value_t;
-
     // Just useful constants which may be accessed by reference from any place of the program.
     LEONIDIA_API static const dynamic_t null;
     LEONIDIA_API static const dynamic_t empty_string;
@@ -87,6 +74,30 @@ public:
     LEONIDIA_API
     dynamic_t(dynamic_t&& other);
 
+    LEONIDIA_API
+    dynamic_t(null_t value);
+
+    LEONIDIA_API
+    dynamic_t(bool_t value);
+
+    LEONIDIA_API
+    dynamic_t(int_t value);
+
+    LEONIDIA_API
+    dynamic_t(uint_t value);
+
+    LEONIDIA_API
+    dynamic_t(double_t value);
+
+    LEONIDIA_API
+    dynamic_t(string_t value);
+
+    LEONIDIA_API
+    dynamic_t(array_t value);
+
+    LEONIDIA_API
+    dynamic_t(object_t value);
+
     template<class T>
     dynamic_t(
         T&& from,
@@ -100,6 +111,38 @@ public:
     LEONIDIA_API
     dynamic_t&
     operator=(dynamic_t&& other);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(null_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(bool_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(int_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(uint_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(double_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(string_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(array_t value);
+
+    LEONIDIA_API
+    dynamic_t&
+    operator=(object_t value);
 
     template<class T>
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
@@ -243,6 +286,17 @@ private:
     }
 
 private:
+    typedef boost::variant<
+        null_t,
+        bool_t,
+        int_t,
+        uint_t,
+        double_t,
+        string_t,
+        detail::dynamic::incomplete_wrapper<array_t>,
+        detail::dynamic::incomplete_wrapper<object_t>
+    > value_t;
+
     value_t m_value;
 };
 
@@ -253,13 +307,13 @@ dynamic_t::dynamic_t(
 ) :
     m_value(null_t())
 {
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), m_value);
+    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
 }
 
 template<class T>
 typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
 dynamic_t::operator=(T&& from) {
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), m_value);
+    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
     return *this;
 }
 
