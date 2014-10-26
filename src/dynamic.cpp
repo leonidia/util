@@ -23,6 +23,8 @@
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
 
+#include <stack>
+
 using namespace leonidia;
 
 json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :

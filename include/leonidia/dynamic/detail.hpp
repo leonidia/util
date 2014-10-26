@@ -23,8 +23,8 @@
 
 #include <boost/variant.hpp>
 
-#include <map>
 #include <memory>
+#include <type_traits>
 
 namespace leonidia {
 
@@ -66,14 +66,17 @@ private:
     std::unique_ptr<T> m_data;
 };
 
+/*
+ * If you apply it to some T deduced in template<class T> foo bar(T&&),
+ * you'll get non-const reference if the template is called with lvalue reference,
+ * and const reference otherwise.
+ * It's a helper to write one template function bar(T&&)
+ * which behaves like two overloads bar(T&) and bar(const T&).
+ */
 template<class T>
 struct reference_type {
-    typedef const T& type;
-};
-
-template<class T>
-struct reference_type<T&> {
-    typedef T& type;
+    typedef typename std::add_const<T>::type const_type;
+    typedef typename std::add_lvalue_reference<const_type>::type type;
 };
 
 template<class Visitor, class Result>
@@ -96,32 +99,14 @@ struct dynamic_visitor_applier :
         return m_visitor(v.get());
     }
 
+    template<class T>
+    Result
+    operator()(const incomplete_wrapper<T>& v) const {
+        return m_visitor(v.get());
+    }
+
 private:
     Visitor m_visitor;
-};
-
-template<class ConstVisitor, class Result>
-struct const_visitor_applier :
-    public boost::static_visitor<Result>
-{
-    const_visitor_applier(ConstVisitor v) :
-        m_const_visitor(v)
-    { }
-
-    template<class T>
-    Result
-    operator()(T& v) const {
-        return m_const_visitor(static_cast<const T&>(v));
-    }
-
-    template<class T>
-    Result
-    operator()(incomplete_wrapper<T>& v) const {
-        return m_const_visitor(static_cast<const T&>(v.get()));
-    }
-
-private:
-    ConstVisitor m_const_visitor;
 };
 
 }}} // namespace leonidia::detail::dynamic

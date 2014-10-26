@@ -28,7 +28,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 
-#include <stack>
 #include <string>
 #include <utility>
 #include <vector>
@@ -84,7 +83,7 @@ public:
 
     LEONIDIA_API
     dynamic_t(const dynamic_t& other);
-    
+
     LEONIDIA_API
     dynamic_t(dynamic_t&& other);
 
@@ -129,7 +128,7 @@ public:
     apply(Visitor&& visitor) const {
         typedef typename std::decay<Visitor>::type::result_type result_type;
         typedef typename detail::dynamic::reference_type<Visitor>::type reference_type;
-        typedef detail::dynamic::const_visitor_applier<reference_type, result_type> applier_type;
+        typedef detail::dynamic::dynamic_visitor_applier<reference_type, result_type> applier_type;
 
         return boost::apply_visitor(applier_type(std::forward<Visitor>(visitor)), m_value);
     }
@@ -244,8 +243,7 @@ private:
     }
 
 private:
-    // boost::apply_visitor takes non-constant reference to a variant object.
-    mutable value_t m_value;
+    value_t m_value;
 };
 
 template<class T>
