@@ -25,6 +25,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/numeric/conversion/cast.hpp>
 
+#include <sstream>
+
 namespace leonidia {
 
 class LEONIDIA_API config_error : public std::exception

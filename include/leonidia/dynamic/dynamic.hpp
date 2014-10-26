@@ -23,7 +23,6 @@
 
 #include "leonidia/dynamic/detail.hpp"
 
-#include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 
 #include <string>
@@ -49,12 +48,7 @@ public:
     typedef std::string            string_t;
     typedef std::vector<dynamic_t> array_t;
 
-    struct null_t {
-        bool
-        operator==(const null_t&) const {
-            return true;
-        }
-    };
+    struct null_t { };
 
     class object_t;
 
