@@ -1,7 +1,7 @@
 Source: leonidia-util
 Priority: extra
 Maintainer: Evgeny Safronov <division494@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), cmake
+Build-Depends: debhelper (>= 8.0.0), cmake, libboost-dev
 Standards-Version: 3.9.3
 Section: libs
 Homepage: https://github.com/leonidia
