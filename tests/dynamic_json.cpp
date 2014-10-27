@@ -28,11 +28,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 
 namespace {
-    bool
-    compare_double(double left, double right) {
-        const double eps = 0.1;
-        return (left - right) <= eps && (left - right) >= -eps;
-    }
 
     void
     check_parsed_object(const leonidia::dynamic_t& parsed) {
@@ -51,7 +46,7 @@ namespace {
         EXPECT_EQ(parsed.as_object()["int_key"], 5);
 
         EXPECT_EQ(parsed.as_object().count("double_key"), 1);
-        EXPECT_TRUE(compare_double(parsed.as_object()["double_key"].to<double>(), 25.2));
+        EXPECT_DOUBLE_EQ(parsed.as_object()["double_key"].to<double>(), 25.2);
 
         EXPECT_EQ(parsed.as_object().count("string_key"), 1);
         EXPECT_EQ(parsed.as_object()["string_key"], "xdd");
@@ -61,7 +56,7 @@ namespace {
         EXPECT_EQ(parsed.as_object()["array_key"].as_array().size(), 6);
         EXPECT_EQ(parsed.as_object()["array_key"].as_array()[0], true);
         EXPECT_EQ(parsed.as_object()["array_key"].as_array()[1], -5);
-        EXPECT_TRUE(compare_double(parsed.as_object()["array_key"].as_array()[2].to<double>(), -5.0));
+        EXPECT_DOUBLE_EQ(parsed.as_object()["array_key"].as_array()[2].to<double>(), -5.0);
         EXPECT_EQ(parsed.as_object()["array_key"].as_array()[3], "-_-");
         EXPECT_TRUE(parsed.as_object()["array_key"].as_array()[4].is_array());
         EXPECT_EQ(parsed.as_object()["array_key"].as_array()[4].as_array().size(), 2);
@@ -117,7 +112,7 @@ namespace {
         EXPECT_EQ(parsed.as_array().size(), 6);
         EXPECT_EQ(parsed.as_array()[0], true);
         EXPECT_EQ(parsed.as_array()[1], -5);
-        EXPECT_TRUE(compare_double(parsed.as_array()[2].to<double>(), -5.0));
+        EXPECT_DOUBLE_EQ(parsed.as_array()[2].to<double>(), -5.0);
         EXPECT_EQ(parsed.as_array()[3], "-_-");
         EXPECT_TRUE(parsed.as_array()[4].is_array());
         EXPECT_EQ(parsed.as_array()[4].as_array().size(), 2);

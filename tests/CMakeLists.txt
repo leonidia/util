@@ -23,6 +23,7 @@ LINK_DIRECTORIES(
 ADD_EXECUTABLE(leonidia-tests
     config
     dynamic
+    dynamic_constructor
     dynamic_json
 )
 

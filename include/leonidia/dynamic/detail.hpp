@@ -31,8 +31,6 @@
 
 namespace leonidia {
 
-class dynamic_t;
-
 namespace detail { namespace dynamic {
 
 // Helps to use STL containers with incomplete dynamic_t.
