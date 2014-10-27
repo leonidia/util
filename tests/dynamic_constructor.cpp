@@ -136,11 +136,11 @@ TEST(DynamicConstructor, Float) {
 TEST(DynamicConstructor, FloatOverflow) {
     if (std::numeric_limits<long double>::max() > std::numeric_limits<double>::max()) {
         EXPECT_THROW(leonidia::dynamic_t dynamic = std::numeric_limits<long double>::max(),
-                     boost::numeric::positive_overflow);
+                     leonidia::bad_numeric_cast_t);
 
         leonidia::dynamic_t assigned;
         EXPECT_THROW(assigned = std::numeric_limits<long double>::max(),
-                     boost::numeric::positive_overflow);
+                     leonidia::bad_numeric_cast_t);
     } else {
         std::cout << "NOTICE: FloatOverflow test is not performed because long double is equal to double type."
                   << std::endl;

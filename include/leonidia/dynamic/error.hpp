@@ -24,6 +24,7 @@
 #include "leonidia/utility.hpp"
 
 #include <stdexcept>
+#include <typeinfo>
 
 namespace leonidia {
 
@@ -44,6 +45,15 @@ public:
 private:
     size_t m_offset;
     std::string m_message;
+};
+
+class LEONIDIA_API bad_numeric_cast_t :
+    public std::bad_cast
+{
+public:
+    bad_numeric_cast_t() LEONIDIA_NOEXCEPT;
+
+    ~bad_numeric_cast_t() LEONIDIA_NOEXCEPT;
 };
 
 } // namespace leonidia

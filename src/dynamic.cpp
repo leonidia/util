@@ -45,6 +45,10 @@ json_parsing_error_t::message() const LEONIDIA_NOEXCEPT {
     return m_message.data();
 }
 
+bad_numeric_cast_t::bad_numeric_cast_t() LEONIDIA_NOEXCEPT { }
+
+bad_numeric_cast_t::~bad_numeric_cast_t() LEONIDIA_NOEXCEPT { }
+
 const dynamic_t dynamic_t::null;
 const dynamic_t dynamic_t::empty_string = dynamic_t::string_t();
 const dynamic_t dynamic_t::empty_array = dynamic_t::array_t();

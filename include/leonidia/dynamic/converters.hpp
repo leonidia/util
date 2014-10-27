@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONVERTERS_HPP
 #define LEONIDIA_DYNAMIC_CONVERTERS_HPP
 
+#include "leonidia/dynamic/error.hpp"
+
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <algorithm>
@@ -75,10 +77,14 @@ struct dynamic_converter<
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if (from.is_int()) {
-            return boost::numeric_cast<result_type>(from.as_int());
-        } else {
-            return boost::numeric_cast<result_type>(from.as_uint());
+        try {
+            if (from.is_int()) {
+                return boost::numeric_cast<result_type>(from.as_int());
+            } else {
+                return boost::numeric_cast<result_type>(from.as_uint());
+            }
+        } catch (const boost::numeric::bad_numeric_cast&) {
+            throw bad_numeric_cast_t();
         }
     }
 
@@ -108,12 +114,16 @@ struct dynamic_converter<
     static inline
     result_type
     convert(const dynamic_t& from) {
-        if (from.is_int()) {
-            return boost::numeric_cast<result_type>(from.as_int());
-        } else if (from.is_uint()) {
-            return boost::numeric_cast<result_type>(from.as_uint());
-        } else {
-            return boost::numeric_cast<result_type>(from.as_double());
+        try {
+            if (from.is_int()) {
+                return boost::numeric_cast<result_type>(from.as_int());
+            } else if (from.is_uint()) {
+                return boost::numeric_cast<result_type>(from.as_uint());
+            } else {
+                return boost::numeric_cast<result_type>(from.as_double());
+            }
+        } catch (const boost::numeric::bad_numeric_cast&) {
+            throw bad_numeric_cast_t();
         }
     }
 

@@ -21,6 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 #define LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 
+#include "leonidia/dynamic/error.hpp"
+
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <tuple>
@@ -41,7 +43,11 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = boost::numeric_cast<dynamic_t::uint_t>(from);
+        try {
+            to = boost::numeric_cast<dynamic_t::uint_t>(from);
+        } catch (const boost::numeric::bad_numeric_cast&) {
+            throw bad_numeric_cast_t();
+        }
     }
 };
 
@@ -56,7 +62,11 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = boost::numeric_cast<dynamic_t::int_t>(from);
+        try {
+            to = boost::numeric_cast<dynamic_t::int_t>(from);
+        } catch (const boost::numeric::bad_numeric_cast&) {
+            throw bad_numeric_cast_t();
+        }
     }
 };
 
@@ -86,7 +96,11 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        to = boost::numeric_cast<dynamic_t::double_t>(from);
+        try {
+            to = boost::numeric_cast<dynamic_t::double_t>(from);
+        } catch (const boost::numeric::bad_numeric_cast&) {
+            throw bad_numeric_cast_t();
+        }
     }
 };
 
