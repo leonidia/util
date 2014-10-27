@@ -33,6 +33,8 @@ class LEONIDIA_API json_parsing_error_t :
 public:
     json_parsing_error_t(size_t offset, std::string message);
 
+    ~json_parsing_error_t() LEONIDIA_NOEXCEPT;
+
     size_t
     offset() const LEONIDIA_NOEXCEPT;
 

@@ -33,6 +33,8 @@ json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :
     m_message(message)
 { }
 
+json_parsing_error_t::~json_parsing_error_t() LEONIDIA_NOEXCEPT { }
+
 size_t
 json_parsing_error_t::offset() const LEONIDIA_NOEXCEPT {
     return m_offset;

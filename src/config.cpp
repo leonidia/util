@@ -30,6 +30,10 @@ config_error::config_error(std::string message) : m_message(std::move(message))
 {
 }
 
+config_error::~config_error() LEONIDIA_NOEXCEPT
+{
+}
+
 const char *config_error::what() const LEONIDIA_NOEXCEPT
 {
     return m_message.c_str();
@@ -40,6 +44,10 @@ config_parser_error::config_parser_error(std::string message, std::string parse_
     m_parse_error(std::move(parse_error)),
     m_line_number(line_number),
     m_column_number(column_number)
+{
+}
+
+config_parser_error::~config_parser_error() LEONIDIA_NOEXCEPT
 {
 }
 

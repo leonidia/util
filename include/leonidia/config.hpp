@@ -34,6 +34,8 @@ class LEONIDIA_API config_error : public std::exception
 public:
     explicit config_error(std::string message);
 
+    ~config_error() LEONIDIA_NOEXCEPT;
+
     const char *what() const LEONIDIA_NOEXCEPT;
 
 private:
@@ -44,6 +46,8 @@ class LEONIDIA_API config_parser_error : public config_error
 {
 public:
     config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number);
+
+    ~config_parser_error() LEONIDIA_NOEXCEPT;
 
     const std::string &parse_error() const;
 
