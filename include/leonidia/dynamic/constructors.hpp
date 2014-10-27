@@ -116,6 +116,18 @@ struct dynamic_constructor<char[N]> {
     }
 };
 
+template<>
+struct dynamic_constructor<const char*> {
+    static const bool enable = true;
+
+    static inline
+    void
+    convert(const char* from, dynamic_t& to) {
+        dynamic_t::string_t buffer(from);
+        to = std::move(buffer);
+    }
+};
+
 template<class T>
 struct dynamic_constructor<
     std::vector<T>,
