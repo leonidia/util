@@ -107,7 +107,7 @@ bool config_t::has(size_t index) const
 
 config_t config_t::at(size_t index) const
 {
-    const std::string path = m_path + "[" + std::to_string(index) + "]";
+    const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
     if (!has(index))
         throw config_error(path + " is missed");
@@ -128,11 +128,11 @@ std::string config_t::to_string() const
     std::string value_str;
 
     if (m_value.is_uint())
-        value_str = std::to_string(m_value.as_uint());
+        value_str = boost::lexical_cast<std::string>(m_value.as_uint());
     else if (m_value.is_int())
-        value_str = std::to_string(m_value.as_int());
+        value_str = boost::lexical_cast<std::string>(m_value.as_int());
     else if (m_value.is_double())
-        value_str = std::to_string(m_value.as_double());
+        value_str = boost::lexical_cast<std::string>(m_value.as_double());
     else if (m_value.is_string())
         value_str = m_value.to<dynamic_t::string_t>();
     else

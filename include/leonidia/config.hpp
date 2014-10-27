@@ -23,6 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "leonidia/dynamic.hpp"
 
+#include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 
 #include <sstream>
@@ -187,7 +188,7 @@ struct config_value_caster_specific_helper<T, vector_type>
 
         T result;
         for (size_t i = 0; i < array.size(); ++i)
-            result.emplace_back(caster::cast(path + "[" + std::to_string(i) + "]", array[i]));
+            result.emplace_back(caster::cast(path + "[" + boost::lexical_cast<std::string>(i) + "]", array[i]));
         return result;
     }
 };
