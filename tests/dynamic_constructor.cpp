@@ -91,6 +91,7 @@ TEST(DynamicConstructor, SignedNumbers) {
     }
 }
 
+#ifdef LEONIDIA_NOT_BAD
 TEST(DynamicConstructor, Enum) {
     {
         enum enum1_t {
@@ -109,6 +110,7 @@ TEST(DynamicConstructor, Enum) {
         EXPECT_EQ(2, assigned.as_int());
     }
 }
+#endif
 
 TEST(DynamicConstructor, Float) {
     {

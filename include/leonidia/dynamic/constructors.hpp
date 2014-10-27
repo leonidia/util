@@ -70,6 +70,7 @@ struct dynamic_constructor<
     }
 };
 
+#ifdef LEONIDIA_NOT_BAD
 template<class From>
 struct dynamic_constructor<
     From,
@@ -84,6 +85,7 @@ struct dynamic_constructor<
         to = static_cast<dynamic_t::int_t>(from);
     }
 };
+#endif
 
 template<class From>
 struct dynamic_constructor<
