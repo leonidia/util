@@ -1,0 +1,11 @@
+os:
+- linux
+- osx
+language:
+- cpp
+before_install:
+- ./travis/before_install.sh
+install:
+- ./travis/install.sh
+script:
+- mkdir build && cd build && cmake .. && make && ./tests/leonidia-tests
