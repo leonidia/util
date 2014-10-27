@@ -122,19 +122,6 @@ struct dynamic_constructor<
 
         to = std::move(buffer);
     }
-
-    static inline
-    void
-    convert(std::vector<T>&& from, dynamic_t& to) {
-        dynamic_t::array_t buffer;
-        buffer.reserve(from.size());
-
-        for (size_t i = 0; i < from.size(); ++i) {
-            buffer.emplace_back(std::move_if_noexcept(from[i]));
-        }
-
-        to = std::move(buffer);
-    }
 };
 
 template<class... Args>
@@ -169,47 +156,6 @@ struct dynamic_constructor<std::tuple<Args...>> {
         }
     };
 
-    template<size_t N, size_t I, class... Args2>
-    struct move_tuple_to_vector {
-        static inline
-        void
-        convert(std::tuple<Args2...>& from, dynamic_t::array_t& to) {
-            to.emplace_back(std::move(std::get<I - 1>(from)));
-            move_tuple_to_vector<N, I + 1, Args2...>::convert(from, to);
-        }
-    };
-
-    template<size_t N, class... Args2>
-    struct move_tuple_to_vector<N, N, Args2...> {
-        static inline
-        void
-        convert(std::tuple<Args2...>& from, dynamic_t::array_t& to) {
-            to.emplace_back(std::move(std::get<N - 1>(from)));
-        }
-    };
-
-    template<class... Args2>
-    struct move_tuple_to_vector<0, 1, Args2...> {
-        static inline
-        void
-        convert(std::tuple<Args2...>&, dynamic_t::array_t&) {
-            // Empty.
-        }
-    };
-
-    static inline
-    bool
-    for_all(bool value) {
-        return value;
-    }
-
-    template<class First, class... Others>
-    static inline
-    bool
-    for_all(First head, Others... tail) {
-        return head && for_all(tail...);
-    }
-
     static inline
     void
     convert(const std::tuple<Args...>& from, dynamic_t& to) {
@@ -217,21 +163,6 @@ struct dynamic_constructor<std::tuple<Args...>> {
         buffer.reserve(sizeof...(Args));
 
         copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
-
-        to = std::move(buffer);
-    }
-
-    static inline
-    void
-    convert(std::tuple<Args...>&& from, dynamic_t& to) {
-        dynamic_t::array_t buffer;
-        buffer.reserve(sizeof...(Args));
-
-        if (for_all(std::is_nothrow_move_constructible<Args>::value...)) {
-            move_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
-        } else {
-            copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
-        }
 
         to = std::move(buffer);
     }
