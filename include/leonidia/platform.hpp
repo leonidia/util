@@ -35,7 +35,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #endif
 #endif
 
-#if defined(LEONIDIA_HAVE_GCC46) || defined(__clang__)
+#if !defined(LEONIDIA_HAVE_GCC44) || defined(LEONIDIA_HAVE_GCC44)
 #define LEONIDIA_NOT_BAD
 #endif
 

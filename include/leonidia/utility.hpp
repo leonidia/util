@@ -39,7 +39,7 @@ type& operator=(const type&) = delete;
     #define LEONIDIA_NOEXCEPT throw()
 #endif
 
-#if defined(LEONIDIA_HAVE_GCC44) && !defined(LEONIDIA_NOT_BAD)
+#if !defined(LEONIDIA_NOT_BAD)
     #define nullptr __null
 #endif
 
