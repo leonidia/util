@@ -22,9 +22,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define LEONIDIA_CONFIG_HPP
 
 #include "leonidia/dynamic.hpp"
+#include "leonidia/utility.hpp"
 
+LEONIDIA_PUSH_VISIBILITY
 #include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
+LEONIDIA_POP_VISIBILITY
 
 #include <sstream>
 

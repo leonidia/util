@@ -23,7 +23,9 @@
 
 #include "leonidia/utility.hpp"
 
+LEONIDIA_PUSH_VISIBILITY
 #include <boost/variant.hpp>
+LEONIDIA_POP_VISIBILITY
 
 #include <memory>
 #include <type_traits>

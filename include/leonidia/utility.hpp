@@ -23,11 +23,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "leonidia/platform.hpp"
 
-#include <boost/assert.hpp>
-
-#include <type_traits>
-#include <utility>
-
 // Write LEONIDIA_NONCOPYABLE(YourClass) in YourClass to delete copy constructor/assignment operator.
 #define LEONIDIA_NONCOPYABLE(type) \
 type(const type&) = delete; \
@@ -44,6 +39,21 @@ type& operator=(const type&) = delete;
 #endif
 
 #define LEONIDIA_API __attribute__ ((visibility ("default")))
+
+#ifdef __GNUC__
+    #define LEONIDIA_PUSH_VISIBILITY _Pragma("GCC visibility push(default)")
+    #define LEONIDIA_POP_VISIBILITY _Pragma("GCC visibility pop")
+#else
+    #define LEONIDIA_PUSH_VISIBILITY
+    #define LEONIDIA_POP_VISIBILITY
+#endif
+
+LEONIDIA_PUSH_VISIBILITY
+#include <boost/assert.hpp>
+LEONIDIA_POP_VISIBILITY
+
+#include <type_traits>
+#include <utility>
 
 namespace leonidia {
 

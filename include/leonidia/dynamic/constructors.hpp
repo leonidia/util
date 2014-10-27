@@ -22,8 +22,11 @@
 #define LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 
 #include "leonidia/dynamic/error.hpp"
+#include "leonidia/utility.hpp"
 
+LEONIDIA_PUSH_VISIBILITY
 #include <boost/numeric/conversion/cast.hpp>
+LEONIDIA_POP_VISIBILITY
 
 #include <tuple>
 #include <type_traits>
