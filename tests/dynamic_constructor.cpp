@@ -210,15 +210,15 @@ TEST(DynamicConstructor, Map) {
     leonidia::dynamic_t constructed = map;
     EXPECT_TRUE(constructed.is_object());
     EXPECT_EQ(2, constructed.as_object().size());
-    EXPECT_EQ(true, constructed.as_object()["key1"].as_bool());
-    EXPECT_EQ(false, constructed.as_object()["key2"].as_bool());
+    EXPECT_EQ(constructed.as_object()["key1"].as_bool(), true);
+    EXPECT_EQ(constructed.as_object()["key2"].as_bool(), false);
 
     leonidia::dynamic_t assigned;
     assigned = map;
     EXPECT_TRUE(assigned.is_object());
     EXPECT_EQ(2, assigned.as_object().size());
-    EXPECT_EQ(true, assigned.as_object()["key1"].as_bool());
-    EXPECT_EQ(false, assigned.as_object()["key2"].as_bool());
+    EXPECT_EQ(assigned.as_object()["key1"].as_bool(), true);
+    EXPECT_EQ(assigned.as_object()["key2"].as_bool(), false);
 }
 
 TEST(DynamicConstructor, UnorderedMap) {
@@ -229,13 +229,13 @@ TEST(DynamicConstructor, UnorderedMap) {
     leonidia::dynamic_t constructed = map;
     EXPECT_TRUE(constructed.is_object());
     EXPECT_EQ(2, constructed.as_object().size());
-    EXPECT_EQ(true, constructed.as_object()["key1"].as_bool());
-    EXPECT_EQ(false, constructed.as_object()["key2"].as_bool());
+    EXPECT_EQ(constructed.as_object()["key1"].as_bool(), true);
+    EXPECT_EQ(constructed.as_object()["key2"].as_bool(), false);
 
     leonidia::dynamic_t assigned;
     assigned = map;
     EXPECT_TRUE(assigned.is_object());
     EXPECT_EQ(2, assigned.as_object().size());
-    EXPECT_EQ(true, assigned.as_object()["key1"].as_bool());
-    EXPECT_EQ(false, assigned.as_object()["key2"].as_bool());
+    EXPECT_EQ(assigned.as_object()["key1"].as_bool(), true);
+    EXPECT_EQ(assigned.as_object()["key2"].as_bool(), false);
 }
