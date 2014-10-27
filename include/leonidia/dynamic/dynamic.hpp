@@ -258,13 +258,25 @@ private:
     template<class T>
     T&
     get() {
-        return boost::get<T>(m_value);
+        T* ptr = boost::get<T>(&m_value);
+
+        if (ptr) {
+            return *ptr;
+        } else {
+            throw std::bad_cast();
+        }
     }
 
     template<class T>
     const T&
     get() const {
-        return boost::get<T>(m_value);
+        const T* ptr = boost::get<T>(&m_value);
+
+        if (ptr) {
+            return *ptr;
+        } else {
+            throw std::bad_cast();
+        }
     }
 
     template<class T>
