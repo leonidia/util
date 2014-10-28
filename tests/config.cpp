@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "leonidia/config.hpp"
+#include "kora/config.hpp"
 
 TEST(Config, NumericTest) {
     std::string json =
@@ -39,10 +39,10 @@ TEST(Config, NumericTest) {
 
     std::istringstream stream(json);
 
-    leonidia::config_parser_t parser;
+    kora::config_parser_t parser;
     parser.parse(stream);
 
-    leonidia::config_t config = parser.root();
+    kora::config_t config = parser.root();
 
     GTEST_ASSERT_EQ(config.at<short>("short_min"), std::numeric_limits<short>::min());
     GTEST_ASSERT_EQ(config.at<short>("short_max"), std::numeric_limits<short>::max());
@@ -71,11 +71,11 @@ TEST(Config, ParseErrorTest) {
 
     std::istringstream stream(json);
 
-    leonidia::config_parser_t parser;
+    kora::config_parser_t parser;
     try {
         parser.parse(stream);
         GTEST_FAIL();
-    } catch (leonidia::config_parser_error &error) {
+    } catch (kora::config_parser_error &error) {
         GTEST_ASSERT_EQ(error.line_number(), 9);
         GTEST_ASSERT_EQ(error.column_number(), 39);
     }
@@ -86,12 +86,12 @@ TEST(Config, ParseErrorTest_2) {
 
     std::istringstream stream(json);
 
-    leonidia::config_parser_t parser;
+    kora::config_parser_t parser;
 
     try {
         parser.parse(stream);
         GTEST_FAIL();
-    } catch (leonidia::config_parser_error &error) {
+    } catch (kora::config_parser_error &error) {
         GTEST_ASSERT_EQ(error.line_number(), 1);
         GTEST_ASSERT_EQ(error.column_number(), 1);
     }
@@ -102,12 +102,12 @@ TEST(Config, ParseErrorTest_3) {
 
     std::istringstream stream(json);
 
-    leonidia::config_parser_t parser;
+    kora::config_parser_t parser;
 
     try {
         parser.parse(stream);
         GTEST_FAIL();
-    } catch (leonidia::config_parser_error &error) {
+    } catch (kora::config_parser_error &error) {
         GTEST_ASSERT_EQ(error.line_number(), 1);
         GTEST_ASSERT_EQ(error.column_number(), 1);
     }

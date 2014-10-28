@@ -23,7 +23,7 @@
 
 #include <map>
 
-namespace leonidia {
+namespace kora {
 
 class dynamic_t::object_t :
     public std::map<std::string, dynamic_t>
@@ -87,6 +87,6 @@ public:
     operator[](const std::string& key) const;
 };
 
-} // namespace leonidia
+} // namespace kora
 
 #endif

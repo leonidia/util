@@ -1,4 +1,4 @@
-Source: leonidia-util
+Source: kora-util
 Priority: extra
 Maintainer: Evgeny Safronov <division494@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), cmake, libboost-dev
@@ -8,17 +8,17 @@ Homepage: https://github.com/leonidia
 Vcs-Git: git://github.com/leonidia/util.git
 Vcs-Browser: https://github.com/leonidia/util
 
-Package: libleonidia-util1
+Package: libkora-util1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Util - Common useful C++ components.
  Common C++ components that makes your life much easier.
 
-Package: libleonidia-util-dev
+Package: libkora-util-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libleonidia-util1 (= ${binary:Version}),
+Depends: ${misc:Depends}, libkora-util1 (= ${binary:Version}),
  libboost-dev
 Description: Util - Development headers.
  Development headers package for common useful C++ components.

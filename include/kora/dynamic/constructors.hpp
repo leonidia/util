@@ -21,8 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 #define LEONIDIA_DYNAMIC_CONSTRUCTORS_HPP
 
-#include "leonidia/dynamic/error.hpp"
-#include "leonidia/utility.hpp"
+#include "kora/dynamic/error.hpp"
+#include "kora/utility.hpp"
 
 LEONIDIA_PUSH_VISIBILITY
 #include <boost/numeric/conversion/cast.hpp>
@@ -33,7 +33,7 @@ LEONIDIA_POP_VISIBILITY
 #include <utility>
 #include <unordered_map>
 
-namespace leonidia {
+namespace kora {
 
 template<class From>
 struct dynamic_constructor<
@@ -249,6 +249,6 @@ struct dynamic_constructor<std::unordered_map<std::string, T>> {
     }
 };
 
-} // namespace leonidia
+} // namespace kora
 
 #endif

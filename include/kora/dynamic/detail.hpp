@@ -21,7 +21,7 @@
 #ifndef LEONIDIA_DYNAMIC_DETAIL_HPP
 #define LEONIDIA_DYNAMIC_DETAIL_HPP
 
-#include "leonidia/utility.hpp"
+#include "kora/utility.hpp"
 
 LEONIDIA_PUSH_VISIBILITY
 #include <boost/variant.hpp>
@@ -31,7 +31,7 @@ LEONIDIA_POP_VISIBILITY
 #include <type_traits>
 #include <utility>
 
-namespace leonidia {
+namespace kora {
 
 namespace detail { namespace dynamic {
 
@@ -101,6 +101,6 @@ private:
     visitor_type *m_visitor;
 };
 
-}}} // namespace leonidia::detail::dynamic
+}}} // namespace kora::detail::dynamic
 
 #endif

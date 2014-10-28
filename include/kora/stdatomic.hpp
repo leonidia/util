@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef LEONIDIA_STDATOMIC_HPP
 #define LEONIDIA_STDATOMIC_HPP
 
-#include "leonidia/platform.hpp"
+#include "kora/platform.hpp"
 
 #ifdef LEONIDIA_NOT_BAD
     #include <atomic>

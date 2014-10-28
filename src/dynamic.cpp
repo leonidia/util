@@ -18,14 +18,14 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "leonidia/dynamic.hpp"
+#include "kora/dynamic.hpp"
 
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
 
 #include <stack>
 
-using namespace leonidia;
+using namespace kora;
 
 json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :
     std::invalid_argument("parsing error - " + message),
@@ -708,7 +708,7 @@ dynamic_t::to_json(std::ostream &output) const {
 }
 
 std::ostream&
-leonidia::operator<<(std::ostream& stream, const dynamic_t& value) {
+kora::operator<<(std::ostream& stream, const dynamic_t& value) {
     rapidjson_ostream_t rapidjson_stream = &stream;
     ostream_writer_t writer = rapidjson_stream;
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);

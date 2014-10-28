@@ -18,10 +18,45 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_HPP
-#define LEONIDIA_DYNAMIC_HPP
+#ifndef LEONIDIA_DYNAMIC_ERROR_HPP
+#define LEONIDIA_DYNAMIC_ERROR_HPP
 
-#include "leonidia/dynamic/dynamic.hpp"
-#include "leonidia/dynamic/error.hpp"
+#include "kora/utility.hpp"
+
+#include <stdexcept>
+#include <typeinfo>
+
+namespace kora {
+
+class LEONIDIA_API json_parsing_error_t :
+    public std::invalid_argument
+{
+public:
+    json_parsing_error_t(size_t offset, std::string message);
+
+    ~json_parsing_error_t() LEONIDIA_NOEXCEPT;
+
+    size_t
+    offset() const LEONIDIA_NOEXCEPT;
+
+    const char*
+    message() const LEONIDIA_NOEXCEPT;
+
+private:
+    size_t m_offset;
+    std::string m_message;
+};
+
+class LEONIDIA_API bad_numeric_cast_t :
+    public std::bad_cast
+{
+public:
+    bad_numeric_cast_t() LEONIDIA_NOEXCEPT;
+
+    ~bad_numeric_cast_t() LEONIDIA_NOEXCEPT;
+};
+
+} // namespace kora
+
 
 #endif

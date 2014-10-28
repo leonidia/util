@@ -19,12 +19,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "leonidia/config.hpp"
+#include "kora/config.hpp"
 
 #include <fstream>
 #include <stack>
 
-using namespace leonidia;
+using namespace kora;
 
 config_error::config_error(std::string message) : m_message(std::move(message))
 {
@@ -183,8 +183,8 @@ void config_parser_t::open(const std::string &path)
 void config_parser_t::parse(std::istream &stream)
 {
     try {
-        m_root = leonidia::dynamic_t::from_json(stream);
-    } catch (const leonidia::json_parsing_error_t& e) {
+        m_root = kora::dynamic_t::from_json(stream);
+    } catch (const kora::json_parsing_error_t& e) {
         stream.seekg(0);
         if (stream) {
             size_t offset = e.offset();

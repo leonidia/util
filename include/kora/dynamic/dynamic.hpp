@@ -21,7 +21,7 @@
 #ifndef LEONIDIA_DYNAMIC_DYNAMIC_HPP
 #define LEONIDIA_DYNAMIC_DYNAMIC_HPP
 
-#include "leonidia/dynamic/detail.hpp"
+#include "kora/dynamic/detail.hpp"
 
 LEONIDIA_PUSH_VISIBILITY
 #include <boost/variant.hpp>
@@ -31,7 +31,7 @@ LEONIDIA_POP_VISIBILITY
 #include <utility>
 #include <vector>
 
-namespace leonidia {
+namespace kora {
 
 template<class From, class = void>
 struct dynamic_constructor {
@@ -335,10 +335,10 @@ LEONIDIA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
 
-} // namespace leonidia
+} // namespace kora
 
-#include "leonidia/dynamic/object.hpp"
-#include "leonidia/dynamic/constructors.hpp"
-#include "leonidia/dynamic/converters.hpp"
+#include "kora/dynamic/object.hpp"
+#include "kora/dynamic/constructors.hpp"
+#include "kora/dynamic/converters.hpp"
 
 #endif

@@ -21,8 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef LEONIDIA_CONFIG_HPP
 #define LEONIDIA_CONFIG_HPP
 
-#include "leonidia/dynamic.hpp"
-#include "leonidia/utility.hpp"
+#include "kora/dynamic.hpp"
+#include "kora/utility.hpp"
 
 LEONIDIA_PUSH_VISIBILITY
 #include <boost/lexical_cast.hpp>
@@ -31,7 +31,7 @@ LEONIDIA_POP_VISIBILITY
 
 #include <sstream>
 
-namespace leonidia {
+namespace kora {
 
 class LEONIDIA_API config_error : public std::exception
 {
@@ -275,6 +275,6 @@ private:
     dynamic_t m_root;
 };
 
-} // namespace leonidia
+} // namespace kora
 
 #endif

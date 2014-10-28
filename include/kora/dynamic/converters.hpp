@@ -21,8 +21,8 @@
 #ifndef LEONIDIA_DYNAMIC_CONVERTERS_HPP
 #define LEONIDIA_DYNAMIC_CONVERTERS_HPP
 
-#include "leonidia/dynamic/error.hpp"
-#include "leonidia/utility.hpp"
+#include "kora/dynamic/error.hpp"
+#include "kora/utility.hpp"
 
 LEONIDIA_PUSH_VISIBILITY
 #include <boost/numeric/conversion/cast.hpp>
@@ -33,7 +33,7 @@ LEONIDIA_POP_VISIBILITY
 #include <unordered_map>
 #include <set>
 
-namespace leonidia {
+namespace kora {
 
 template<>
 struct dynamic_converter<dynamic_t> {
@@ -475,6 +475,6 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
     }
 };
 
-} // namespace leonidia
+} // namespace kora
 
 #endif

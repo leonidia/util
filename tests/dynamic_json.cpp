@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "leonidia/dynamic.hpp"
+#include "kora/dynamic.hpp"
 
 #include <boost/lexical_cast.hpp>
 
@@ -30,11 +30,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace {
 
     void
-    check_parsed_object(const leonidia::dynamic_t& parsed) {
+    check_parsed_object(const kora::dynamic_t& parsed) {
         ASSERT_TRUE(parsed.is_object());
 
         EXPECT_EQ(parsed.as_object().count("null_key"), 1);
-        EXPECT_EQ(parsed.as_object()["null_key"], leonidia::dynamic_t::null);
+        EXPECT_EQ(parsed.as_object()["null_key"], kora::dynamic_t::null);
 
         EXPECT_EQ(parsed.as_object().count("true_key"), 1);
         EXPECT_EQ(parsed.as_object()["true_key"], true);
@@ -74,31 +74,31 @@ namespace {
         EXPECT_EQ(parsed.as_object()["object_key"].as_object()["key"], 13);
     }
 
-    leonidia::dynamic_t
+    kora::dynamic_t
     construct_object() {
-        leonidia::dynamic_t::object_t object;
+        kora::dynamic_t::object_t object;
 
-        object["null_key"] = leonidia::dynamic_t::null;
+        object["null_key"] = kora::dynamic_t::null;
         object["true_key"] = true;
         object["false_key"] = false;
         object["int_key"] = 5;
         object["double_key"] = 25.2;
         object["string_key"] = "xdd";
 
-        leonidia::dynamic_t::array_t nested_array;
+        kora::dynamic_t::array_t nested_array;
         nested_array.emplace_back(true);
         nested_array.emplace_back(-5);
         nested_array.emplace_back(-5.0);
         nested_array.emplace_back("-_-");
-        nested_array.emplace_back(leonidia::dynamic_t::array_t({1, 2}));
+        nested_array.emplace_back(kora::dynamic_t::array_t({1, 2}));
 
-        leonidia::dynamic_t::object_t nested_object1;
+        kora::dynamic_t::object_t nested_object1;
         nested_object1["key"] = 12;
         nested_array.emplace_back(nested_object1);
 
         object["array_key"] = nested_array;
 
-        leonidia::dynamic_t::object_t nested_object2;
+        kora::dynamic_t::object_t nested_object2;
         nested_object2["key"] = 13;
 
         object["object_key"] = nested_object2;
@@ -107,7 +107,7 @@ namespace {
     }
 
     void
-    check_parsed_array(const leonidia::dynamic_t& parsed) {
+    check_parsed_array(const kora::dynamic_t& parsed) {
         ASSERT_TRUE(parsed.is_array());
         EXPECT_EQ(parsed.as_array().size(), 6);
         EXPECT_EQ(parsed.as_array()[0], true);
@@ -124,16 +124,16 @@ namespace {
         EXPECT_EQ(parsed.as_array()[5].as_object()["key"], 12);
     }
 
-    leonidia::dynamic_t
+    kora::dynamic_t
     construct_array() {
-        leonidia::dynamic_t::array_t array;
+        kora::dynamic_t::array_t array;
         array.emplace_back(true);
         array.emplace_back(-5);
         array.emplace_back(-5.0);
         array.emplace_back("-_-");
-        array.emplace_back(leonidia::dynamic_t::array_t({1, 2}));
+        array.emplace_back(kora::dynamic_t::array_t({1, 2}));
 
-        leonidia::dynamic_t::object_t nested_object;
+        kora::dynamic_t::object_t nested_object;
         nested_object["key"] = 12;
         array.emplace_back(nested_object);
 
@@ -166,7 +166,7 @@ TEST(Dynamic, JsonObjectParsing) {
 
     std::istringstream input(object_json);
 
-    check_parsed_object(leonidia::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic_t::from_json(input));
 
 }
 
@@ -184,14 +184,14 @@ TEST(Dynamic, JsonArrayParsing) {
 
     std::istringstream input(array_json);
 
-    check_parsed_array(leonidia::dynamic_t::from_json(input));
+    check_parsed_array(kora::dynamic_t::from_json(input));
 }
 
 namespace {
     void
     check_parsing_error(const std::string& data) {
         std::istringstream input(data);
-        EXPECT_THROW(leonidia::dynamic_t::from_json(input), leonidia::json_parsing_error_t);
+        EXPECT_THROW(kora::dynamic_t::from_json(input), kora::json_parsing_error_t);
     }
 }
 
@@ -226,7 +226,7 @@ TEST(Dynamic, ObjectToJson) {
     construct_object().to_json(output);
 
     std::istringstream input(output.str());
-    check_parsed_object(leonidia::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic_t::from_json(input));
 }
 
 TEST(Dynamic, ArrayToJson) {
@@ -234,49 +234,49 @@ TEST(Dynamic, ArrayToJson) {
     construct_array().to_json(output);
 
     std::istringstream input(output.str());
-    check_parsed_array(leonidia::dynamic_t::from_json(input));
+    check_parsed_array(kora::dynamic_t::from_json(input));
 }
 
 TEST(Dynamic, ValuesToStream) {
     std::ostringstream output;
 
-    output << leonidia::dynamic_t();
+    output << kora::dynamic_t();
     EXPECT_EQ("null", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(true);
+    output << kora::dynamic_t(true);
     EXPECT_EQ("true", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(false);
+    output << kora::dynamic_t(false);
     EXPECT_EQ("false", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(5);
+    output << kora::dynamic_t(5);
     EXPECT_EQ("5", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(-5);
+    output << kora::dynamic_t(-5);
     EXPECT_EQ("-5", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(25.2);
+    output << kora::dynamic_t(25.2);
     EXPECT_EQ("25.2", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(-25.2);
+    output << kora::dynamic_t(-25.2);
     EXPECT_EQ("-25.2", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t("xd");
+    output << kora::dynamic_t("xd");
     EXPECT_EQ("\"xd\"", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(leonidia::dynamic_t::array_t());
+    output << kora::dynamic_t(kora::dynamic_t::array_t());
     EXPECT_EQ("[]", output.str());
 
     output.str("");
-    output << leonidia::dynamic_t(leonidia::dynamic_t::object_t());
+    output << kora::dynamic_t(kora::dynamic_t::object_t());
     EXPECT_EQ("{}", output.str());
 }
 
@@ -285,7 +285,7 @@ TEST(Dynamic, ObjectToStream) {
     output << construct_object();
 
     std::istringstream input(output.str());
-    check_parsed_object(leonidia::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic_t::from_json(input));
 }
 
 TEST(Dynamic, ArrayToStream) {
@@ -293,12 +293,12 @@ TEST(Dynamic, ArrayToStream) {
     output << construct_array();
 
     std::istringstream input(output.str());
-    check_parsed_array(leonidia::dynamic_t::from_json(input));
+    check_parsed_array(kora::dynamic_t::from_json(input));
 }
 
 TEST(Dynamic, BoostLexicalCast) {
     std::string serialized = boost::lexical_cast<std::string>(construct_object());
 
     std::istringstream input(serialized);
-    check_parsed_object(leonidia::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic_t::from_json(input));
 }

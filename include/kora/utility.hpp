@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef LEONIDIA_UTILITY_HPP
 #define LEONIDIA_UTILITY_HPP
 
-#include "leonidia/platform.hpp"
+#include "kora/platform.hpp"
 
 // Write LEONIDIA_NONCOPYABLE(YourClass) in YourClass to delete copy constructor/assignment operator.
 #define LEONIDIA_NONCOPYABLE(type) \
@@ -55,7 +55,7 @@ LEONIDIA_POP_VISIBILITY
 #include <type_traits>
 #include <utility>
 
-namespace leonidia {
+namespace kora {
 
 // It's like std::decay, but doesn't convert arrays to pointers.
 template<class T>
@@ -83,6 +83,6 @@ struct requires_method {
     typedef Result type;
 };
 
-} // namespace leonidia
+} // namespace kora
 
 #endif

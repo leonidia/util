@@ -21,53 +21,53 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "leonidia/dynamic.hpp"
+#include "kora/dynamic.hpp"
 
 TEST(DynamicObject, Constructors) {
-    leonidia::dynamic_t::object_t obj1;
+    kora::dynamic_t::object_t obj1;
     EXPECT_TRUE(obj1.empty());
 
     obj1["key"] = 5;
 
-    leonidia::dynamic_t::object_t obj2(obj1);
+    kora::dynamic_t::object_t obj2(obj1);
     EXPECT_EQ(1, obj2.count("key"));
     EXPECT_EQ(obj2.at("key"), 5);
 
-    leonidia::dynamic_t::object_t obj3(std::move(obj2));
+    kora::dynamic_t::object_t obj3(std::move(obj2));
     EXPECT_EQ(1, obj3.count("key"));
     EXPECT_EQ(obj3.at("key"), 5);
 
-    std::map<std::string, leonidia::dynamic_t> map;
+    std::map<std::string, kora::dynamic_t> map;
     map["key2"] = 6;
 
-    leonidia::dynamic_t::object_t obj4(map);
+    kora::dynamic_t::object_t obj4(map);
     EXPECT_EQ(1, obj4.count("key2"));
     EXPECT_EQ(obj4.at("key2"), 6);
 
-    leonidia::dynamic_t::object_t obj5(std::move(map));
+    kora::dynamic_t::object_t obj5(std::move(map));
     EXPECT_EQ(1, obj5.count("key2"));
     EXPECT_EQ(obj5.at("key2"), 6);
 
-    leonidia::dynamic_t::object_t obj6(obj5.begin(), obj5.end());
+    kora::dynamic_t::object_t obj6(obj5.begin(), obj5.end());
     EXPECT_EQ(1, obj6.size());
     EXPECT_EQ(1, obj6.count("key2"));
     EXPECT_EQ(obj6.at("key2"), 6);
 }
 
 TEST(DynamicObject, Assignment) {
-    leonidia::dynamic_t::object_t obj1;
+    kora::dynamic_t::object_t obj1;
     EXPECT_TRUE(obj1.empty());
 
     obj1["key"] = 5;
 
-    leonidia::dynamic_t::object_t obj2;
+    kora::dynamic_t::object_t obj2;
     EXPECT_TRUE(obj2.empty());
 
     obj2 = obj1;
     EXPECT_EQ(1, obj2.count("key"));
     EXPECT_EQ(obj2.at("key"), 5);
 
-    leonidia::dynamic_t::object_t obj3;
+    kora::dynamic_t::object_t obj3;
     EXPECT_TRUE(obj3.empty());
 
     obj3 = obj1;
@@ -76,10 +76,10 @@ TEST(DynamicObject, Assignment) {
 }
 
 TEST(DynamicObject, Indexing) {
-    leonidia::dynamic_t::object_t obj1;
+    kora::dynamic_t::object_t obj1;
     obj1["key"] = 5;
 
-    leonidia::dynamic_t dynamic;
+    kora::dynamic_t dynamic;
 
     obj1.at("key2", dynamic) = 42.0;
 
@@ -88,8 +88,8 @@ TEST(DynamicObject, Indexing) {
 
     EXPECT_EQ(obj1.at("key", dynamic), 5);
 
-    const leonidia::dynamic_t::object_t& const_obj = obj1;
-    const leonidia::dynamic_t& const_dynamic = dynamic;
+    const kora::dynamic_t::object_t& const_obj = obj1;
+    const kora::dynamic_t& const_dynamic = dynamic;
 
     EXPECT_EQ(obj1.at("key", const_dynamic), 5);
     EXPECT_EQ(obj1.at("key2", const_dynamic), 42.0);
@@ -101,81 +101,81 @@ TEST(DynamicObject, Indexing) {
 }
 
 TEST(Dynamic, AssociatedItems) {
-    leonidia::dynamic_t::bool_t bool_variable;
+    kora::dynamic_t::bool_t bool_variable;
     (void)bool_variable;
-    leonidia::dynamic_t::int_t int_variable;
+    kora::dynamic_t::int_t int_variable;
     (void)int_variable;
-    leonidia::dynamic_t::uint_t uint_variable;
+    kora::dynamic_t::uint_t uint_variable;
     (void)uint_variable;
-    leonidia::dynamic_t::double_t double_variable;
+    kora::dynamic_t::double_t double_variable;
     (void)double_variable;
-    leonidia::dynamic_t::string_t string_variable;
+    kora::dynamic_t::string_t string_variable;
     (void)string_variable;
-    leonidia::dynamic_t::array_t array_variable;
+    kora::dynamic_t::array_t array_variable;
     (void)array_variable;
-    leonidia::dynamic_t::null_t null_variable;
+    kora::dynamic_t::null_t null_variable;
     (void)null_variable;
-    leonidia::dynamic_t::object_t object_variable;
+    kora::dynamic_t::object_t object_variable;
     (void)object_variable;
 
-    const leonidia::dynamic_t &null_reference = leonidia::dynamic_t::null;
+    const kora::dynamic_t &null_reference = kora::dynamic_t::null;
     (void)null_reference;
-    const leonidia::dynamic_t &empty_string_reference = leonidia::dynamic_t::empty_string;
+    const kora::dynamic_t &empty_string_reference = kora::dynamic_t::empty_string;
     (void)empty_string_reference;
-    const leonidia::dynamic_t &empty_array_reference = leonidia::dynamic_t::empty_array;
+    const kora::dynamic_t &empty_array_reference = kora::dynamic_t::empty_array;
     (void)empty_array_reference;
-    const leonidia::dynamic_t &empty_object_reference = leonidia::dynamic_t::empty_object;
+    const kora::dynamic_t &empty_object_reference = kora::dynamic_t::empty_object;
     (void)empty_object_reference;
 }
 
 TEST(Dynamic, DefaultConstructor) {
-    leonidia::dynamic_t default_dynamic;
+    kora::dynamic_t default_dynamic;
     EXPECT_TRUE(default_dynamic.is_null());
 }
 
 TEST(Dynamic, NullConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::null_t();
+    kora::dynamic_t dynamic = kora::dynamic_t::null_t();
     EXPECT_TRUE(dynamic.is_null());
 }
 
 TEST(Dynamic, BoolConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::bool_t(true);
+    kora::dynamic_t dynamic = kora::dynamic_t::bool_t(true);
     EXPECT_TRUE(dynamic.is_bool());
     EXPECT_EQ(true, dynamic.as_bool());
 }
 
 TEST(Dynamic, IntConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::int_t(5);
+    kora::dynamic_t dynamic = kora::dynamic_t::int_t(5);
     EXPECT_TRUE(dynamic.is_int());
     EXPECT_EQ(5, dynamic.as_int());
 }
 
 TEST(Dynamic, UintConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::uint_t(5);
+    kora::dynamic_t dynamic = kora::dynamic_t::uint_t(5);
     EXPECT_TRUE(dynamic.is_uint());
     EXPECT_EQ(5, dynamic.as_uint());
 }
 
 TEST(Dynamic, DoubleConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::double_t(5.0);
+    kora::dynamic_t dynamic = kora::dynamic_t::double_t(5.0);
     EXPECT_TRUE(dynamic.is_double());
     EXPECT_EQ(5.0, dynamic.as_double());
 }
 
 TEST(Dynamic, StringConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::string_t("xdd");
+    kora::dynamic_t dynamic = kora::dynamic_t::string_t("xdd");
     EXPECT_TRUE(dynamic.is_string());
     EXPECT_EQ("xdd", dynamic.as_string());
 }
 
 TEST(Dynamic, ArrayConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::array_t(3, 4);
+    kora::dynamic_t dynamic = kora::dynamic_t::array_t(3, 4);
     EXPECT_TRUE(dynamic.is_array());
-    EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), dynamic.as_array());
+    EXPECT_EQ(kora::dynamic_t::array_t(3, 4), dynamic.as_array());
 }
 
 TEST(Dynamic, ObjectConstructor) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+    kora::dynamic_t dynamic = kora::dynamic_t::object_t();
     dynamic.as_object()["key"] = 43;
 
     EXPECT_TRUE(dynamic.is_object());
@@ -185,15 +185,15 @@ TEST(Dynamic, ObjectConstructor) {
 
 TEST(Dynamic, CopyConstructor) {
     {
-        leonidia::dynamic_t dyn1;
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1;
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn1.is_null());
         EXPECT_TRUE(dyn2.is_null());
     }
     {
-        leonidia::dynamic_t dyn1(true);
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(true);
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn1.is_bool());
         EXPECT_TRUE(dyn1.as_bool());
@@ -201,8 +201,8 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_TRUE(dyn2.as_bool());
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::int_t(20));
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(kora::dynamic_t::int_t(20));
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_int());
         EXPECT_EQ(dyn2.as_int(), 20);
@@ -210,8 +210,8 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_EQ(dyn1.as_int(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_uint());
         EXPECT_EQ(dyn2.as_uint(), 20);
@@ -219,8 +219,8 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_EQ(dyn1.as_uint(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_double());
         EXPECT_EQ(dyn2.as_double(), 20.0);
@@ -228,8 +228,8 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_EQ(dyn1.as_double(), 20.0);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::string_t("xd"));
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_string());
         EXPECT_EQ(dyn2.as_string(), "xd");
@@ -237,8 +237,8 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_EQ(dyn1.as_string(), "xd");
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::array_t(3, 4));
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
+        kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_array());
         EXPECT_EQ(dyn2.as_array().size(), 3);
@@ -248,10 +248,10 @@ TEST(Dynamic, CopyConstructor) {
         EXPECT_EQ(dyn1.as_array()[0], 4);
     }
     {
-        leonidia::dynamic_t dyn1 = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
         dyn1.as_object()["key"] = 42;
 
-        leonidia::dynamic_t dyn2(dyn1);
+        kora::dynamic_t dyn2(dyn1);
         EXPECT_TRUE(dyn2.is_object());
         EXPECT_EQ(dyn2.as_object().size(), 1);
         EXPECT_EQ(dyn2.as_object()["key"], 42);
@@ -263,59 +263,59 @@ TEST(Dynamic, CopyConstructor) {
 
 TEST(Dynamic, MoveConstructor) {
     {
-        leonidia::dynamic_t dyn1;
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1;
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_null());
     }
     {
-        leonidia::dynamic_t dyn1(true);
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(true);
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_bool());
         EXPECT_TRUE(dyn2.as_bool());
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::int_t(20));
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(kora::dynamic_t::int_t(20));
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_int());
         EXPECT_EQ(dyn2.as_int(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_uint());
         EXPECT_EQ(dyn2.as_uint(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_double());
         EXPECT_EQ(dyn2.as_double(), 20.0);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::string_t("xd"));
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_string());
         EXPECT_EQ(dyn2.as_string(), "xd");
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::array_t(3, 4));
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
+        kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_array());
         EXPECT_EQ(dyn2.as_array().size(), 3);
         EXPECT_EQ(dyn2.as_array()[0], 4);
     }
     {
-        leonidia::dynamic_t dyn1 = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
         dyn1.as_object()["key"] = 42;
 
-        leonidia::dynamic_t dyn2(std::move(dyn1));
+        kora::dynamic_t dyn2(std::move(dyn1));
         EXPECT_TRUE(dyn2.is_object());
         EXPECT_EQ(dyn2.as_object().size(), 1);
         EXPECT_EQ(dyn2.as_object()["key"], 42);
@@ -323,56 +323,56 @@ TEST(Dynamic, MoveConstructor) {
 }
 
 TEST(Dynamic, NullAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::null_t();
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::null_t();
     EXPECT_TRUE(dynamic.is_null());
 }
 
 TEST(Dynamic, BoolAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::bool_t(true);
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::bool_t(true);
     EXPECT_TRUE(dynamic.is_bool());
     EXPECT_EQ(true, dynamic.as_bool());
 }
 
 TEST(Dynamic, IntAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::int_t(5);
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::int_t(5);
     EXPECT_TRUE(dynamic.is_int());
     EXPECT_EQ(5, dynamic.as_int());
 }
 
 TEST(Dynamic, UintAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::uint_t(5);
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::uint_t(5);
     EXPECT_TRUE(dynamic.is_uint());
     EXPECT_EQ(5, dynamic.as_uint());
 }
 
 TEST(Dynamic, DoubleAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::double_t(5.0);
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::double_t(5.0);
     EXPECT_TRUE(dynamic.is_double());
     EXPECT_EQ(5.0, dynamic.as_double());
 }
 
 TEST(Dynamic, StringAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::string_t("xdd");
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::string_t("xdd");
     EXPECT_TRUE(dynamic.is_string());
     EXPECT_EQ("xdd", dynamic.as_string());
 }
 
 TEST(Dynamic, ArrayAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::array_t(3, 4);
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::array_t(3, 4);
     EXPECT_TRUE(dynamic.is_array());
-    EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), dynamic.as_array());
+    EXPECT_EQ(kora::dynamic_t::array_t(3, 4), dynamic.as_array());
 }
 
 TEST(Dynamic, ObjectAssignment) {
-    leonidia::dynamic_t dynamic;
-    dynamic = leonidia::dynamic_t::object_t();
+    kora::dynamic_t dynamic;
+    dynamic = kora::dynamic_t::object_t();
     dynamic.as_object()["key"] = 43;
 
     EXPECT_TRUE(dynamic.is_object());
@@ -382,16 +382,16 @@ TEST(Dynamic, ObjectAssignment) {
 
 TEST(Dynamic, CopyAssignment) {
     {
-        leonidia::dynamic_t dyn1;
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1;
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn1.is_null());
         EXPECT_TRUE(dyn2.is_null());
     }
     {
-        leonidia::dynamic_t dyn1(true);
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(true);
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn1.is_bool());
@@ -400,8 +400,8 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_TRUE(dyn2.as_bool());
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::int_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::int_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_int());
@@ -410,8 +410,8 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_EQ(dyn1.as_int(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_uint());
@@ -420,8 +420,8 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_EQ(dyn1.as_uint(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_double());
@@ -430,8 +430,8 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_EQ(dyn1.as_double(), 20.0);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::string_t("xd"));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_string());
@@ -440,8 +440,8 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_EQ(dyn1.as_string(), "xd");
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::array_t(3, 4));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_array());
@@ -452,10 +452,10 @@ TEST(Dynamic, CopyAssignment) {
         EXPECT_EQ(dyn1.as_array()[0], 4);
     }
     {
-        leonidia::dynamic_t dyn1 = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
         dyn1.as_object()["key"] = 42;
 
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn2;
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_object());
@@ -469,55 +469,55 @@ TEST(Dynamic, CopyAssignment) {
 
 TEST(Dynamic, MoveAssignment) {
     {
-        leonidia::dynamic_t dyn1;
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1;
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_null());
     }
     {
-        leonidia::dynamic_t dyn1(true);
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(true);
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_bool());
         EXPECT_TRUE(dyn2.as_bool());
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::int_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::int_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_int());
         EXPECT_EQ(dyn2.as_int(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::uint_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_uint());
         EXPECT_EQ(dyn2.as_uint(), 20);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::double_t(20));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_double());
         EXPECT_EQ(dyn2.as_double(), 20.0);
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::string_t("xd"));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_string());
         EXPECT_EQ(dyn2.as_string(), "xd");
     }
     {
-        leonidia::dynamic_t dyn1(leonidia::dynamic_t::array_t(3, 4));
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_array());
@@ -525,10 +525,10 @@ TEST(Dynamic, MoveAssignment) {
         EXPECT_EQ(dyn2.as_array()[0], 4);
     }
     {
-        leonidia::dynamic_t dyn1 = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
         dyn1.as_object()["key"] = 42;
 
-        leonidia::dynamic_t dyn2;
+        kora::dynamic_t dyn2;
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_object());
@@ -539,8 +539,8 @@ TEST(Dynamic, MoveAssignment) {
 
 namespace {
     void
-    test_copy_equality(const leonidia::dynamic_t& original) {
-        leonidia::dynamic_t copy(original);
+    test_copy_equality(const kora::dynamic_t& original) {
+        kora::dynamic_t copy(original);
         EXPECT_TRUE(original == copy);
     }
 } // namespace
@@ -548,7 +548,7 @@ namespace {
 TEST(Dynamic, EqualityAfterCopy) {
     {
         SCOPED_TRACE("Null");
-        test_copy_equality(leonidia::dynamic_t());
+        test_copy_equality(kora::dynamic_t());
     }
     {
         SCOPED_TRACE("Bool");
@@ -556,27 +556,27 @@ TEST(Dynamic, EqualityAfterCopy) {
     }
     {
         SCOPED_TRACE("Int");
-        test_copy_equality(leonidia::dynamic_t::int_t(20));
+        test_copy_equality(kora::dynamic_t::int_t(20));
     }
     {
         SCOPED_TRACE("Uint");
-        test_copy_equality(leonidia::dynamic_t::uint_t(20));
+        test_copy_equality(kora::dynamic_t::uint_t(20));
     }
     {
         SCOPED_TRACE("Double");
-        test_copy_equality(leonidia::dynamic_t::double_t(20));
+        test_copy_equality(kora::dynamic_t::double_t(20));
     }
     {
         SCOPED_TRACE("String");
-        test_copy_equality(leonidia::dynamic_t::string_t("xd"));
+        test_copy_equality(kora::dynamic_t::string_t("xd"));
     }
     {
         SCOPED_TRACE("Array");
-        test_copy_equality(leonidia::dynamic_t::array_t(3, 4));
+        test_copy_equality(kora::dynamic_t::array_t(3, 4));
     }
     {
         SCOPED_TRACE("Object");
-        leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dynamic = kora::dynamic_t::object_t();
         dynamic.as_object()["key"] = 42;
 
         test_copy_equality(dynamic);
@@ -586,81 +586,81 @@ TEST(Dynamic, EqualityAfterCopy) {
 namespace {
 
     void
-    basic_equality_checks(const leonidia::dynamic_t& dynamic) {
+    basic_equality_checks(const kora::dynamic_t& dynamic) {
         EXPECT_FALSE(dynamic == false);
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::int_t(20));
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::uint_t(20));
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::double_t(20.7));
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::string_t("._______."));
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::array_t());
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::object_t());
+        EXPECT_FALSE(dynamic == kora::dynamic_t::int_t(20));
+        EXPECT_FALSE(dynamic == kora::dynamic_t::uint_t(20));
+        EXPECT_FALSE(dynamic == kora::dynamic_t::double_t(20.7));
+        EXPECT_FALSE(dynamic == kora::dynamic_t::string_t("._______."));
+        EXPECT_FALSE(dynamic == kora::dynamic_t::array_t());
+        EXPECT_FALSE(dynamic == kora::dynamic_t::object_t());
     }
 
     void
-    basic_equality_checks_nonnull(const leonidia::dynamic_t& dynamic) {
-        EXPECT_FALSE(dynamic == leonidia::dynamic_t::null);
+    basic_equality_checks_nonnull(const kora::dynamic_t& dynamic) {
+        EXPECT_FALSE(dynamic == kora::dynamic_t::null);
         basic_equality_checks(dynamic);
     }
 
 } // namespace
 
 TEST(Dynamic, EqualityNull) {
-    leonidia::dynamic_t dynamic;
+    kora::dynamic_t dynamic;
 
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::null);
+    EXPECT_TRUE(dynamic == kora::dynamic_t::null);
     basic_equality_checks(dynamic);
 }
 
 TEST(Dynamic, EqualityBool) {
-    leonidia::dynamic_t dynamic(true);
+    kora::dynamic_t dynamic(true);
 
     basic_equality_checks_nonnull(dynamic);
     EXPECT_TRUE(dynamic == true);
 }
 
 TEST(Dynamic, EqualityInt) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::int_t(21));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::int_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::uint_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, EqualityUint) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::uint_t(21));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::int_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::uint_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, EqualityDouble) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::double_t(21));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::int_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::uint_t(21));
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::double_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::int_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::uint_t(21));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, EqualityString) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::string_t("xd"));
+    kora::dynamic_t dynamic(kora::dynamic_t::string_t("xd"));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::string_t("xd"));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::string_t("xd"));
 }
 
 TEST(Dynamic, EqualityArray) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
+    kora::dynamic_t dynamic(kora::dynamic_t::array_t(3, 4));
 
     basic_equality_checks_nonnull(dynamic);
-    EXPECT_TRUE(dynamic == leonidia::dynamic_t::array_t(3, 4));
+    EXPECT_TRUE(dynamic == kora::dynamic_t::array_t(3, 4));
 }
 
 TEST(Dynamic, EqualityObject) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+    kora::dynamic_t dynamic = kora::dynamic_t::object_t();
     dynamic.as_object()["key"] = 42;
 
     basic_equality_checks_nonnull(dynamic);
@@ -669,81 +669,81 @@ TEST(Dynamic, EqualityObject) {
 namespace {
 
     void
-    basic_inequality_checks(const leonidia::dynamic_t& dynamic) {
+    basic_inequality_checks(const kora::dynamic_t& dynamic) {
         EXPECT_TRUE(dynamic != false);
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::int_t(20));
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::uint_t(20));
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::double_t(20.7));
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::string_t("._______."));
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::array_t());
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::object_t());
+        EXPECT_TRUE(dynamic != kora::dynamic_t::int_t(20));
+        EXPECT_TRUE(dynamic != kora::dynamic_t::uint_t(20));
+        EXPECT_TRUE(dynamic != kora::dynamic_t::double_t(20.7));
+        EXPECT_TRUE(dynamic != kora::dynamic_t::string_t("._______."));
+        EXPECT_TRUE(dynamic != kora::dynamic_t::array_t());
+        EXPECT_TRUE(dynamic != kora::dynamic_t::object_t());
     }
 
     void
-    basic_inequality_checks_nonnull(const leonidia::dynamic_t& dynamic) {
-        EXPECT_TRUE(dynamic != leonidia::dynamic_t::null);
+    basic_inequality_checks_nonnull(const kora::dynamic_t& dynamic) {
+        EXPECT_TRUE(dynamic != kora::dynamic_t::null);
         basic_inequality_checks(dynamic);
     }
 
 } // namespace
 
 TEST(Dynamic, InequalityNull) {
-    leonidia::dynamic_t dynamic;
+    kora::dynamic_t dynamic;
 
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::null);
+    EXPECT_FALSE(dynamic != kora::dynamic_t::null);
     basic_inequality_checks(dynamic);
 }
 
 TEST(Dynamic, InequalityBool) {
-    leonidia::dynamic_t dynamic(true);
+    kora::dynamic_t dynamic(true);
 
     basic_inequality_checks_nonnull(dynamic);
     EXPECT_FALSE(dynamic != true);
 }
 
 TEST(Dynamic, InequalityInt) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::int_t(21));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::int_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::uint_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, InequalityUint) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::uint_t(21));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::int_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::uint_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, InequalityDouble) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(21));
+    kora::dynamic_t dynamic(kora::dynamic_t::double_t(21));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::int_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::uint_t(21));
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::double_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::int_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::uint_t(21));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::double_t(21));
 }
 
 TEST(Dynamic, InequalityString) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::string_t("xd"));
+    kora::dynamic_t dynamic(kora::dynamic_t::string_t("xd"));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::string_t("xd"));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::string_t("xd"));
 }
 
 TEST(Dynamic, InequalityArray) {
-    leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
+    kora::dynamic_t dynamic(kora::dynamic_t::array_t(3, 4));
 
     basic_inequality_checks_nonnull(dynamic);
-    EXPECT_FALSE(dynamic != leonidia::dynamic_t::array_t(3, 4));
+    EXPECT_FALSE(dynamic != kora::dynamic_t::array_t(3, 4));
 }
 
 TEST(Dynamic, InequalityObject) {
-    leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+    kora::dynamic_t dynamic = kora::dynamic_t::object_t();
     dynamic.as_object()["key"] = 42;
 
     basic_inequality_checks_nonnull(dynamic);
@@ -769,25 +769,25 @@ namespace {
 
     template<class Expected>
     void
-    test_apply_types(leonidia::dynamic_t &dynamic) {
+    test_apply_types(kora::dynamic_t &dynamic) {
         // At the moment, const and non-const apply's are different methods, so I test both.
         // And there is some template magic, so it's better to test apply with all types
         // of a visitor reference.
 
         // Rvalue visitor.
         dynamic.apply(type_tester_t<Expected>());
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(type_tester_t<const Expected>());
+        const_cast<const kora::dynamic_t&>(dynamic).apply(type_tester_t<const Expected>());
 
         // Non-const visitor.
         type_tester_t<Expected> tester;
         dynamic.apply(tester);
 
         type_tester_t<const Expected> tester_const;
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester_const);
+        const_cast<const kora::dynamic_t&>(dynamic).apply(tester_const);
 
         // Const visitor.
         dynamic.apply(const_cast<const type_tester_t<Expected>&>(tester));
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(
+        const_cast<const kora::dynamic_t&>(dynamic).apply(
             const_cast<const type_tester_t<const Expected>&>(tester_const)
         );
     }
@@ -796,66 +796,66 @@ namespace {
         public boost::static_visitor<>
     {
         void
-        operator()(const leonidia::dynamic_t::null_t&) const {
+        operator()(const kora::dynamic_t::null_t&) const {
             // Null is always null. Nothing to test.
             SUCCEED();
         }
 
         void
-        operator()(const leonidia::dynamic_t::bool_t& v) const {
+        operator()(const kora::dynamic_t::bool_t& v) const {
             EXPECT_EQ(true, v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::int_t& v) const {
+        operator()(const kora::dynamic_t::int_t& v) const {
             EXPECT_EQ(20, v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::uint_t& v) const {
+        operator()(const kora::dynamic_t::uint_t& v) const {
             EXPECT_EQ(20, v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::double_t& v) const {
+        operator()(const kora::dynamic_t::double_t& v) const {
             EXPECT_EQ(20, v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::string_t& v) const {
+        operator()(const kora::dynamic_t::string_t& v) const {
             EXPECT_EQ("xd", v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::array_t& v) const {
-            EXPECT_EQ(leonidia::dynamic_t::array_t(3, 4), v);
+        operator()(const kora::dynamic_t::array_t& v) const {
+            EXPECT_EQ(kora::dynamic_t::array_t(3, 4), v);
         }
 
         void
-        operator()(const leonidia::dynamic_t::object_t& v) const {
+        operator()(const kora::dynamic_t::object_t& v) const {
             EXPECT_EQ(1, v.size());
             EXPECT_EQ(v["key"], 20);
         }
     };
 
     void
-    test_apply_values(leonidia::dynamic_t &dynamic) {
+    test_apply_values(kora::dynamic_t &dynamic) {
         // At the moment, const and non-const apply's are different methods, so I test both.
         // And there is some template magic, so it's better to test apply with all types
         // of a visitor reference.
 
         // Rvalue visitor.
         dynamic.apply(values_tester_t());
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(values_tester_t());
+        const_cast<const kora::dynamic_t&>(dynamic).apply(values_tester_t());
 
         // Non-const visitor.
         values_tester_t tester;
         dynamic.apply(tester);
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(tester);
+        const_cast<const kora::dynamic_t&>(dynamic).apply(tester);
 
         // Const visitor.
         dynamic.apply(const_cast<const values_tester_t&>(tester));
-        const_cast<const leonidia::dynamic_t&>(dynamic).apply(
+        const_cast<const kora::dynamic_t&>(dynamic).apply(
             const_cast<const values_tester_t&>(tester)
         );
     }
@@ -864,48 +864,48 @@ namespace {
         public boost::static_visitor<>
     {
         void
-        operator()(leonidia::dynamic_t::null_t& v) const {
-            v = leonidia::dynamic_t::null_t();
+        operator()(kora::dynamic_t::null_t& v) const {
+            v = kora::dynamic_t::null_t();
         }
 
         void
-        operator()(leonidia::dynamic_t::bool_t& v) const {
+        operator()(kora::dynamic_t::bool_t& v) const {
             v = false;
         }
 
         void
-        operator()(leonidia::dynamic_t::int_t& v) const {
+        operator()(kora::dynamic_t::int_t& v) const {
             v = 18;
         }
 
         void
-        operator()(leonidia::dynamic_t::uint_t& v) const {
+        operator()(kora::dynamic_t::uint_t& v) const {
             v = 18;
         }
 
         void
-        operator()(leonidia::dynamic_t::double_t& v) const {
+        operator()(kora::dynamic_t::double_t& v) const {
             v = 18;
         }
 
         void
-        operator()(leonidia::dynamic_t::string_t& v) const {
+        operator()(kora::dynamic_t::string_t& v) const {
             v = "-_-";
         }
 
         void
-        operator()(leonidia::dynamic_t::array_t& v) const {
-            v = leonidia::dynamic_t::array_t(2, 8);
+        operator()(kora::dynamic_t::array_t& v) const {
+            v = kora::dynamic_t::array_t(2, 8);
         }
 
         void
-        operator()(leonidia::dynamic_t::object_t& v) const {
+        operator()(kora::dynamic_t::object_t& v) const {
             v["key2"] = 18;
         }
     };
 
     void
-    test_apply_mutate(leonidia::dynamic_t &dynamic) {
+    test_apply_mutate(kora::dynamic_t &dynamic) {
         dynamic.apply(mutate_tester_t());
 
         mutate_tester_t tester;
@@ -929,16 +929,16 @@ TEST(Dynamic, Apply) {
     {
         SCOPED_TRACE("Null");
 
-        leonidia::dynamic_t dynamic;
-        test_apply_types<leonidia::dynamic_t::null_t>(dynamic);
+        kora::dynamic_t dynamic;
+        test_apply_types<kora::dynamic_t::null_t>(dynamic);
         test_apply_values(dynamic);
         test_apply_mutate(dynamic);
     }
     {
         SCOPED_TRACE("Bool");
 
-        leonidia::dynamic_t dynamic(true);
-        test_apply_types<leonidia::dynamic_t::bool_t>(dynamic);
+        kora::dynamic_t dynamic(true);
+        test_apply_types<kora::dynamic_t::bool_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
@@ -947,38 +947,38 @@ TEST(Dynamic, Apply) {
     {
         SCOPED_TRACE("Int");
 
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::int_t(20));
-        test_apply_types<leonidia::dynamic_t::int_t>(dynamic);
+        kora::dynamic_t dynamic(kora::dynamic_t::int_t(20));
+        test_apply_types<kora::dynamic_t::int_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, leonidia::dynamic_t::int_t(18));
+        EXPECT_EQ(dynamic, kora::dynamic_t::int_t(18));
     }
     {
         SCOPED_TRACE("Uint");
 
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::uint_t(20));
-        test_apply_types<leonidia::dynamic_t::uint_t>(dynamic);
+        kora::dynamic_t dynamic(kora::dynamic_t::uint_t(20));
+        test_apply_types<kora::dynamic_t::uint_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, leonidia::dynamic_t::uint_t(18));
+        EXPECT_EQ(dynamic, kora::dynamic_t::uint_t(18));
     }
     {
         SCOPED_TRACE("Double");
 
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::double_t(20));
-        test_apply_types<leonidia::dynamic_t::double_t>(dynamic);
+        kora::dynamic_t dynamic(kora::dynamic_t::double_t(20));
+        test_apply_types<kora::dynamic_t::double_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, leonidia::dynamic_t::double_t(18));
+        EXPECT_EQ(dynamic, kora::dynamic_t::double_t(18));
     }
     {
         SCOPED_TRACE("String");
 
-        leonidia::dynamic_t dynamic("xd");
-        test_apply_types<leonidia::dynamic_t::string_t>(dynamic);
+        kora::dynamic_t dynamic("xd");
+        test_apply_types<kora::dynamic_t::string_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
@@ -987,19 +987,19 @@ TEST(Dynamic, Apply) {
     {
         SCOPED_TRACE("Array");
 
-        leonidia::dynamic_t dynamic(leonidia::dynamic_t::array_t(3, 4));
-        test_apply_types<leonidia::dynamic_t::array_t>(dynamic);
+        kora::dynamic_t dynamic(kora::dynamic_t::array_t(3, 4));
+        test_apply_types<kora::dynamic_t::array_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, leonidia::dynamic_t::array_t(2, 8));
+        EXPECT_EQ(dynamic, kora::dynamic_t::array_t(2, 8));
     }
     {
         SCOPED_TRACE("Object");
 
-        leonidia::dynamic_t dynamic = leonidia::dynamic_t::object_t();
+        kora::dynamic_t dynamic = kora::dynamic_t::object_t();
         dynamic.as_object()["key"] = 20;
-        test_apply_types<leonidia::dynamic_t::object_t>(dynamic);
+        test_apply_types<kora::dynamic_t::object_t>(dynamic);
         test_apply_values(dynamic);
 
         test_apply_mutate(dynamic);
@@ -1008,7 +1008,7 @@ TEST(Dynamic, Apply) {
 }
 
 TEST(Dynamic, ApplyNonConstVisitor) {
-    leonidia::dynamic_t dynamic;
+    kora::dynamic_t dynamic;
     nonconst_visitor_t visitor;
 
     dynamic.apply(visitor);
