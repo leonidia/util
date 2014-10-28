@@ -39,4 +39,14 @@ SET_TARGET_PROPERTIES(kora-tests PROPERTIES
     COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -Wextra -pedantic"
 )
 
-ADD_TEST(NAME kora-tests COMMAND kora-tests)
+# Allow target called "test".
+IF(POLICY CMP0037)
+    CMAKE_POLICY(PUSH)
+    CMAKE_POLICY(SET CMP0037 OLD)
+ENDIF()
+
+ADD_CUSTOM_TARGET(test COMMAND kora-tests)
+
+IF(POLICY CMP0037)
+    CMAKE_POLICY(POP)
+ENDIF()
