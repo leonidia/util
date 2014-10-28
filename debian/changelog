@@ -1,3 +1,11 @@
+kora-util (1.0.0-1) unstable; urgency=low
+
+  * New library name: Kora. All API is broken :(
+  * Symbols visibility fixes.
+  * More tests.
+
+ -- Andrey Goryachev <andrey.goryachev@gmail.com>  Mon, 28 Oct 2014 13:44:24 +0400
+
 leonidia-util (0.0.1-1) unstable; urgency=low
 
   * Initial release.
