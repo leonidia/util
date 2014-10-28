@@ -1,11 +1,11 @@
 os:
 - linux
-- osx
 language:
 - cpp
 before_install:
-- ./travis/before_install.sh
+- sudo apt-get update -qq
 install:
-- ./travis/install.sh
+- sudo apt-get install -qq devscripts build-essential equivs python-software-properties
 script:
-- mkdir build && cd build && cmake .. && make && ./tests/leonidia-tests
+- yes | sudo mk-build-deps -i
+- yes | debuild -uc -us
