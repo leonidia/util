@@ -2,14 +2,14 @@
 Copyright (c) 2013 Andrey Goryachev <andrey.goryachev@gmail.com>
 Copyright (c) 2011-2013 Other contributors as noted in the AUTHORS file.
 
-This file is part of Leonidia.
+This file is part of Kora.
 
-Leonidia is free software; you can redistribute it and/or modify
+Kora is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
-Leonidia is distributed in the hope that it will be useful,
+Kora is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Lesser General Public License for more details.
@@ -18,39 +18,39 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_UTILITY_HPP
-#define LEONIDIA_UTILITY_HPP
+#ifndef KORA_UTILITY_HPP
+#define KORA_UTILITY_HPP
 
 #include "kora/platform.hpp"
 
-// Write LEONIDIA_NONCOPYABLE(YourClass) in YourClass to delete copy constructor/assignment operator.
-#define LEONIDIA_NONCOPYABLE(type) \
+// Write KORA_NONCOPYABLE(YourClass) in YourClass to delete copy constructor/assignment operator.
+#define KORA_NONCOPYABLE(type) \
 type(const type&) = delete; \
 type& operator=(const type&) = delete;
 
-#ifdef LEONIDIA_NOT_BAD
-    #define LEONIDIA_NOEXCEPT noexcept
+#ifdef KORA_NOT_BAD
+    #define KORA_NOEXCEPT noexcept
 #else
-    #define LEONIDIA_NOEXCEPT throw()
+    #define KORA_NOEXCEPT throw()
 #endif
 
-#if !defined(LEONIDIA_NOT_BAD)
+#if !defined(KORA_NOT_BAD)
     #define nullptr __null
 #endif
 
-#define LEONIDIA_API __attribute__ ((visibility ("default")))
+#define KORA_API __attribute__ ((visibility ("default")))
 
 #ifdef __GNUC__
-    #define LEONIDIA_PUSH_VISIBILITY _Pragma("GCC visibility push(default)")
-    #define LEONIDIA_POP_VISIBILITY _Pragma("GCC visibility pop")
+    #define KORA_PUSH_VISIBILITY _Pragma("GCC visibility push(default)")
+    #define KORA_POP_VISIBILITY _Pragma("GCC visibility pop")
 #else
-    #define LEONIDIA_PUSH_VISIBILITY
-    #define LEONIDIA_POP_VISIBILITY
+    #define KORA_PUSH_VISIBILITY
+    #define KORA_POP_VISIBILITY
 #endif
 
-LEONIDIA_PUSH_VISIBILITY
+KORA_PUSH_VISIBILITY
 #include <boost/assert.hpp>
-LEONIDIA_POP_VISIBILITY
+KORA_POP_VISIBILITY
 
 #include <type_traits>
 #include <utility>

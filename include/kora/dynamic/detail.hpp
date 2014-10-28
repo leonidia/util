@@ -2,14 +2,14 @@
     Copyright (c) 2013-2014 Andrey Goryachev <andrey.goryachev@gmail.com>
     Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
-    This file is part of Leonidia.
+    This file is part of Kora.
 
-    Leonidia is free software; you can redistribute it and/or modify
+    Kora is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    Leonidia is distributed in the hope that it will be useful,
+    Kora is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -18,14 +18,14 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_DETAIL_HPP
-#define LEONIDIA_DYNAMIC_DETAIL_HPP
+#ifndef KORA_DYNAMIC_DETAIL_HPP
+#define KORA_DYNAMIC_DETAIL_HPP
 
 #include "kora/utility.hpp"
 
-LEONIDIA_PUSH_VISIBILITY
+KORA_PUSH_VISIBILITY
 #include <boost/variant.hpp>
-LEONIDIA_POP_VISIBILITY
+KORA_POP_VISIBILITY
 
 #include <memory>
 #include <type_traits>
@@ -42,25 +42,25 @@ public:
     // These constructors are needed just to satisfy the requirements of boost::variant.
     incomplete_wrapper() = default;
 
-    incomplete_wrapper(const incomplete_wrapper&) LEONIDIA_NOEXCEPT { }
+    incomplete_wrapper(const incomplete_wrapper&) KORA_NOEXCEPT { }
 
     incomplete_wrapper&
-    operator=(const incomplete_wrapper&) LEONIDIA_NOEXCEPT {
+    operator=(const incomplete_wrapper&) KORA_NOEXCEPT {
         return *this;
     }
 
     T&
-    get() LEONIDIA_NOEXCEPT {
+    get() KORA_NOEXCEPT {
         return *m_data;
     }
 
     const T&
-    get() const LEONIDIA_NOEXCEPT {
+    get() const KORA_NOEXCEPT {
         return *m_data;
     }
 
     void
-    set(T* object) LEONIDIA_NOEXCEPT {
+    set(T* object) KORA_NOEXCEPT {
         m_data.reset(object);
     }
 

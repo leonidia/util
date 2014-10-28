@@ -2,14 +2,14 @@
     Copyright (c) 2013-2014 Andrey Goryachev <andrey.goryachev@gmail.com>
     Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
-    This file is part of Leonidia.
+    This file is part of Kora.
 
-    Leonidia is free software; you can redistribute it and/or modify
+    Kora is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    Leonidia is distributed in the hope that it will be useful,
+    Kora is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -33,21 +33,21 @@ json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :
     m_message(message)
 { }
 
-json_parsing_error_t::~json_parsing_error_t() LEONIDIA_NOEXCEPT { }
+json_parsing_error_t::~json_parsing_error_t() KORA_NOEXCEPT { }
 
 size_t
-json_parsing_error_t::offset() const LEONIDIA_NOEXCEPT {
+json_parsing_error_t::offset() const KORA_NOEXCEPT {
     return m_offset;
 }
 
 const char*
-json_parsing_error_t::message() const LEONIDIA_NOEXCEPT {
+json_parsing_error_t::message() const KORA_NOEXCEPT {
     return m_message.data();
 }
 
-bad_numeric_cast_t::bad_numeric_cast_t() LEONIDIA_NOEXCEPT { }
+bad_numeric_cast_t::bad_numeric_cast_t() KORA_NOEXCEPT { }
 
-bad_numeric_cast_t::~bad_numeric_cast_t() LEONIDIA_NOEXCEPT { }
+bad_numeric_cast_t::~bad_numeric_cast_t() KORA_NOEXCEPT { }
 
 const dynamic_t dynamic_t::null;
 const dynamic_t dynamic_t::empty_string = dynamic_t::string_t();
@@ -188,7 +188,7 @@ private:
 
 } // namespace
 
-dynamic_t::dynamic_t() LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t() KORA_NOEXCEPT :
     m_value(null_t())
 { }
 
@@ -204,27 +204,27 @@ dynamic_t::dynamic_t(dynamic_t&& other) :
     other.apply(move_visitor(*this));
 }
 
-dynamic_t::dynamic_t(dynamic_t::null_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::null_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::bool_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::bool_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::int_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::int_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::uint_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::uint_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::double_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::double_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::string_t value) LEONIDIA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::string_t value) KORA_NOEXCEPT :
     m_value(dynamic_t::string_t())
 {
     as_string() = std::move(value);

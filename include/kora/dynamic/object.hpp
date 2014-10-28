@@ -2,14 +2,14 @@
     Copyright (c) 2013-2014 Andrey Goryachev <andrey.goryachev@gmail.com>
     Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
-    This file is part of Leonidia.
+    This file is part of Kora.
 
-    Leonidia is free software; you can redistribute it and/or modify
+    Kora is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    Leonidia is distributed in the hope that it will be useful,
+    Kora is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -18,8 +18,8 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_OBJECT_HPP
-#define LEONIDIA_DYNAMIC_OBJECT_HPP
+#ifndef KORA_DYNAMIC_OBJECT_HPP
+#define KORA_DYNAMIC_OBJECT_HPP
 
 #include <map>
 
@@ -72,17 +72,17 @@ public:
 
     using base_type::at;
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     at(const std::string& key, dynamic_t& default_);
 
-    LEONIDIA_API
+    KORA_API
     const dynamic_t&
     at(const std::string& key, const dynamic_t& default_) const;
 
     using base_type::operator[];
 
-    LEONIDIA_API
+    KORA_API
     const dynamic_t&
     operator[](const std::string& key) const;
 };

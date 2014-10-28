@@ -2,14 +2,14 @@
 Copyright (c) 2014 Ruslan Nigmatullin <euroelessar@yandex.ru>
 Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
-This file is part of Leonidia.
+This file is part of Kora.
 
-Leonidia is free software; you can redistribute it and/or modify
+Kora is free software; you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation; either version 3 of the License, or
 (at your option) any later version.
 
-Leonidia is distributed in the hope that it will be useful,
+Kora is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Lesser General Public License for more details.
@@ -18,40 +18,40 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_CONFIG_HPP
-#define LEONIDIA_CONFIG_HPP
+#ifndef KORA_CONFIG_HPP
+#define KORA_CONFIG_HPP
 
 #include "kora/dynamic.hpp"
 #include "kora/utility.hpp"
 
-LEONIDIA_PUSH_VISIBILITY
+KORA_PUSH_VISIBILITY
 #include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
-LEONIDIA_POP_VISIBILITY
+KORA_POP_VISIBILITY
 
 #include <sstream>
 
 namespace kora {
 
-class LEONIDIA_API config_error : public std::exception
+class KORA_API config_error : public std::exception
 {
 public:
     explicit config_error(std::string message);
 
-    ~config_error() LEONIDIA_NOEXCEPT;
+    ~config_error() KORA_NOEXCEPT;
 
-    const char *what() const LEONIDIA_NOEXCEPT;
+    const char *what() const KORA_NOEXCEPT;
 
 private:
     std::string m_message;
 };
 
-class LEONIDIA_API config_parser_error : public config_error
+class KORA_API config_parser_error : public config_error
 {
 public:
     config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number);
 
-    ~config_parser_error() LEONIDIA_NOEXCEPT;
+    ~config_parser_error() KORA_NOEXCEPT;
 
     const std::string &parse_error() const;
 
@@ -201,10 +201,10 @@ struct config_value_caster_specific_helper<T, vector_type>
 class config_t
 {
 public:
-    LEONIDIA_API config_t(const std::string &path, const dynamic_t *value);
+    KORA_API config_t(const std::string &path, const dynamic_t *value);
 
-    LEONIDIA_API bool has(const std::string &name) const;
-    LEONIDIA_API config_t at(const std::string &name) const;
+    KORA_API bool has(const std::string &name) const;
+    KORA_API config_t at(const std::string &name) const;
 
     template <typename T>
     T at(const std::string &name, const T &default_value) const
@@ -221,9 +221,9 @@ public:
         return at(name).as<T>();
     }
 
-    LEONIDIA_API size_t size() const;
-    LEONIDIA_API bool has(size_t index) const;
-    LEONIDIA_API config_t at(size_t index) const;
+    KORA_API size_t size() const;
+    KORA_API bool has(size_t index) const;
+    KORA_API config_t at(size_t index) const;
 
     template <typename T>
     T at(size_t index, const T &default_value) const
@@ -247,13 +247,13 @@ public:
         return detail::config_value_caster<T>::cast(m_path, m_value);
     }
 
-    LEONIDIA_API const std::string &path() const;
+    KORA_API const std::string &path() const;
 
-    LEONIDIA_API std::string to_string() const;
+    KORA_API std::string to_string() const;
 
-    LEONIDIA_API void assert_valid() const;
-    LEONIDIA_API void assert_array() const;
-    LEONIDIA_API void assert_object() const;
+    KORA_API void assert_valid() const;
+    KORA_API void assert_array() const;
+    KORA_API void assert_object() const;
 
 protected:
     std::string m_path;
@@ -263,13 +263,13 @@ protected:
 class config_parser_t
 {
 public:
-    LEONIDIA_API config_parser_t();
-    LEONIDIA_API ~config_parser_t();
+    KORA_API config_parser_t();
+    KORA_API ~config_parser_t();
 
-    LEONIDIA_API void open(const std::string &path);
-    LEONIDIA_API void parse(std::istream &stream);
+    KORA_API void open(const std::string &path);
+    KORA_API void parse(std::istream &stream);
 
-    LEONIDIA_API config_t root() const;
+    KORA_API config_t root() const;
 
 private:
     dynamic_t m_root;

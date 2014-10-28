@@ -2,14 +2,14 @@
     Copyright (c) 2013-2014 Andrey Goryachev <andrey.goryachev@gmail.com>
     Copyright (c) 2011-2014 Other contributors as noted in the AUTHORS file.
 
-    This file is part of Leonidia.
+    This file is part of Kora.
 
-    Leonidia is free software; you can redistribute it and/or modify
+    Kora is free software; you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation; either version 3 of the License, or
     (at your option) any later version.
 
-    Leonidia is distributed in the hope that it will be useful,
+    Kora is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU Lesser General Public License for more details.
@@ -18,14 +18,14 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef LEONIDIA_DYNAMIC_DYNAMIC_HPP
-#define LEONIDIA_DYNAMIC_DYNAMIC_HPP
+#ifndef KORA_DYNAMIC_DYNAMIC_HPP
+#define KORA_DYNAMIC_DYNAMIC_HPP
 
 #include "kora/dynamic/detail.hpp"
 
-LEONIDIA_PUSH_VISIBILITY
+KORA_PUSH_VISIBILITY
 #include <boost/variant.hpp>
-LEONIDIA_POP_VISIBILITY
+KORA_POP_VISIBILITY
 
 #include <string>
 #include <utility>
@@ -55,43 +55,43 @@ public:
     class object_t;
 
     // Just useful constants which may be accessed by reference from any place of the program.
-    LEONIDIA_API static const dynamic_t null;
-    LEONIDIA_API static const dynamic_t empty_string;
-    LEONIDIA_API static const dynamic_t empty_array;
-    LEONIDIA_API static const dynamic_t empty_object;
+    KORA_API static const dynamic_t null;
+    KORA_API static const dynamic_t empty_string;
+    KORA_API static const dynamic_t empty_array;
+    KORA_API static const dynamic_t empty_object;
 
 public:
-    LEONIDIA_API
-    dynamic_t() LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t() KORA_NOEXCEPT;
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t(const dynamic_t& other);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t(dynamic_t&& other);
 
-    LEONIDIA_API
-    dynamic_t(null_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(null_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
-    dynamic_t(bool_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(bool_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
-    dynamic_t(int_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(int_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
-    dynamic_t(uint_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(uint_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
-    dynamic_t(double_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(double_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
-    dynamic_t(string_t value) LEONIDIA_NOEXCEPT;
+    KORA_API
+    dynamic_t(string_t value) KORA_NOEXCEPT;
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t(array_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t(object_t value);
 
     template<class T>
@@ -100,43 +100,43 @@ public:
         typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
     );
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(const dynamic_t& other);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(dynamic_t&& other);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(null_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(bool_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(int_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(uint_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(double_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(string_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(array_t value);
 
-    LEONIDIA_API
+    KORA_API
     dynamic_t&
     operator=(object_t value);
 
@@ -144,11 +144,11 @@ public:
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
 
-    LEONIDIA_API
+    KORA_API
     bool
     operator==(const dynamic_t& other) const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     operator!=(const dynamic_t& other) const;
 
@@ -166,75 +166,75 @@ public:
         return boost::apply_visitor(applier_type(&visitor), m_value);
     }
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_null() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_bool() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_int() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_uint() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_double() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_string() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_array() const;
 
-    LEONIDIA_API
+    KORA_API
     bool
     is_object() const;
 
-    LEONIDIA_API
+    KORA_API
     bool_t
     as_bool() const;
 
-    LEONIDIA_API
+    KORA_API
     int_t
     as_int() const;
 
-    LEONIDIA_API
+    KORA_API
     uint_t
     as_uint() const;
 
-    LEONIDIA_API
+    KORA_API
     double_t
     as_double() const;
 
-    LEONIDIA_API
+    KORA_API
     const string_t&
     as_string() const;
 
-    LEONIDIA_API
+    KORA_API
     const array_t&
     as_array() const;
 
-    LEONIDIA_API
+    KORA_API
     const object_t&
     as_object() const;
 
-    LEONIDIA_API
+    KORA_API
     string_t&
     as_string();
 
-    LEONIDIA_API
+    KORA_API
     array_t&
     as_array();
 
-    LEONIDIA_API
+    KORA_API
     object_t&
     as_object();
 
@@ -247,12 +247,12 @@ public:
     to() const;
 
 public:
-    LEONIDIA_API
+    KORA_API
     static
     dynamic_t
     from_json(std::istream &input);
 
-    LEONIDIA_API
+    KORA_API
     void
     to_json(std::ostream &output) const;
 
@@ -331,7 +331,7 @@ dynamic_t::to() const {
     return dynamic_converter<typename pristine<T>::type>::convert(*this);
 }
 
-LEONIDIA_API
+KORA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
 
