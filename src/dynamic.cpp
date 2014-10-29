@@ -224,7 +224,7 @@ dynamic_t::dynamic_t(dynamic_t::double_t value) KORA_NOEXCEPT :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::string_t value) KORA_NOEXCEPT :
+dynamic_t::dynamic_t(dynamic_t::string_t value) :
     m_value(dynamic_t::string_t())
 {
     as_string() = std::move(value);
@@ -259,31 +259,31 @@ dynamic_t::operator=(dynamic_t&& other) {
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::null_t value) {
+dynamic_t::operator=(dynamic_t::null_t value) KORA_NOEXCEPT {
     m_value = value;
     return *this;
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::bool_t value) {
+dynamic_t::operator=(dynamic_t::bool_t value) KORA_NOEXCEPT {
     m_value = value;
     return *this;
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::int_t value) {
+dynamic_t::operator=(dynamic_t::int_t value) KORA_NOEXCEPT {
     m_value = value;
     return *this;
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::uint_t value) {
+dynamic_t::operator=(dynamic_t::uint_t value) KORA_NOEXCEPT {
     m_value = value;
     return *this;
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::double_t value) {
+dynamic_t::operator=(dynamic_t::double_t value) KORA_NOEXCEPT {
     m_value = value;
     return *this;
 }
