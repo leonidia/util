@@ -22,9 +22,10 @@ LINK_DIRECTORIES(
 
 ADD_EXECUTABLE(kora-tests
     config
-    dynamic
-    dynamic_constructor
-    dynamic_json
+    dynamic/dynamic
+    dynamic/dynamic_constructor
+    dynamic/json
+    dynamic/object
 )
 
 TARGET_LINK_LIBRARIES(kora-tests
