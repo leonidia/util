@@ -38,7 +38,10 @@ namespace kora {
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_integral<From>::value && std::is_unsigned<From>::value>::type
+    typename std::enable_if<std::is_integral<From>::value &&
+                            std::is_unsigned<From>::value &&
+                            sizeof(From) <= sizeof(dynamic_t::uint_t)
+                            >::type
 >
 {
     static const bool enable = true;
@@ -46,18 +49,17 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        try {
-            to = boost::numeric_cast<dynamic_t::uint_t>(from);
-        } catch (const boost::numeric::bad_numeric_cast&) {
-            throw bad_numeric_cast_t();
-        }
+        to = static_cast<dynamic_t::uint_t>(from);
     }
 };
 
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_integral<From>::value && std::is_signed<From>::value>::type
+    typename std::enable_if<std::is_integral<From>::value &&
+                            std::is_signed<From>::value &&
+                            sizeof(From) <= sizeof(dynamic_t::int_t)
+                            >::type
 >
 {
     static const bool enable = true;
@@ -65,11 +67,8 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        try {
-            to = boost::numeric_cast<dynamic_t::int_t>(from);
-        } catch (const boost::numeric::bad_numeric_cast&) {
-            throw bad_numeric_cast_t();
-        }
+        to = static_cast<dynamic_t::int_t>(from);
+
     }
 };
 
@@ -93,7 +92,9 @@ struct dynamic_constructor<
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_floating_point<From>::value>::type
+    typename std::enable_if<std::is_floating_point<From>::value &&
+                            sizeof(From) <= sizeof(dynamic_t::double_t)
+                            >::type
 >
 {
     static const bool enable = true;
@@ -101,11 +102,7 @@ struct dynamic_constructor<
     static inline
     void
     convert(From from, dynamic_t& to) {
-        try {
-            to = boost::numeric_cast<dynamic_t::double_t>(from);
-        } catch (const boost::numeric::bad_numeric_cast&) {
-            throw bad_numeric_cast_t();
-        }
+        to = static_cast<dynamic_t::double_t>(from);
     }
 };
 

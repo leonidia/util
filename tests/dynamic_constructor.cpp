@@ -113,41 +113,14 @@ TEST(DynamicConstructor, Enum) {
 #endif
 
 TEST(DynamicConstructor, Float) {
-    {
-        kora::dynamic_t constructed = (float)2.0;
-        EXPECT_TRUE(constructed.is_double());
-        EXPECT_DOUBLE_EQ(2.0, constructed.as_double());
+    kora::dynamic_t constructed = (float)2.0;
+    EXPECT_TRUE(constructed.is_double());
+    EXPECT_DOUBLE_EQ(2.0, constructed.as_double());
 
-        kora::dynamic_t assigned;
-        assigned = (float)(-2.0);
-        EXPECT_TRUE(assigned.is_double());
-        EXPECT_DOUBLE_EQ(-2.0, assigned.as_double());
-    }
-    {
-        kora::dynamic_t constructed = (long double)2.0;
-        EXPECT_TRUE(constructed.is_double());
-        EXPECT_DOUBLE_EQ(2.0, constructed.as_double());
-
-        kora::dynamic_t assigned;
-        assigned = (long double)(-2.0);
-        EXPECT_TRUE(assigned.is_double());
-        EXPECT_DOUBLE_EQ(-2.0, assigned.as_double());
-    }
-}
-
-TEST(DynamicConstructor, FloatOverflow) {
-    if (std::numeric_limits<long double>::max() > std::numeric_limits<double>::max()) {
-        EXPECT_THROW(kora::dynamic_t dynamic = std::numeric_limits<long double>::max(),
-                     kora::bad_numeric_cast_t);
-
-        kora::dynamic_t assigned;
-        EXPECT_THROW(assigned = std::numeric_limits<long double>::max(),
-                     kora::bad_numeric_cast_t);
-    } else {
-        std::cout << "NOTICE: FloatOverflow test is not performed because long double is equal to double type."
-                  << std::endl;
-        SUCCEED();
-    }
+    kora::dynamic_t assigned;
+    assigned = (float)(-2.0);
+    EXPECT_TRUE(assigned.is_double());
+    EXPECT_DOUBLE_EQ(-2.0, assigned.as_double());
 }
 
 TEST(DynamicConstructor, StringLiteral) {
