@@ -67,7 +67,7 @@ public:
     dynamic_t(const dynamic_t& other);
 
     KORA_API
-    dynamic_t(dynamic_t&& other);
+    dynamic_t(dynamic_t&& other) KORA_NOEXCEPT;
 
     KORA_API
     dynamic_t(null_t value) KORA_NOEXCEPT;
@@ -105,7 +105,7 @@ public:
 
     KORA_API
     dynamic_t&
-    operator=(dynamic_t&& other);
+    operator=(dynamic_t&& other) KORA_NOEXCEPT;
 
     KORA_API
     dynamic_t&
@@ -285,6 +285,8 @@ private:
     is() const {
         return static_cast<bool>(boost::get<T>(&m_value));
     }
+
+    struct move_visitor;
 
 private:
     typedef boost::variant<

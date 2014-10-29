@@ -81,24 +81,38 @@ dynamic_t::object_t::operator[](const std::string& key) const {
     return at(key);
 }
 
-namespace {
-
-struct move_visitor:
+// Should be applied directly to the underlying variant.
+struct dynamic_t::move_visitor:
     public boost::static_visitor<>
 {
-    move_visitor(dynamic_t& destination) :
+    move_visitor(dynamic_t::value_t& destination) :
         m_destination(destination)
     { }
 
     template<class T>
     void
     operator()(T& v) const {
-        m_destination = std::move(v);
+        m_destination = v;
+    }
+
+    void
+    operator()(std::string& v) const {
+        m_destination = std::string();
+        boost::get<std::string>(m_destination) = std::move(v);
+    }
+
+    template<class T>
+    void
+    operator()(detail::dynamic::incomplete_wrapper<T>& v) const {
+        m_destination = detail::dynamic::incomplete_wrapper<T>();
+        boost::get<detail::dynamic::incomplete_wrapper<T>>(m_destination).set(v.release());
     }
 
 private:
-    dynamic_t& m_destination;
+    dynamic_t::value_t& m_destination;
 };
+
+namespace {
 
 struct assign_visitor:
     public boost::static_visitor<>
@@ -198,10 +212,10 @@ dynamic_t::dynamic_t(const dynamic_t& other) :
     other.apply(assign_visitor(*this));
 }
 
-dynamic_t::dynamic_t(dynamic_t&& other) :
+dynamic_t::dynamic_t(dynamic_t&& other) KORA_NOEXCEPT :
     m_value(null_t())
 {
-    other.apply(move_visitor(*this));
+    boost::apply_visitor(dynamic_t::move_visitor(m_value), other.m_value);
 }
 
 dynamic_t::dynamic_t(dynamic_t::null_t value) KORA_NOEXCEPT :
@@ -253,8 +267,8 @@ dynamic_t::operator=(const dynamic_t& other) {
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t&& other) {
-    other.apply(move_visitor(*this));
+dynamic_t::operator=(dynamic_t&& other) KORA_NOEXCEPT {
+    boost::apply_visitor(dynamic_t::move_visitor(m_value), other.m_value);
     return *this;
 }
 

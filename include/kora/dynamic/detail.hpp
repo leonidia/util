@@ -64,6 +64,11 @@ public:
         m_data.reset(object);
     }
 
+    T*
+    release() KORA_NOEXCEPT {
+        return m_data.release();
+    }
+
 private:
     std::unique_ptr<T> m_data;
 };
