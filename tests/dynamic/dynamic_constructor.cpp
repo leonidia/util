@@ -23,8 +23,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/dynamic.hpp"
 
-#include <limits>
-
 TEST(DynamicConstructor, UnsignedNumbers) {
     {
         kora::dynamic_t constructed = (unsigned char)13;

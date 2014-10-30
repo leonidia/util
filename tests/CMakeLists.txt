@@ -24,6 +24,7 @@ ADD_EXECUTABLE(kora-tests
     config
     dynamic/dynamic
     dynamic/dynamic_constructor
+    dynamic/dynamic_converter
     dynamic/json
     dynamic/object
 )
