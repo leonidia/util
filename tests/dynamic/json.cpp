@@ -141,7 +141,7 @@ namespace {
     }
 }
 
-TEST(Dynamic, JsonObjectParsing) {
+TEST(DynamicJson, ObjectParsing) {
     std::string object_json =
     "{\n"
     "    \"null_key\": null,\n"
@@ -170,7 +170,7 @@ TEST(Dynamic, JsonObjectParsing) {
 
 }
 
-TEST(Dynamic, JsonArrayParsing) {
+TEST(DynamicJson, ArrayParsing) {
     std::string array_json =
     "[\n"
     "    true,\n"
@@ -195,7 +195,7 @@ namespace {
     }
 }
 
-TEST(Dynamic, JsonParsingErrors) {
+TEST(DynamicJson, ParsingErrors) {
     {
         SCOPED_TRACE("Null");
         check_parsing_error("null");
@@ -221,7 +221,7 @@ TEST(Dynamic, JsonParsingErrors) {
     }
 }
 
-TEST(Dynamic, ObjectToJson) {
+TEST(DynamicJson, ObjectToJson) {
     std::ostringstream output;
     construct_object().to_json(output);
 
@@ -229,7 +229,7 @@ TEST(Dynamic, ObjectToJson) {
     check_parsed_object(kora::dynamic_t::from_json(input));
 }
 
-TEST(Dynamic, ArrayToJson) {
+TEST(DynamicJson, ArrayToJson) {
     std::ostringstream output;
     construct_array().to_json(output);
 
@@ -237,7 +237,7 @@ TEST(Dynamic, ArrayToJson) {
     check_parsed_array(kora::dynamic_t::from_json(input));
 }
 
-TEST(Dynamic, ValuesToStream) {
+TEST(DynamicJson, ValuesToStream) {
     std::ostringstream output;
 
     output << kora::dynamic_t();
@@ -280,7 +280,7 @@ TEST(Dynamic, ValuesToStream) {
     EXPECT_EQ("{}", output.str());
 }
 
-TEST(Dynamic, ObjectToStream) {
+TEST(DynamicJson, ObjectToStream) {
     std::ostringstream output;
     output << construct_object();
 
@@ -288,7 +288,7 @@ TEST(Dynamic, ObjectToStream) {
     check_parsed_object(kora::dynamic_t::from_json(input));
 }
 
-TEST(Dynamic, ArrayToStream) {
+TEST(DynamicJson, ArrayToStream) {
     std::ostringstream output;
     output << construct_array();
 
@@ -296,7 +296,7 @@ TEST(Dynamic, ArrayToStream) {
     check_parsed_array(kora::dynamic_t::from_json(input));
 }
 
-TEST(Dynamic, BoostLexicalCast) {
+TEST(DynamicJson, BoostLexicalCast) {
     std::string serialized = boost::lexical_cast<std::string>(construct_object());
 
     std::istringstream input(serialized);
