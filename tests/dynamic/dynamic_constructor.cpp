@@ -214,3 +214,42 @@ TEST(DynamicConstructor, UnorderedMap) {
     EXPECT_EQ(assigned.as_object()["key1"].as_bool(), true);
     EXPECT_EQ(assigned.as_object()["key2"].as_bool(), false);
 }
+
+namespace {
+
+    struct test_struct_t {
+        int a;
+        std::string b;
+    };
+
+} // namespace
+
+namespace kora {
+
+    template<>
+    struct dynamic_constructor<test_struct_t> {
+        static const bool enable = true;
+
+        static inline
+        void
+        convert(const test_struct_t& from, dynamic_t& to) {
+            to = std::tuple<int, std::string>(from.a, from.b);
+        }
+    };
+
+} // namespace kora
+
+TEST(DynamicConstructor, CustomConstructor) {
+    kora::dynamic_t constructed = test_struct_t {1337, ">_>"};
+    EXPECT_TRUE(constructed.is_array());
+    EXPECT_EQ(2, constructed.as_array().size());
+    EXPECT_EQ(constructed.as_array()[0].as_int(), 1337);
+    EXPECT_EQ(constructed.as_array()[1].as_string(), ">_>");
+
+    kora::dynamic_t assigned;
+    assigned = test_struct_t {1337, ">_>"};
+    EXPECT_TRUE(assigned.is_array());
+    EXPECT_EQ(2, assigned.as_array().size());
+    EXPECT_EQ(assigned.as_array()[0].as_int(), 1337);
+    EXPECT_EQ(assigned.as_array()[1].as_string(), ">_>");
+}
