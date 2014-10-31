@@ -23,70 +23,70 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/dynamic.hpp"
 
-TEST(DynamicConstructor, UnsignedNumbers) {
-    {
-        kora::dynamic_t constructed = (unsigned char)13;
-        EXPECT_TRUE(constructed.is_uint());
-        EXPECT_EQ(13, constructed.as_uint());
+TEST(DynamicConstructor, UnsignedChar) {
+    kora::dynamic_t constructed = (unsigned char)13;
+    EXPECT_TRUE(constructed.is_uint());
+    EXPECT_EQ(13, constructed.as_uint());
 
-        kora::dynamic_t assigned;
-        assigned = (unsigned char)13;
-        EXPECT_TRUE(assigned.is_uint());
-        EXPECT_EQ(13, assigned.as_uint());
-    }
-    {
-        kora::dynamic_t constructed = (unsigned short)13;
-        EXPECT_TRUE(constructed.is_uint());
-        EXPECT_EQ(13, constructed.as_uint());
-
-        kora::dynamic_t assigned;
-        assigned = (unsigned short)13;
-        EXPECT_TRUE(assigned.is_uint());
-        EXPECT_EQ(13, assigned.as_uint());
-    }
-    {
-        kora::dynamic_t constructed = (unsigned int)13;
-        EXPECT_TRUE(constructed.is_uint());
-        EXPECT_EQ(13, constructed.as_uint());
-
-        kora::dynamic_t assigned;
-        assigned = (unsigned int)13;
-        EXPECT_TRUE(assigned.is_uint());
-        EXPECT_EQ(13, assigned.as_uint());
-    }
+    kora::dynamic_t assigned;
+    assigned = (unsigned char)13;
+    EXPECT_TRUE(assigned.is_uint());
+    EXPECT_EQ(13, assigned.as_uint());
 }
 
-TEST(DynamicConstructor, SignedNumbers) {
-    {
-        kora::dynamic_t constructed = (char)-13;
-        EXPECT_TRUE(constructed.is_int());
-        EXPECT_EQ(-13, constructed.as_int());
+TEST(DynamicConstructor, UnsignedShort) {
+    kora::dynamic_t constructed = (unsigned short)13;
+    EXPECT_TRUE(constructed.is_uint());
+    EXPECT_EQ(13, constructed.as_uint());
 
-        kora::dynamic_t assigned;
-        assigned = (char)-13;
-        EXPECT_TRUE(assigned.is_int());
-        EXPECT_EQ(-13, assigned.as_int());
-    }
-    {
-        kora::dynamic_t constructed = (short)-13;
-        EXPECT_TRUE(constructed.is_int());
-        EXPECT_EQ(-13, constructed.as_int());
+    kora::dynamic_t assigned;
+    assigned = (unsigned short)13;
+    EXPECT_TRUE(assigned.is_uint());
+    EXPECT_EQ(13, assigned.as_uint());
+}
 
-        kora::dynamic_t assigned;
-        assigned = (short)-13;
-        EXPECT_TRUE(assigned.is_int());
-        EXPECT_EQ(-13, assigned.as_int());
-    }
-    {
-        kora::dynamic_t constructed = (int)-13;
-        EXPECT_TRUE(constructed.is_int());
-        EXPECT_EQ(-13, constructed.as_int());
+TEST(DynamicConstructor, UnsignedInt) {
+    kora::dynamic_t constructed = (unsigned int)13;
+    EXPECT_TRUE(constructed.is_uint());
+    EXPECT_EQ(13, constructed.as_uint());
 
-        kora::dynamic_t assigned;
-        assigned = (int)-13;
-        EXPECT_TRUE(assigned.is_int());
-        EXPECT_EQ(-13, assigned.as_int());
-    }
+    kora::dynamic_t assigned;
+    assigned = (unsigned int)13;
+    EXPECT_TRUE(assigned.is_uint());
+    EXPECT_EQ(13, assigned.as_uint());
+}
+
+TEST(DynamicConstructor, SignedChar) {
+    kora::dynamic_t constructed = (char)-13;
+    EXPECT_TRUE(constructed.is_int());
+    EXPECT_EQ(-13, constructed.as_int());
+
+    kora::dynamic_t assigned;
+    assigned = (char)-13;
+    EXPECT_TRUE(assigned.is_int());
+    EXPECT_EQ(-13, assigned.as_int());
+}
+
+TEST(DynamicConstructor, SignedShort) {
+    kora::dynamic_t constructed = (short)-13;
+    EXPECT_TRUE(constructed.is_int());
+    EXPECT_EQ(-13, constructed.as_int());
+
+    kora::dynamic_t assigned;
+    assigned = (short)-13;
+    EXPECT_TRUE(assigned.is_int());
+    EXPECT_EQ(-13, assigned.as_int());
+}
+
+TEST(DynamicConstructor, SignedInt) {
+    kora::dynamic_t constructed = (int)-13;
+    EXPECT_TRUE(constructed.is_int());
+    EXPECT_EQ(-13, constructed.as_int());
+
+    kora::dynamic_t assigned;
+    assigned = (int)-13;
+    EXPECT_TRUE(assigned.is_int());
+    EXPECT_EQ(-13, assigned.as_int());
 }
 
 #ifdef KORA_NOT_BAD

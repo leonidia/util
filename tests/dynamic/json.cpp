@@ -195,30 +195,27 @@ namespace {
     }
 }
 
-TEST(DynamicJson, ParsingErrors) {
-    {
-        SCOPED_TRACE("Null");
-        check_parsing_error("null");
-    }
-    {
-        SCOPED_TRACE("Bool");
-        check_parsing_error("true");
-        check_parsing_error("false");
-    }
-    {
-        SCOPED_TRACE("Numbers");
-        check_parsing_error("5");
-        check_parsing_error("-5");
-        check_parsing_error("-5.2");
-    }
-    {
-        SCOPED_TRACE("String");
-        check_parsing_error("\"dcdcd\"");
-    }
-    {
-        SCOPED_TRACE("Garbage");
-        check_parsing_error("fdkjfj!@#j");
-    }
+TEST(DynamicJson, NullIsBadJson) {
+    check_parsing_error("null");
+}
+
+TEST(DynamicJson, BoolIsBadJson) {
+    check_parsing_error("true");
+    check_parsing_error("false");
+}
+
+TEST(DynamicJson, NumberIsBadJson) {
+    check_parsing_error("5");
+    check_parsing_error("-5");
+    check_parsing_error("-5.2");
+}
+
+TEST(DynamicJson, StringIsBadJson) {
+    check_parsing_error("\"dcdcd\"");
+}
+
+TEST(DynamicJson, GarbageIsBadJson) {
+    check_parsing_error("fdkjfj!@#j");
 }
 
 TEST(DynamicJson, ObjectToJson) {

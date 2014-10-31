@@ -848,86 +848,75 @@ namespace {
 
 } // namespace
 
-TEST(Dynamic, Apply) {
-    {
-        SCOPED_TRACE("Null");
+TEST(Dynamic, ApplyToNull) {
+    kora::dynamic_t dynamic;
+    test_apply_types<kora::dynamic_t::null_t>(dynamic);
+    test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+}
 
-        kora::dynamic_t dynamic;
-        test_apply_types<kora::dynamic_t::null_t>(dynamic);
-        test_apply_values(dynamic);
-        test_apply_mutate(dynamic);
-    }
-    {
-        SCOPED_TRACE("Bool");
+TEST(Dynamic, ApplyToBool) {
+    kora::dynamic_t dynamic(true);
+    test_apply_types<kora::dynamic_t::bool_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic(true);
-        test_apply_types<kora::dynamic_t::bool_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, false);
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, false);
-    }
-    {
-        SCOPED_TRACE("Int");
+TEST(Dynamic, ApplyToInt) {
+    kora::dynamic_t dynamic(kora::dynamic_t::int_t(20));
+    test_apply_types<kora::dynamic_t::int_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic(kora::dynamic_t::int_t(20));
-        test_apply_types<kora::dynamic_t::int_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, kora::dynamic_t::int_t(18));
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, kora::dynamic_t::int_t(18));
-    }
-    {
-        SCOPED_TRACE("Uint");
+TEST(Dynamic, ApplyToUint) {
+    kora::dynamic_t dynamic(kora::dynamic_t::uint_t(20));
+    test_apply_types<kora::dynamic_t::uint_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic(kora::dynamic_t::uint_t(20));
-        test_apply_types<kora::dynamic_t::uint_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, kora::dynamic_t::uint_t(18));
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, kora::dynamic_t::uint_t(18));
-    }
-    {
-        SCOPED_TRACE("Double");
+TEST(Dynamic, ApplyToDouble) {
+    kora::dynamic_t dynamic(kora::dynamic_t::double_t(20));
+    test_apply_types<kora::dynamic_t::double_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic(kora::dynamic_t::double_t(20));
-        test_apply_types<kora::dynamic_t::double_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, kora::dynamic_t::double_t(18));
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, kora::dynamic_t::double_t(18));
-    }
-    {
-        SCOPED_TRACE("String");
+TEST(Dynamic, ApplyToString) {
+    kora::dynamic_t dynamic("xd");
+    test_apply_types<kora::dynamic_t::string_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic("xd");
-        test_apply_types<kora::dynamic_t::string_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, "-_-");
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, "-_-");
-    }
-    {
-        SCOPED_TRACE("Array");
+TEST(Dynamic, ApplyToArray) {
+    kora::dynamic_t dynamic(kora::dynamic_t::array_t(3, 4));
+    test_apply_types<kora::dynamic_t::array_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic(kora::dynamic_t::array_t(3, 4));
-        test_apply_types<kora::dynamic_t::array_t>(dynamic);
-        test_apply_values(dynamic);
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic, kora::dynamic_t::array_t(2, 8));
+}
 
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic, kora::dynamic_t::array_t(2, 8));
-    }
-    {
-        SCOPED_TRACE("Object");
+TEST(Dynamic, ApplyToObject) {
+    kora::dynamic_t dynamic = kora::dynamic_t::object_t();
+    dynamic.as_object()["key"] = 20;
+    test_apply_types<kora::dynamic_t::object_t>(dynamic);
+    test_apply_values(dynamic);
 
-        kora::dynamic_t dynamic = kora::dynamic_t::object_t();
-        dynamic.as_object()["key"] = 20;
-        test_apply_types<kora::dynamic_t::object_t>(dynamic);
-        test_apply_values(dynamic);
-
-        test_apply_mutate(dynamic);
-        EXPECT_EQ(dynamic.as_object()["key2"], 18);
-    }
+    test_apply_mutate(dynamic);
+    EXPECT_EQ(dynamic.as_object()["key2"], 18);
 }
 
 TEST(Dynamic, ApplyNonConstVisitor) {
