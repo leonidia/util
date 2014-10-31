@@ -363,3 +363,178 @@ TEST(DynamicConverter, String) {
         EXPECT_STREQ("=^_^=", destination);
     }
 }
+
+TEST(DynamicConverter, DynamicArray) {
+    kora::dynamic_t source = std::vector<int>(3, 4);
+
+    test_forbidden_casts<std::vector<int>>(source);
+
+    ASSERT_TRUE(source.convertible_to<kora::dynamic_t::array_t>());
+
+    auto destination = source.to<kora::dynamic_t::array_t>();
+
+    static_assert(
+        std::is_same<kora::dynamic_t::array_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type kora::dynamic_t::array_t."
+    );
+
+    EXPECT_EQ(kora::dynamic_t::array_t(3, 4), destination);
+}
+
+TEST(DynamicConverter, VectorInt) {
+    kora::dynamic_t source = std::vector<int>(3, 4);
+
+    test_forbidden_casts<std::vector<int>>(source);
+
+    ASSERT_TRUE(source.convertible_to<std::vector<int>>());
+
+    auto destination = source.to<std::vector<int>>();
+
+    static_assert(
+        std::is_same<std::vector<int>, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::vector<int>."
+    );
+
+    EXPECT_EQ(std::vector<int>(3, 4), destination);
+}
+
+TEST(DynamicConverter, SetInt) {
+    kora::dynamic_t source = std::vector<int>(3, 4);
+
+    test_forbidden_casts<std::vector<int>>(source);
+
+    ASSERT_TRUE(source.convertible_to<std::set<int>>());
+
+    auto destination = source.to<std::set<int>>();
+
+    static_assert(
+        std::is_same<std::set<int>, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::set<int>."
+    );
+
+    std::set<int> pattern;
+    pattern.insert(4);
+
+    EXPECT_EQ(pattern, destination);
+}
+
+TEST(DynamicConverter, Tuple) {
+    kora::dynamic_t source = std::tuple<int, std::string>(3, "@_@");
+
+    test_forbidden_casts<std::tuple<int, std::string>>(source);
+
+    ASSERT_TRUE((source.convertible_to<std::tuple<int, std::string>>()));
+
+    auto destination = source.to<std::tuple<int, std::string>>();
+
+    static_assert(
+        std::is_same<std::tuple<int, std::string>, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::tuple<int, std::string>."
+    );
+
+    EXPECT_EQ((std::tuple<int, std::string>(3, "@_@")), destination);
+}
+
+TEST(DynamicConverter, Pair) {
+    kora::dynamic_t source = std::tuple<int, std::string>(3, "@_@");
+
+    test_forbidden_casts<std::tuple<int, std::string>>(source);
+
+    ASSERT_TRUE((source.convertible_to<std::pair<int, std::string>>()));
+
+    auto destination = source.to<std::pair<int, std::string>>();
+
+    static_assert(
+        std::is_same<std::pair<int, std::string>, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::pair<int, std::string>."
+    );
+
+    EXPECT_EQ((std::pair<int, std::string>(3, "@_@")), destination);
+}
+
+TEST(DynamicConverter, DynamicObject) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = 1337;
+    source.as_object()["key2"] = "._____.";
+
+    test_forbidden_casts<kora::dynamic_t::object_t>(source);
+
+    ASSERT_TRUE(source.convertible_to<kora::dynamic_t::object_t>());
+
+    auto destination = source.to<kora::dynamic_t::object_t>();
+
+    static_assert(
+        std::is_same<kora::dynamic_t::object_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type kora::dynamic_t::object_t."
+    );
+
+    EXPECT_EQ(destination["key1"], 1337);
+    EXPECT_EQ(destination["key2"], "._____.");
+}
+
+TEST(DynamicConverter, MapStringDynamic) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = 1337;
+    source.as_object()["key2"] = "._____.";
+
+    test_forbidden_casts<kora::dynamic_t::object_t>(source);
+
+    ASSERT_TRUE((source.convertible_to<std::map<std::string, kora::dynamic_t>>()));
+
+    auto destination = source.to<std::map<std::string, kora::dynamic_t>>();
+
+    static_assert(
+        std::is_same<std::map<std::string, kora::dynamic_t>,
+                     typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::map<std::string, kora::dynamic_t>."
+    );
+
+    EXPECT_EQ(destination["key1"], 1337);
+    EXPECT_EQ(destination["key2"], "._____.");
+}
+
+TEST(DynamicConverter, MapStringInt) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = 1337;
+    source.as_object()["key2"] = -5;
+
+    test_forbidden_casts<kora::dynamic_t::object_t>(source);
+
+    ASSERT_TRUE((source.convertible_to<std::map<std::string, int>>()));
+
+    auto destination = source.to<std::map<std::string, int>>();
+
+    static_assert(
+        std::is_same<std::map<std::string, int>,
+                     typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::map<std::string, int>."
+    );
+
+    EXPECT_EQ(destination["key1"], 1337);
+    EXPECT_EQ(destination["key2"], -5);
+}
+
+TEST(DynamicConverter, UnorderedMapStringInt) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = 1337;
+    source.as_object()["key2"] = -5;
+
+    test_forbidden_casts<kora::dynamic_t::object_t>(source);
+
+    ASSERT_TRUE((source.convertible_to<std::unordered_map<std::string, int>>()));
+
+    auto destination = source.to<std::unordered_map<std::string, int>>();
+
+    static_assert(
+        std::is_same<std::unordered_map<std::string, int>,
+                     typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::unordered_map<std::string, int>."
+    );
+
+    EXPECT_EQ(destination["key1"], 1337);
+    EXPECT_EQ(destination["key2"], -5);
+}
