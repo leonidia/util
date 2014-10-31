@@ -41,14 +41,14 @@ type& operator=(const type&) = delete;
 #define KORA_API __attribute__ ((visibility ("default")))
 
 #ifdef __GNUC__
-    #define KORA_PUSH_VISIBILITY _Pragma("GCC visibility push(default)")
+    #define KORA_PUSH_VISIBLE _Pragma("GCC visibility push(default)")
     #define KORA_POP_VISIBILITY _Pragma("GCC visibility pop")
 #else
-    #define KORA_PUSH_VISIBILITY
+    #define KORA_PUSH_VISIBLE
     #define KORA_POP_VISIBILITY
 #endif
 
-KORA_PUSH_VISIBILITY
+KORA_PUSH_VISIBLE
 #include <boost/assert.hpp>
 KORA_POP_VISIBILITY
 

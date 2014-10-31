@@ -24,7 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "kora/dynamic.hpp"
 #include "kora/utility.hpp"
 
-KORA_PUSH_VISIBILITY
+KORA_PUSH_VISIBLE
 #include <boost/lexical_cast.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 KORA_POP_VISIBILITY

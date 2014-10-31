@@ -24,7 +24,7 @@
 #include "kora/dynamic/error.hpp"
 #include "kora/utility.hpp"
 
-KORA_PUSH_VISIBILITY
+KORA_PUSH_VISIBLE
 #include <boost/numeric/conversion/cast.hpp>
 KORA_POP_VISIBILITY
 

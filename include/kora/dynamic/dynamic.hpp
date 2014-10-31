@@ -23,7 +23,7 @@
 
 #include "kora/dynamic/detail.hpp"
 
-KORA_PUSH_VISIBILITY
+KORA_PUSH_VISIBLE
 #include <boost/variant.hpp>
 KORA_POP_VISIBILITY
 
