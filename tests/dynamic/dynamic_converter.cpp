@@ -113,36 +113,38 @@ TEST(DynamicConverter, Dynamic) {
     EXPECT_EQ(destination.as_object()["key2"], "._____.");
 }
 
+TEST(DynamicConverter, DynamicBool) {
+    kora::dynamic_t source = true;
+
+    test_forbidden_casts<bool>(source);
+
+    ASSERT_TRUE(source.convertible_to<kora::dynamic_t::bool_t>());
+
+    auto destination = source.to<kora::dynamic_t::bool_t>();
+
+    static_assert(
+        std::is_same<kora::dynamic_t::bool_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type kora::dynamic_t::bool_t."
+    );
+
+    EXPECT_EQ(destination, true);
+}
+
 TEST(DynamicConverter, Bool) {
     kora::dynamic_t source = true;
 
     test_forbidden_casts<bool>(source);
 
-    {
-        ASSERT_TRUE(source.convertible_to<kora::dynamic_t::bool_t>());
+    ASSERT_TRUE(source.convertible_to<bool>());
 
-        auto destination = source.to<kora::dynamic_t::bool_t>();
+    auto destination = source.to<bool>();
 
-        static_assert(
-            std::is_same<kora::dynamic_t::bool_t, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type kora::dynamic_t::bool_t."
-        );
+    static_assert(
+        std::is_same<bool, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type bool."
+    );
 
-        EXPECT_EQ(destination, true);
-    }
-
-    {
-        ASSERT_TRUE(source.convertible_to<bool>());
-
-        auto destination = source.to<bool>();
-
-        static_assert(
-            std::is_same<bool, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type bool."
-        );
-
-        EXPECT_EQ(destination, true);
-    }
+    EXPECT_EQ(destination, true);
 }
 
 namespace {
@@ -233,34 +235,52 @@ namespace {
 
 } // namespace
 
-TEST(DynamicConverter, Integral) {
+TEST(DynamicConverter, SignedIntegral) {
     test_conversion_to_integral<int>(kora::dynamic_t::int_t(1337));
+}
+
+TEST(DynamicConverter, UnsignedIntegral) {
     test_conversion_to_integral<unsigned int>(kora::dynamic_t::uint_t(1337));
 }
 
-TEST(DynamicConverter, IntegralOverflow) {
-    {
-        kora::dynamic_t source(std::numeric_limits<int64_t>::max());
+TEST(DynamicConverter, SignedIntegralOverflow) {
+    kora::dynamic_t source(std::numeric_limits<int64_t>::max());
 
-        ASSERT_FALSE(source.convertible_to<char>());
-        EXPECT_THROW(source.to<char>(), kora::bad_numeric_cast_t);
+    ASSERT_FALSE(source.convertible_to<char>());
+    EXPECT_THROW(source.to<char>(), kora::bad_numeric_cast_t);
 
-        ASSERT_FALSE(source.convertible_to<uint32_t>());
-        EXPECT_THROW(source.to<uint32_t>(), kora::bad_numeric_cast_t);
+    ASSERT_FALSE(source.convertible_to<uint32_t>());
+    EXPECT_THROW(source.to<uint32_t>(), kora::bad_numeric_cast_t);
 
-        ASSERT_FALSE(source.convertible_to<unsigned char>());
-        EXPECT_THROW(source.to<unsigned char>(), kora::bad_numeric_cast_t);
+    ASSERT_FALSE(source.convertible_to<unsigned char>());
+    EXPECT_THROW(source.to<unsigned char>(), kora::bad_numeric_cast_t);
 
-        ASSERT_FALSE(source.convertible_to<int32_t>());
-        EXPECT_THROW(source.to<int32_t>(), kora::bad_numeric_cast_t);
-    }
+    ASSERT_FALSE(source.convertible_to<int32_t>());
+    EXPECT_THROW(source.to<int32_t>(), kora::bad_numeric_cast_t);
+}
 
-    {
-        kora::dynamic_t source = -1;
+TEST(DynamicConverter, UnsignedIntegralOverflow) {
+    kora::dynamic_t source = -1;
 
-        ASSERT_FALSE(source.convertible_to<uint64_t>());
-        EXPECT_THROW(source.to<uint64_t>(), kora::bad_numeric_cast_t);
-    }
+    ASSERT_FALSE(source.convertible_to<uint64_t>());
+    EXPECT_THROW(source.to<uint64_t>(), kora::bad_numeric_cast_t);
+}
+
+TEST(DynamicConverter, DynamicDouble) {
+    kora::dynamic_t source = 1337.5;
+
+    test_forbidden_casts<double>(source);
+
+    ASSERT_TRUE(source.convertible_to<kora::dynamic_t::double_t>());
+
+    auto destination = source.to<kora::dynamic_t::double_t>();
+
+    static_assert(
+        std::is_same<kora::dynamic_t::double_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type kora::dynamic_t::double_t."
+    );
+
+    EXPECT_EQ(1337.5, destination);
 }
 
 TEST(DynamicConverter, Double) {
@@ -268,31 +288,16 @@ TEST(DynamicConverter, Double) {
 
     test_forbidden_casts<double>(source);
 
-    {
-        ASSERT_TRUE(source.convertible_to<kora::dynamic_t::double_t>());
+    ASSERT_TRUE(source.convertible_to<double>());
 
-        auto destination = source.to<kora::dynamic_t::double_t>();
+    auto destination = source.to<double>();
 
-        static_assert(
-            std::is_same<kora::dynamic_t::double_t, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type kora::dynamic_t::double_t."
-        );
+    static_assert(
+        std::is_same<double, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type double."
+    );
 
-        EXPECT_EQ(1337.5, destination);
-    }
-
-    {
-        ASSERT_TRUE(source.convertible_to<double>());
-
-        auto destination = source.to<double>();
-
-        static_assert(
-            std::is_same<double, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type double."
-        );
-
-        EXPECT_EQ(1337.5, destination);
-    }
+    EXPECT_EQ(1337.5, destination);
 }
 
 TEST(DynamicConverter, FloatOverflow) {
@@ -319,49 +324,55 @@ TEST(DynamicConverter, Enum) {
     EXPECT_EQ(const2, destination);
 }
 
-TEST(DynamicConverter, String) {
+TEST(DynamicConverter, DynamicString) {
     kora::dynamic_t source = "=^_^=";
 
     test_forbidden_casts<std::string>(source);
 
-    {
-        ASSERT_TRUE(source.convertible_to<kora::dynamic_t::string_t>());
+    ASSERT_TRUE(source.convertible_to<kora::dynamic_t::string_t>());
 
-        auto destination = source.to<kora::dynamic_t::string_t>();
+    auto destination = source.to<kora::dynamic_t::string_t>();
 
-        static_assert(
-            std::is_same<kora::dynamic_t::string_t, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type kora::dynamic_t::string_t."
-        );
+    static_assert(
+        std::is_same<kora::dynamic_t::string_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type kora::dynamic_t::string_t."
+    );
 
-        EXPECT_EQ("=^_^=", destination);
-    }
+    EXPECT_EQ("=^_^=", destination);
+}
 
-    {
-        ASSERT_TRUE(source.convertible_to<std::string>());
+TEST(DynamicConverter, StdString) {
+    kora::dynamic_t source = "=^_^=";
 
-        auto destination = source.to<std::string>();
+    test_forbidden_casts<std::string>(source);
 
-        static_assert(
-            std::is_same<std::string, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type std::string."
-        );
+    ASSERT_TRUE(source.convertible_to<std::string>());
 
-        EXPECT_EQ("=^_^=", destination);
-    }
+    auto destination = source.to<std::string>();
 
-    {
-        ASSERT_TRUE(source.convertible_to<const char*>());
+    static_assert(
+        std::is_same<std::string, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type std::string."
+    );
 
-        auto destination = source.to<const char*>();
+    EXPECT_EQ("=^_^=", destination);
+}
 
-        static_assert(
-            std::is_same<const char*, typename std::decay<decltype(destination)>::type>::value,
-            "Expected result of type const char*."
-        );
+TEST(DynamicConverter, CString) {
+    kora::dynamic_t source = "=^_^=";
 
-        EXPECT_STREQ("=^_^=", destination);
-    }
+    test_forbidden_casts<std::string>(source);
+
+    ASSERT_TRUE(source.convertible_to<const char*>());
+
+    auto destination = source.to<const char*>();
+
+    static_assert(
+        std::is_same<const char*, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type const char*."
+    );
+
+    EXPECT_STREQ("=^_^=", destination);
 }
 
 TEST(DynamicConverter, DynamicArray) {
