@@ -31,27 +31,27 @@ TEST(DynamicObject, Constructors) {
 
     kora::dynamic_t::object_t obj2(obj1);
     EXPECT_EQ(1, obj2.count("key"));
-    EXPECT_EQ(obj2.at("key"), 5);
+    EXPECT_EQ(5, obj2.at("key"));
 
     kora::dynamic_t::object_t obj3(std::move(obj2));
     EXPECT_EQ(1, obj3.count("key"));
-    EXPECT_EQ(obj3.at("key"), 5);
+    EXPECT_EQ(5, obj3.at("key"));
 
     std::map<std::string, kora::dynamic_t> map;
     map["key2"] = 6;
 
     kora::dynamic_t::object_t obj4(map);
     EXPECT_EQ(1, obj4.count("key2"));
-    EXPECT_EQ(obj4.at("key2"), 6);
+    EXPECT_EQ(6, obj4.at("key2"));
 
     kora::dynamic_t::object_t obj5(std::move(map));
     EXPECT_EQ(1, obj5.count("key2"));
-    EXPECT_EQ(obj5.at("key2"), 6);
+    EXPECT_EQ(6, obj5.at("key2"));
 
     kora::dynamic_t::object_t obj6(obj5.begin(), obj5.end());
     EXPECT_EQ(1, obj6.size());
     EXPECT_EQ(1, obj6.count("key2"));
-    EXPECT_EQ(obj6.at("key2"), 6);
+    EXPECT_EQ(6, obj6.at("key2"));
 }
 
 TEST(DynamicObject, Assignment) {
@@ -65,14 +65,14 @@ TEST(DynamicObject, Assignment) {
 
     obj2 = obj1;
     EXPECT_EQ(1, obj2.count("key"));
-    EXPECT_EQ(obj2.at("key"), 5);
+    EXPECT_EQ(5, obj2.at("key"));
 
     kora::dynamic_t::object_t obj3;
     EXPECT_TRUE(obj3.empty());
 
     obj3 = obj1;
     EXPECT_EQ(1, obj3.count("key"));
-    EXPECT_EQ(obj3.at("key"), 5);
+    EXPECT_EQ(5, obj3.at("key"));
 }
 
 TEST(DynamicObject, Indexing) {
@@ -84,17 +84,17 @@ TEST(DynamicObject, Indexing) {
     obj1.at("key2", dynamic) = 42.0;
 
     EXPECT_TRUE(dynamic.is_double());
-    EXPECT_EQ(dynamic, 42.0);
+    EXPECT_EQ(42.0, dynamic);
 
-    EXPECT_EQ(obj1.at("key", dynamic), 5);
+    EXPECT_EQ(5, obj1.at("key", dynamic));
 
     const kora::dynamic_t::object_t& const_obj = obj1;
     const kora::dynamic_t& const_dynamic = dynamic;
 
-    EXPECT_EQ(obj1.at("key", const_dynamic), 5);
-    EXPECT_EQ(obj1.at("key2", const_dynamic), 42.0);
-    EXPECT_EQ(const_obj.at("key", const_dynamic), 5);
-    EXPECT_EQ(const_obj.at("key2", const_dynamic), 42.0);
+    EXPECT_EQ(5, obj1.at("key", const_dynamic));
+    EXPECT_EQ(42.0, obj1.at("key2", const_dynamic));
+    EXPECT_EQ(5, const_obj.at("key", const_dynamic));
+    EXPECT_EQ(42.0, const_obj.at("key2", const_dynamic));
 
     EXPECT_EQ(const_obj["key"], 5);
     ASSERT_THROW(const_obj["key2"], std::out_of_range);

@@ -103,7 +103,7 @@ TEST(Dynamic, ObjectConstructor) {
 
     EXPECT_TRUE(dynamic.is_object());
     EXPECT_EQ(1, dynamic.as_object().count("key"));
-    EXPECT_EQ(dynamic.as_object()["key"], 43);
+    EXPECT_EQ(43, dynamic.as_object()["key"]);
 }
 
 TEST(Dynamic, CopyConstructor) {
@@ -128,47 +128,47 @@ TEST(Dynamic, CopyConstructor) {
         kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_int());
-        EXPECT_EQ(dyn2.as_int(), 20);
+        EXPECT_EQ(20, dyn2.as_int());
         EXPECT_TRUE(dyn1.is_int());
-        EXPECT_EQ(dyn1.as_int(), 20);
+        EXPECT_EQ(20, dyn1.as_int());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
         kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_uint());
-        EXPECT_EQ(dyn2.as_uint(), 20);
+        EXPECT_EQ(20, dyn2.as_uint());
         EXPECT_TRUE(dyn1.is_uint());
-        EXPECT_EQ(dyn1.as_uint(), 20);
+        EXPECT_EQ(20, dyn1.as_uint());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
         kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_double());
-        EXPECT_EQ(dyn2.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn2.as_double());
         EXPECT_TRUE(dyn1.is_double());
-        EXPECT_EQ(dyn1.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn1.as_double());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
         kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_string());
-        EXPECT_EQ(dyn2.as_string(), "xd");
+        EXPECT_EQ("xd", dyn2.as_string());
         EXPECT_TRUE(dyn1.is_string());
-        EXPECT_EQ(dyn1.as_string(), "xd");
+        EXPECT_EQ("xd", dyn1.as_string());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
         kora::dynamic_t dyn2(dyn1);
 
         EXPECT_TRUE(dyn2.is_array());
-        EXPECT_EQ(dyn2.as_array().size(), 3);
-        EXPECT_EQ(dyn2.as_array()[0], 4);
+        EXPECT_EQ(3, dyn2.as_array().size());
+        EXPECT_EQ(4, dyn2.as_array()[0]);
         EXPECT_TRUE(dyn1.is_array());
-        EXPECT_EQ(dyn1.as_array().size(), 3);
-        EXPECT_EQ(dyn1.as_array()[0], 4);
+        EXPECT_EQ(3, dyn1.as_array().size());
+        EXPECT_EQ(4, dyn1.as_array()[0]);
     }
     {
         kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
@@ -176,11 +176,11 @@ TEST(Dynamic, CopyConstructor) {
 
         kora::dynamic_t dyn2(dyn1);
         EXPECT_TRUE(dyn2.is_object());
-        EXPECT_EQ(dyn2.as_object().size(), 1);
-        EXPECT_EQ(dyn2.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn2.as_object().size());
+        EXPECT_EQ(42, dyn2.as_object()["key"]);
         EXPECT_TRUE(dyn1.is_object());
-        EXPECT_EQ(dyn1.as_object().size(), 1);
-        EXPECT_EQ(dyn1.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn1.as_object().size());
+        EXPECT_EQ(42, dyn1.as_object()["key"]);
     }
 }
 
@@ -203,36 +203,36 @@ TEST(Dynamic, MoveConstructor) {
         kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_int());
-        EXPECT_EQ(dyn2.as_int(), 20);
+        EXPECT_EQ(20, dyn2.as_int());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
         kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_uint());
-        EXPECT_EQ(dyn2.as_uint(), 20);
+        EXPECT_EQ(20, dyn2.as_uint());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
         kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_double());
-        EXPECT_EQ(dyn2.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn2.as_double());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
         kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_string());
-        EXPECT_EQ(dyn2.as_string(), "xd");
+        EXPECT_EQ("xd", dyn2.as_string());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
         kora::dynamic_t dyn2(std::move(dyn1));
 
         EXPECT_TRUE(dyn2.is_array());
-        EXPECT_EQ(dyn2.as_array().size(), 3);
-        EXPECT_EQ(dyn2.as_array()[0], 4);
+        EXPECT_EQ(3, dyn2.as_array().size());
+        EXPECT_EQ(4, dyn2.as_array()[0]);
     }
     {
         kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
@@ -240,8 +240,8 @@ TEST(Dynamic, MoveConstructor) {
 
         kora::dynamic_t dyn2(std::move(dyn1));
         EXPECT_TRUE(dyn2.is_object());
-        EXPECT_EQ(dyn2.as_object().size(), 1);
-        EXPECT_EQ(dyn2.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn2.as_object().size());
+        EXPECT_EQ(42, dyn2.as_object()["key"]);
     }
 }
 
@@ -300,7 +300,7 @@ TEST(Dynamic, ObjectAssignment) {
 
     EXPECT_TRUE(dynamic.is_object());
     EXPECT_EQ(1, dynamic.as_object().count("key"));
-    EXPECT_EQ(dynamic.as_object()["key"], 43);
+    EXPECT_EQ(43, dynamic.as_object()["key"]);
 }
 
 TEST(Dynamic, CopyAssignment) {
@@ -328,9 +328,9 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_int());
-        EXPECT_EQ(dyn2.as_int(), 20);
+        EXPECT_EQ(20, dyn2.as_int());
         EXPECT_TRUE(dyn1.is_int());
-        EXPECT_EQ(dyn1.as_int(), 20);
+        EXPECT_EQ(20, dyn1.as_int());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
@@ -338,9 +338,9 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_uint());
-        EXPECT_EQ(dyn2.as_uint(), 20);
+        EXPECT_EQ(20, dyn2.as_uint());
         EXPECT_TRUE(dyn1.is_uint());
-        EXPECT_EQ(dyn1.as_uint(), 20);
+        EXPECT_EQ(20, dyn1.as_uint());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
@@ -348,9 +348,9 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_double());
-        EXPECT_EQ(dyn2.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn2.as_double());
         EXPECT_TRUE(dyn1.is_double());
-        EXPECT_EQ(dyn1.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn1.as_double());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
@@ -358,9 +358,9 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_string());
-        EXPECT_EQ(dyn2.as_string(), "xd");
+        EXPECT_EQ("xd", dyn2.as_string());
         EXPECT_TRUE(dyn1.is_string());
-        EXPECT_EQ(dyn1.as_string(), "xd");
+        EXPECT_EQ("xd", dyn1.as_string());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
@@ -368,11 +368,11 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_array());
-        EXPECT_EQ(dyn2.as_array().size(), 3);
-        EXPECT_EQ(dyn2.as_array()[0], 4);
+        EXPECT_EQ(3, dyn2.as_array().size());
+        EXPECT_EQ(4, dyn2.as_array()[0]);
         EXPECT_TRUE(dyn1.is_array());
-        EXPECT_EQ(dyn1.as_array().size(), 3);
-        EXPECT_EQ(dyn1.as_array()[0], 4);
+        EXPECT_EQ(3, dyn1.as_array().size());
+        EXPECT_EQ(4, dyn1.as_array()[0]);
     }
     {
         kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
@@ -382,11 +382,11 @@ TEST(Dynamic, CopyAssignment) {
         dyn2 = dyn1;
 
         EXPECT_TRUE(dyn2.is_object());
-        EXPECT_EQ(dyn2.as_object().size(), 1);
-        EXPECT_EQ(dyn2.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn2.as_object().size());
+        EXPECT_EQ(42, dyn2.as_object()["key"]);
         EXPECT_TRUE(dyn1.is_object());
-        EXPECT_EQ(dyn1.as_object().size(), 1);
-        EXPECT_EQ(dyn1.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn1.as_object().size());
+        EXPECT_EQ(42, dyn1.as_object()["key"]);
     }
 }
 
@@ -412,7 +412,7 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_int());
-        EXPECT_EQ(dyn2.as_int(), 20);
+        EXPECT_EQ(20, dyn2.as_int());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::uint_t(20));
@@ -420,7 +420,7 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_uint());
-        EXPECT_EQ(dyn2.as_uint(), 20);
+        EXPECT_EQ(20, dyn2.as_uint());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::double_t(20));
@@ -428,7 +428,7 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_double());
-        EXPECT_EQ(dyn2.as_double(), 20.0);
+        EXPECT_EQ(20.0, dyn2.as_double());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::string_t("xd"));
@@ -436,7 +436,7 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_string());
-        EXPECT_EQ(dyn2.as_string(), "xd");
+        EXPECT_EQ("xd", dyn2.as_string());
     }
     {
         kora::dynamic_t dyn1(kora::dynamic_t::array_t(3, 4));
@@ -444,8 +444,8 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_array());
-        EXPECT_EQ(dyn2.as_array().size(), 3);
-        EXPECT_EQ(dyn2.as_array()[0], 4);
+        EXPECT_EQ(3, dyn2.as_array().size());
+        EXPECT_EQ(4, dyn2.as_array()[0]);
     }
     {
         kora::dynamic_t dyn1 = kora::dynamic_t::object_t();
@@ -455,8 +455,8 @@ TEST(Dynamic, MoveAssignment) {
         dyn2 = std::move(dyn1);
 
         EXPECT_TRUE(dyn2.is_object());
-        EXPECT_EQ(dyn2.as_object().size(), 1);
-        EXPECT_EQ(dyn2.as_object()["key"], 42);
+        EXPECT_EQ(1, dyn2.as_object().size());
+        EXPECT_EQ(42, dyn2.as_object()["key"]);
     }
 }
 
@@ -870,7 +870,7 @@ TEST(Dynamic, ApplyToInt) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic, kora::dynamic_t::int_t(18));
+    EXPECT_EQ(kora::dynamic_t::int_t(18), dynamic);
 }
 
 TEST(Dynamic, ApplyToUint) {
@@ -879,7 +879,7 @@ TEST(Dynamic, ApplyToUint) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic, kora::dynamic_t::uint_t(18));
+    EXPECT_EQ(kora::dynamic_t::uint_t(18), dynamic);
 }
 
 TEST(Dynamic, ApplyToDouble) {
@@ -888,7 +888,7 @@ TEST(Dynamic, ApplyToDouble) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic, kora::dynamic_t::double_t(18));
+    EXPECT_EQ(kora::dynamic_t::double_t(18), dynamic);
 }
 
 TEST(Dynamic, ApplyToString) {
@@ -897,7 +897,7 @@ TEST(Dynamic, ApplyToString) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic, "-_-");
+    EXPECT_EQ("-_-", dynamic);
 }
 
 TEST(Dynamic, ApplyToArray) {
@@ -906,7 +906,7 @@ TEST(Dynamic, ApplyToArray) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic, kora::dynamic_t::array_t(2, 8));
+    EXPECT_EQ(kora::dynamic_t::array_t(2, 8), dynamic);
 }
 
 TEST(Dynamic, ApplyToObject) {
@@ -916,7 +916,7 @@ TEST(Dynamic, ApplyToObject) {
     test_apply_values(dynamic);
 
     test_apply_mutate(dynamic);
-    EXPECT_EQ(dynamic.as_object()["key2"], 18);
+    EXPECT_EQ(18, dynamic.as_object()["key2"]);
 }
 
 TEST(Dynamic, ApplyNonConstVisitor) {

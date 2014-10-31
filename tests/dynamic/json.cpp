@@ -33,45 +33,45 @@ namespace {
     check_parsed_object(const kora::dynamic_t& parsed) {
         ASSERT_TRUE(parsed.is_object());
 
-        EXPECT_EQ(parsed.as_object().count("null_key"), 1);
-        EXPECT_EQ(parsed.as_object()["null_key"], kora::dynamic_t::null);
+        EXPECT_EQ(1, parsed.as_object().count("null_key"));
+        EXPECT_EQ(kora::dynamic_t::null, parsed.as_object()["null_key"]);
 
-        EXPECT_EQ(parsed.as_object().count("true_key"), 1);
+        EXPECT_EQ(1, parsed.as_object().count("true_key"));
         EXPECT_EQ(parsed.as_object()["true_key"], true);
 
-        EXPECT_EQ(parsed.as_object().count("false_key"), 1);
+        EXPECT_EQ(1, parsed.as_object().count("false_key"));
         EXPECT_EQ(parsed.as_object()["false_key"], false);
 
-        EXPECT_EQ(parsed.as_object().count("int_key"), 1);
-        EXPECT_EQ(parsed.as_object()["int_key"], 5);
+        EXPECT_EQ(1, parsed.as_object().count("int_key"));
+        EXPECT_EQ(5, parsed.as_object()["int_key"]);
 
-        EXPECT_EQ(parsed.as_object().count("double_key"), 1);
-        EXPECT_DOUBLE_EQ(parsed.as_object()["double_key"].to<double>(), 25.2);
+        EXPECT_EQ(1, parsed.as_object().count("double_key"));
+        EXPECT_DOUBLE_EQ(25.2, parsed.as_object()["double_key"].to<double>());
 
-        EXPECT_EQ(parsed.as_object().count("string_key"), 1);
-        EXPECT_EQ(parsed.as_object()["string_key"], "xdd");
+        EXPECT_EQ(1, parsed.as_object().count("string_key"));
+        EXPECT_EQ("xdd", parsed.as_object()["string_key"]);
 
-        EXPECT_EQ(parsed.as_object().count("array_key"), 1);
+        EXPECT_EQ(1, parsed.as_object().count("array_key"));
         EXPECT_TRUE(parsed.as_object()["array_key"].is_array());
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array().size(), 6);
+        EXPECT_EQ(6, parsed.as_object()["array_key"].as_array().size());
         EXPECT_EQ(parsed.as_object()["array_key"].as_array()[0], true);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[1], -5);
-        EXPECT_DOUBLE_EQ(parsed.as_object()["array_key"].as_array()[2].to<double>(), -5.0);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[3], "-_-");
+        EXPECT_EQ(-5, parsed.as_object()["array_key"].as_array()[1]);
+        EXPECT_DOUBLE_EQ(-5.0, parsed.as_object()["array_key"].as_array()[2].to<double>());
+        EXPECT_EQ("-_-", parsed.as_object()["array_key"].as_array()[3]);
         EXPECT_TRUE(parsed.as_object()["array_key"].as_array()[4].is_array());
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[4].as_array().size(), 2);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[4].as_array()[0], 1);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[4].as_array()[1], 2);
+        EXPECT_EQ(2, parsed.as_object()["array_key"].as_array()[4].as_array().size());
+        EXPECT_EQ(1, parsed.as_object()["array_key"].as_array()[4].as_array()[0]);
+        EXPECT_EQ(2, parsed.as_object()["array_key"].as_array()[4].as_array()[1]);
         EXPECT_TRUE(parsed.as_object()["array_key"].as_array()[5].is_object());
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[5].as_object().size(), 1);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[5].as_object().count("key"), 1);
-        EXPECT_EQ(parsed.as_object()["array_key"].as_array()[5].as_object()["key"], 12);
+        EXPECT_EQ(1, parsed.as_object()["array_key"].as_array()[5].as_object().size());
+        EXPECT_EQ(1, parsed.as_object()["array_key"].as_array()[5].as_object().count("key"));
+        EXPECT_EQ(12, parsed.as_object()["array_key"].as_array()[5].as_object()["key"]);
 
-        EXPECT_EQ(parsed.as_object().count("object_key"), 1);
+        EXPECT_EQ(1, parsed.as_object().count("object_key"));
         EXPECT_TRUE(parsed.as_object()["object_key"].is_object());
-        EXPECT_EQ(parsed.as_object()["object_key"].as_object().size(), 1);
-        EXPECT_EQ(parsed.as_object()["object_key"].as_object().count("key"), 1);
-        EXPECT_EQ(parsed.as_object()["object_key"].as_object()["key"], 13);
+        EXPECT_EQ(1, parsed.as_object()["object_key"].as_object().size());
+        EXPECT_EQ(1, parsed.as_object()["object_key"].as_object().count("key"));
+        EXPECT_EQ(13, parsed.as_object()["object_key"].as_object()["key"]);
     }
 
     kora::dynamic_t
@@ -109,19 +109,19 @@ namespace {
     void
     check_parsed_array(const kora::dynamic_t& parsed) {
         ASSERT_TRUE(parsed.is_array());
-        EXPECT_EQ(parsed.as_array().size(), 6);
+        EXPECT_EQ(6, parsed.as_array().size());
         EXPECT_EQ(parsed.as_array()[0], true);
-        EXPECT_EQ(parsed.as_array()[1], -5);
-        EXPECT_DOUBLE_EQ(parsed.as_array()[2].to<double>(), -5.0);
-        EXPECT_EQ(parsed.as_array()[3], "-_-");
+        EXPECT_EQ(-5, parsed.as_array()[1]);
+        EXPECT_DOUBLE_EQ(-5.0, parsed.as_array()[2].to<double>());
+        EXPECT_EQ("-_-", parsed.as_array()[3]);
         EXPECT_TRUE(parsed.as_array()[4].is_array());
-        EXPECT_EQ(parsed.as_array()[4].as_array().size(), 2);
-        EXPECT_EQ(parsed.as_array()[4].as_array()[0], 1);
-        EXPECT_EQ(parsed.as_array()[4].as_array()[1], 2);
+        EXPECT_EQ(2, parsed.as_array()[4].as_array().size());
+        EXPECT_EQ(1, parsed.as_array()[4].as_array()[0]);
+        EXPECT_EQ(2, parsed.as_array()[4].as_array()[1]);
         EXPECT_TRUE(parsed.as_array()[5].is_object());
-        EXPECT_EQ(parsed.as_array()[5].as_object().size(), 1);
-        EXPECT_EQ(parsed.as_array()[5].as_object().count("key"), 1);
-        EXPECT_EQ(parsed.as_array()[5].as_object()["key"], 12);
+        EXPECT_EQ(1, parsed.as_array()[5].as_object().size());
+        EXPECT_EQ(1, parsed.as_array()[5].as_object().count("key"));
+        EXPECT_EQ(12, parsed.as_array()[5].as_object()["key"]);
     }
 
     kora::dynamic_t

@@ -241,13 +241,13 @@ TEST(DynamicConstructor, CustomConstructor) {
     kora::dynamic_t constructed = test_struct_t {1337, ">_>"};
     EXPECT_TRUE(constructed.is_array());
     EXPECT_EQ(2, constructed.as_array().size());
-    EXPECT_EQ(constructed.as_array()[0].as_int(), 1337);
-    EXPECT_EQ(constructed.as_array()[1].as_string(), ">_>");
+    EXPECT_EQ(1337, constructed.as_array()[0].as_int());
+    EXPECT_EQ(">_>", constructed.as_array()[1].as_string());
 
     kora::dynamic_t assigned;
     assigned = test_struct_t {1337, ">_>"};
     EXPECT_TRUE(assigned.is_array());
     EXPECT_EQ(2, assigned.as_array().size());
-    EXPECT_EQ(assigned.as_array()[0].as_int(), 1337);
-    EXPECT_EQ(assigned.as_array()[1].as_string(), ">_>");
+    EXPECT_EQ(1337, assigned.as_array()[0].as_int());
+    EXPECT_EQ(">_>", assigned.as_array()[1].as_string());
 }

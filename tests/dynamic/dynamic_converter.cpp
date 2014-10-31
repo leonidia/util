@@ -109,8 +109,8 @@ TEST(DynamicConverter, Dynamic) {
     );
 
     ASSERT_TRUE(destination.is_object());
-    EXPECT_EQ(destination.as_object()["key1"], 1337);
-    EXPECT_EQ(destination.as_object()["key2"], "._____.");
+    EXPECT_EQ(1337, destination.as_object()["key1"]);
+    EXPECT_EQ("._____.", destination.as_object()["key2"]);
 }
 
 TEST(DynamicConverter, DynamicBool) {
@@ -480,8 +480,8 @@ TEST(DynamicConverter, DynamicObject) {
         "Expected result of type kora::dynamic_t::object_t."
     );
 
-    EXPECT_EQ(destination["key1"], 1337);
-    EXPECT_EQ(destination["key2"], "._____.");
+    EXPECT_EQ(1337, destination["key1"]);
+    EXPECT_EQ("._____.", destination["key2"]);
 }
 
 TEST(DynamicConverter, MapStringDynamic) {
@@ -502,8 +502,8 @@ TEST(DynamicConverter, MapStringDynamic) {
         "Expected result of type std::map<std::string, kora::dynamic_t>."
     );
 
-    EXPECT_EQ(destination["key1"], 1337);
-    EXPECT_EQ(destination["key2"], "._____.");
+    EXPECT_EQ(1337, destination["key1"]);
+    EXPECT_EQ("._____.", destination["key2"]);
 }
 
 TEST(DynamicConverter, MapStringInt) {
@@ -524,8 +524,8 @@ TEST(DynamicConverter, MapStringInt) {
         "Expected result of type std::map<std::string, int>."
     );
 
-    EXPECT_EQ(destination["key1"], 1337);
-    EXPECT_EQ(destination["key2"], -5);
+    EXPECT_EQ(1337, destination["key1"]);
+    EXPECT_EQ(-5, destination["key2"]);
 }
 
 TEST(DynamicConverter, UnorderedMapStringInt) {
@@ -546,6 +546,6 @@ TEST(DynamicConverter, UnorderedMapStringInt) {
         "Expected result of type std::unordered_map<std::string, int>."
     );
 
-    EXPECT_EQ(destination["key1"], 1337);
-    EXPECT_EQ(destination["key2"], -5);
+    EXPECT_EQ(1337, destination["key1"]);
+    EXPECT_EQ(-5, destination["key2"]);
 }
