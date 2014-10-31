@@ -143,14 +143,6 @@ public:
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
 
-    KORA_API
-    bool
-    operator==(const dynamic_t& other) const;
-
-    KORA_API
-    bool
-    operator!=(const dynamic_t& other) const;
-
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
     apply(Visitor&& visitor) {
@@ -331,6 +323,14 @@ typename dynamic_converter<typename pristine<T>::type>::result_type
 dynamic_t::to() const {
     return dynamic_converter<typename pristine<T>::type>::convert(*this);
 }
+
+KORA_API
+bool
+operator==(const dynamic_t& left, const dynamic_t& right);
+
+KORA_API
+bool
+operator!=(const dynamic_t& left, const dynamic_t& right);
 
 KORA_API
 std::ostream&

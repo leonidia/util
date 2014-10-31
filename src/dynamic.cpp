@@ -325,16 +325,6 @@ dynamic_t::operator=(dynamic_t::object_t value) {
     return *this;
 }
 
-bool
-dynamic_t::operator==(const dynamic_t& other) const {
-    return other.apply(equals_visitor(*this));
-}
-
-bool
-dynamic_t::operator!=(const dynamic_t& other) const {
-    return !other.apply(equals_visitor(*this));
-}
-
 dynamic_t::bool_t
 dynamic_t::as_bool() const {
     return get<bool_t>();
@@ -427,6 +417,16 @@ dynamic_t::is_array() const {
 bool
 dynamic_t::is_object() const {
     return is<detail::dynamic::incomplete_wrapper<object_t>>();
+}
+
+bool
+kora::operator==(const dynamic_t& left, const dynamic_t& right) {
+    return left.apply(equals_visitor(right));
+}
+
+bool
+kora::operator!=(const dynamic_t& left, const dynamic_t& right) {
+    return !left.apply(equals_visitor(right));
 }
 
 namespace {
