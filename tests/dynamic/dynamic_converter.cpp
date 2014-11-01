@@ -30,6 +30,11 @@ namespace {
         const2
     };
 
+    enum class test_enum_class_t {
+        const1 = 1,
+        const2
+    };
+
     template<class Exception>
     void
     test_forbidden_casts(const kora::dynamic_t& source) {
@@ -46,6 +51,12 @@ namespace {
 
             EXPECT_FALSE(source.convertible_to<unsigned int>());
             EXPECT_THROW(source.to<unsigned int>(), std::bad_cast);
+
+            EXPECT_FALSE(source.convertible_to<test_enum_t>());
+            EXPECT_THROW(source.to<test_enum_t>(), std::bad_cast);
+
+            EXPECT_FALSE(source.convertible_to<test_enum_class_t>());
+            EXPECT_THROW(source.to<test_enum_class_t>(), std::bad_cast);
 
             if (!std::is_arithmetic<Exception>::value) {
                 EXPECT_FALSE(source.convertible_to<double>());
@@ -322,6 +333,23 @@ TEST(DynamicConverter, Enum) {
     );
 
     EXPECT_EQ(const2, destination);
+}
+
+TEST(DynamicConverter, EnumClass) {
+    kora::dynamic_t source = test_enum_class_t::const2;
+
+    test_forbidden_casts<test_enum_class_t>(source);
+
+    ASSERT_TRUE(source.convertible_to<test_enum_class_t>());
+
+    auto destination = source.to<test_enum_class_t>();
+
+    static_assert(
+        std::is_same<test_enum_class_t, typename std::decay<decltype(destination)>::type>::value,
+        "Expected result of type test_enum_class_t."
+    );
+
+    EXPECT_EQ(test_enum_class_t::const2, destination);
 }
 
 TEST(DynamicConverter, DynamicString) {

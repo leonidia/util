@@ -91,22 +91,37 @@ TEST(DynamicConstructor, SignedInt) {
 
 #ifdef KORA_NOT_BAD
 TEST(DynamicConstructor, Enum) {
-    {
-        enum enum1_t {
-            const1 = 1,
-            const2,
-            const3
-        };
+    enum test_enum_t {
+        const1 = 1,
+        const2,
+        const3
+    };
 
-        kora::dynamic_t constructed = const1;
-        EXPECT_TRUE(constructed.is_int());
-        EXPECT_EQ(1, constructed.as_int());
+    kora::dynamic_t constructed = const1;
+    EXPECT_TRUE(constructed.is_int());
+    EXPECT_EQ(1, constructed.as_int());
 
-        kora::dynamic_t assigned;
-        assigned = const2;
-        EXPECT_TRUE(assigned.is_int());
-        EXPECT_EQ(2, assigned.as_int());
-    }
+    kora::dynamic_t assigned;
+    assigned = const2;
+    EXPECT_TRUE(assigned.is_int());
+    EXPECT_EQ(2, assigned.as_int());
+}
+
+TEST(DynamicConstructor, EnumClass) {
+    enum class test_enum_t {
+        const1 = 1,
+        const2,
+        const3
+    };
+
+    kora::dynamic_t constructed = test_enum_t::const1;
+    EXPECT_TRUE(constructed.is_int());
+    EXPECT_EQ(1, constructed.as_int());
+
+    kora::dynamic_t assigned;
+    assigned = test_enum_t::const2;
+    EXPECT_TRUE(assigned.is_int());
+    EXPECT_EQ(2, assigned.as_int());
 }
 #endif
 
