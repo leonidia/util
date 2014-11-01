@@ -85,7 +85,10 @@ public:
     dynamic_t(double_t value) KORA_NOEXCEPT;
 
     KORA_API
-    dynamic_t(string_t value);
+    dynamic_t(const string_t& value);
+
+    KORA_API
+    dynamic_t(string_t&& value);
 
     KORA_API
     dynamic_t(array_t value);
@@ -129,7 +132,11 @@ public:
 
     KORA_API
     dynamic_t&
-    operator=(string_t value);
+    operator=(const string_t& value);
+
+    KORA_API
+    dynamic_t&
+    operator=(string_t&& value);
 
     KORA_API
     dynamic_t&

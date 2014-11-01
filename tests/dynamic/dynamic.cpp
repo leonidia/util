@@ -85,7 +85,14 @@ TEST(Dynamic, DoubleConstructor) {
     EXPECT_EQ(5.0, dynamic.as_double());
 }
 
-TEST(Dynamic, StringConstructor) {
+TEST(Dynamic, StringCopyConstructor) {
+    kora::dynamic_t::string_t source("xdd");
+    kora::dynamic_t dynamic = source;
+    EXPECT_TRUE(dynamic.is_string());
+    EXPECT_EQ("xdd", dynamic.as_string());
+}
+
+TEST(Dynamic, StringMoveConstructor) {
     kora::dynamic_t dynamic = kora::dynamic_t::string_t("xdd");
     EXPECT_TRUE(dynamic.is_string());
     EXPECT_EQ("xdd", dynamic.as_string());
@@ -279,7 +286,15 @@ TEST(Dynamic, DoubleAssignment) {
     EXPECT_EQ(5.0, dynamic.as_double());
 }
 
-TEST(Dynamic, StringAssignment) {
+TEST(Dynamic, StringCopyAssignment) {
+    kora::dynamic_t dynamic;
+    kora::dynamic_t::string_t source("xdd");
+    dynamic = source;
+    EXPECT_TRUE(dynamic.is_string());
+    EXPECT_EQ("xdd", dynamic.as_string());
+}
+
+TEST(Dynamic, StringMoveAssignment) {
     kora::dynamic_t dynamic;
     dynamic = kora::dynamic_t::string_t("xdd");
     EXPECT_TRUE(dynamic.is_string());
