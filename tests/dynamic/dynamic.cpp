@@ -772,7 +772,7 @@ namespace {
         void
         operator()(const kora::dynamic_t::object_t& v) const {
             EXPECT_EQ(1, v.size());
-            EXPECT_EQ(v["key"], 20);
+            EXPECT_EQ(20, v["key"]);
         }
     };
 

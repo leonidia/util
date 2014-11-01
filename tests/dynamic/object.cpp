@@ -96,6 +96,6 @@ TEST(DynamicObject, Indexing) {
     EXPECT_EQ(5, const_obj.at("key", const_dynamic));
     EXPECT_EQ(42.0, const_obj.at("key2", const_dynamic));
 
-    EXPECT_EQ(const_obj["key"], 5);
+    EXPECT_EQ(5, const_obj["key"]);
     ASSERT_THROW(const_obj["key2"], std::out_of_range);
 }
