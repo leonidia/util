@@ -328,7 +328,8 @@ dynamic_t::convertible_to() const {
 template<class T>
 typename dynamic_converter<typename pristine<T>::type>::result_type
 dynamic_t::to() const {
-    return dynamic_converter<typename pristine<T>::type>::convert(*this);
+    const detail::dynamic::default_conversion_controller_t controller;
+    return dynamic_converter<typename pristine<T>::type>::convert(*this, controller);
 }
 
 KORA_API

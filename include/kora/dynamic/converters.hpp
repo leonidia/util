@@ -39,9 +39,10 @@ template<>
 struct dynamic_converter<dynamic_t> {
     typedef const dynamic_t& result_type;
 
+    template<class Controller>
     static inline
     const dynamic_t&
-    convert(const dynamic_t& from) {
+    convert(const dynamic_t& from, Controller&) {
         return from;
     }
 
@@ -56,10 +57,15 @@ template<>
 struct dynamic_converter<bool> {
     typedef bool result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_bool();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_bool()) {
+            return from.as_bool();
+        } else {
+            controller.fail(expected_bool_t(), from);
+        }
     }
 
     static inline
@@ -77,17 +83,24 @@ struct dynamic_converter<
 {
     typedef To result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        try {
-            if (from.is_int()) {
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_int()) {
+            try {
                 return boost::numeric_cast<result_type>(from.as_int());
-            } else {
-                return boost::numeric_cast<result_type>(from.as_uint());
+            } catch (const boost::numeric::bad_numeric_cast&) {
+                controller.fail(numeric_overflow_t<result_type>(), from);
             }
-        } catch (const boost::numeric::bad_numeric_cast&) {
-            throw bad_numeric_cast_t();
+        } else if (from.is_uint()) {
+            try {
+                return boost::numeric_cast<result_type>(from.as_uint());
+            } catch (const boost::numeric::bad_numeric_cast&) {
+                controller.fail(numeric_overflow_t<result_type>(), from);
+            }
+        } else {
+            controller.fail(expected_integer_t(), from);
         }
     }
 
@@ -114,19 +127,22 @@ struct dynamic_converter<
 {
     typedef To result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
+    convert(const dynamic_t& from, Controller& controller) {
         try {
             if (from.is_int()) {
                 return boost::numeric_cast<result_type>(from.as_int());
             } else if (from.is_uint()) {
                 return boost::numeric_cast<result_type>(from.as_uint());
-            } else {
+            } else if (from.is_double()) {
                 return boost::numeric_cast<result_type>(from.as_double());
+            } else {
+                controller.fail(expected_number_t(), from);
             }
         } catch (const boost::numeric::bad_numeric_cast&) {
-            throw bad_numeric_cast_t();
+            controller.fail(numeric_overflow_t<result_type>(), from);
         }
     }
 
@@ -156,10 +172,15 @@ struct dynamic_converter<
 {
     typedef To result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return static_cast<result_type>(from.as_int());
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_int()) {
+            return static_cast<result_type>(from.as_int());
+        } else {
+            controller.fail(expected_int_t(), from);
+        }
     }
 
     static inline
@@ -173,10 +194,15 @@ template<>
 struct dynamic_converter<std::string> {
     typedef const std::string& result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_string();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_string()) {
+            return from.as_string();
+        } else {
+            controller.fail(expected_string_t(), from);
+        }
     }
 
     static inline
@@ -190,10 +216,15 @@ template<>
 struct dynamic_converter<const char*> {
     typedef const char *result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_string().c_str();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_string()) {
+            return from.as_string().c_str();
+        } else {
+            controller.fail(expected_string_t(), from);
+        }
     }
 
     static inline
@@ -207,10 +238,15 @@ template<>
 struct dynamic_converter<std::vector<dynamic_t>> {
     typedef const std::vector<dynamic_t>& result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_array();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_array()) {
+            return from.as_array();
+        } else {
+            controller.fail(expected_array_t(), from);
+        }
     }
 
     static inline
@@ -224,17 +260,25 @@ template<class T>
 struct dynamic_converter<std::vector<T>> {
     typedef std::vector<T> result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        std::vector<T> result;
-        const dynamic_t::array_t& array = from.as_array();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_array()) {
+            const dynamic_t::array_t& array = from.as_array();
+            std::vector<T> result;
 
-        for (size_t i = 0; i < array.size(); ++i) {
-            result.emplace_back(array[i].to<T>());
+            controller.start_array(from);
+            for (size_t i = 0; i < array.size(); ++i) {
+                controller.item(i);
+                result.emplace_back(array[i].to<T>());
+            }
+            controller.finish_array();
+
+            return result;
+        } else {
+            controller.fail(expected_array_t(), from);
         }
-
-        return result;
     }
 
     static inline
@@ -252,17 +296,25 @@ template<class T>
 struct dynamic_converter<std::set<T>> {
     typedef std::set<T> result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        std::set<T> result;
-        const dynamic_t::array_t& array = from.as_array();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_array()) {
+            const dynamic_t::array_t& array = from.as_array();
+            std::set<T> result;
 
-        for (size_t i = 0; i < array.size(); ++i) {
-            result.insert(array[i].to<T>());
+            controller.start_array(from);
+            for (size_t i = 0; i < array.size(); ++i) {
+                controller.item(i);
+                result.insert(array[i].to<T>());
+            }
+            controller.finish_array();
+
+            return result;
+        } else {
+            controller.fail(expected_array_t(), from);
         }
-
-        return result;
     }
 
     static inline
@@ -280,17 +332,18 @@ template<class... Args>
 struct dynamic_converter<std::tuple<Args...>> {
     typedef std::tuple<Args...> result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        if (sizeof...(Args) == from.as_array().size()) {
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_array() && sizeof...(Args) == from.as_array().size()) {
             if (sizeof...(Args) == 0) {
                 return result_type();
             } else {
-                return range_applier<sizeof...(Args) - 1>::convert(from.as_array());
+                return range_applier<sizeof...(Args) - 1>::convert(from, controller);
             }
         } else {
-            throw std::bad_cast();
+            controller.fail(expected_tuple_t(sizeof...(Args)), from);
         }
     }
 
@@ -326,13 +379,28 @@ private:
 
     template<size_t... Idxs>
     struct range_applier<0, Idxs...> {
+        template<size_t Index, class Controller>
+        static inline
+        typename std::tuple_element<Index, result_type>::type
+        control_and_convert(const dynamic_t::array_t& from, Controller& controller) {
+            controller.item(Index);
+            return from[Index].to<typename std::tuple_element<Index, result_type>::type>();
+        }
+
+        template<class Controller>
         static inline
         result_type
-        convert(const dynamic_t::array_t& from) {
-            return std::tuple<Args...>(
-                from[0].to<typename std::tuple_element<0, result_type>::type>(),
-                from[Idxs].to<typename std::tuple_element<Idxs, result_type>::type>()...
+        convert(const dynamic_t& from, Controller& controller) {
+            controller.start_array(from);
+
+            std::tuple<Args...> result(
+                control_and_convert<0>(from.as_array(), controller),
+                control_and_convert<Idxs>(from.as_array(), controller)...
             );
+
+            controller.finish_array();
+
+            return result;
         }
 
         static inline
@@ -347,13 +415,31 @@ template<class First, class Second>
 struct dynamic_converter<std::pair<First, Second>> {
     typedef std::pair<First, Second> result_type;
 
+    template<size_t Index, class Controller>
+    static inline
+    typename std::tuple_element<Index, result_type>::type
+    control_and_convert(const dynamic_t::array_t& from, Controller& controller) {
+        controller.item(Index);
+        return from[Index].to<typename std::tuple_element<Index, result_type>::type>();
+    }
+
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        if (from.as_array().size() == 2) {
-            return std::make_pair(from.as_array()[0].to<First>(), from.as_array()[1].to<Second>());
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_array() && from.as_array().size() == 2) {
+            controller.start_array(from);
+
+            auto result = std::make_pair(
+                control_and_convert<0>(from.as_array(), controller),
+                control_and_convert<1>(from.as_array(), controller)
+            );
+
+            controller.finish_array();
+
+            return result;
         } else {
-            throw std::bad_cast();
+            controller.fail(expected_tuple_t(2), from);
         }
     }
 
@@ -373,10 +459,15 @@ template<>
 struct dynamic_converter<dynamic_t::object_t> {
     typedef const dynamic_t::object_t& result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_object();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_object()) {
+            return from.as_object();
+        } else {
+            controller.fail(expected_object_t(), from);
+        }
     }
 
     static inline
@@ -390,10 +481,15 @@ template<>
 struct dynamic_converter<std::map<std::string, dynamic_t>> {
     typedef const std::map<std::string, dynamic_t>& result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        return from.as_object();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_object()) {
+            return from.as_object();
+        } else {
+            controller.fail(expected_object_t(), from);
+        }
     }
 
     static inline
@@ -407,17 +503,25 @@ template<class T>
 struct dynamic_converter<std::map<std::string, T>> {
     typedef std::map<std::string, T> result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        result_type result;
-        const dynamic_t::object_t& object = from.as_object();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_object()) {
+            result_type result;
+            const dynamic_t::object_t& object = from.as_object();
 
-        for (auto it = object.begin(); it != object.end(); ++it) {
-            result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+            controller.start_object(from);
+            for (auto it = object.begin(); it != object.end(); ++it) {
+                controller.item(it->first);
+                result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+            }
+            controller.finish_object();
+
+            return result;
+        } else {
+            controller.fail(expected_object_t(), from);
         }
-
-        return result;
     }
 
     static inline
@@ -443,17 +547,25 @@ template<class T>
 struct dynamic_converter<std::unordered_map<std::string, T>> {
     typedef std::unordered_map<std::string, T> result_type;
 
+    template<class Controller>
     static inline
     result_type
-    convert(const dynamic_t& from) {
-        result_type result;
-        const dynamic_t::object_t& object = from.as_object();
+    convert(const dynamic_t& from, Controller& controller) {
+        if (from.is_object()) {
+            result_type result;
+            const dynamic_t::object_t& object = from.as_object();
 
-        for (auto it = object.begin(); it != object.end(); ++it) {
-            result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+            controller.start_object(from);
+            for (auto it = object.begin(); it != object.end(); ++it) {
+                controller.item(it->first);
+                result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+            }
+            controller.finish_object();
+
+            return result;
+        } else {
+            controller.fail(expected_object_t(), from);
         }
-
-        return result;
     }
 
     static inline
