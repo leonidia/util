@@ -106,39 +106,6 @@ private:
     visitor_type *m_visitor;
 };
 
-// TODO: I use template artificially template methods to delay the instantiation until dynamic_t becomes declared.
-// Move all dynamic_t's template methods to an *.inl file and put this class there.
-struct default_conversion_controller_t {
-    default_conversion_controller_t() { }
-
-    template<class Dynamic>
-    void
-    start_array(const Dynamic&) const { }
-
-    void
-    finish_array() const { }
-
-    void
-    item(size_t) const { }
-
-    template<class Dynamic>
-    void
-    start_object(const Dynamic&) const { }
-
-    void
-    finish_object() const { }
-
-    void
-    item(const std::string&) const { }
-
-    template<class Exception, class Dynamic>
-    KORA_NORETURN
-    void
-    fail(const Exception& e, const Dynamic&) const {
-        throw e;
-    }
-};
-
 }}} // namespace kora::detail::dynamic
 
 #endif

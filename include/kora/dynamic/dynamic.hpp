@@ -152,17 +152,11 @@ public:
 
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
-    apply(Visitor&& visitor) {
-        typedef detail::dynamic::dynamic_visitor_applier<Visitor> applier_type;
-        return boost::apply_visitor(applier_type(&visitor), m_value);
-    }
+    apply(Visitor&& visitor);
 
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
-    apply(Visitor&& visitor) const {
-        typedef detail::dynamic::dynamic_visitor_applier<Visitor> applier_type;
-        return boost::apply_visitor(applier_type(&visitor), m_value);
-    }
+    apply(Visitor&& visitor) const;
 
     KORA_API
     bool
@@ -257,33 +251,15 @@ public:
 private:
     template<class T>
     T&
-    get() {
-        T* ptr = boost::get<T>(&m_value);
-
-        if (ptr) {
-            return *ptr;
-        } else {
-            throw std::bad_cast();
-        }
-    }
+    get();
 
     template<class T>
     const T&
-    get() const {
-        const T* ptr = boost::get<T>(&m_value);
-
-        if (ptr) {
-            return *ptr;
-        } else {
-            throw std::bad_cast();
-        }
-    }
+    get() const;
 
     template<class T>
     bool
-    is() const {
-        return static_cast<bool>(boost::get<T>(&m_value));
-    }
+    is() const;
 
     struct move_visitor;
 
@@ -302,36 +278,6 @@ private:
     value_t m_value;
 };
 
-template<class T>
-dynamic_t::dynamic_t(
-    T&& from,
-    typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type*
-) :
-    m_value(null_t())
-{
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
-}
-
-template<class T>
-typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
-dynamic_t::operator=(T&& from) {
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
-    return *this;
-}
-
-template<class T>
-bool
-dynamic_t::convertible_to() const {
-    return dynamic_converter<typename pristine<T>::type>::convertible(*this);
-}
-
-template<class T>
-typename dynamic_converter<typename pristine<T>::type>::result_type
-dynamic_t::to() const {
-    const detail::dynamic::default_conversion_controller_t controller;
-    return dynamic_converter<typename pristine<T>::type>::convert(*this, controller);
-}
-
 KORA_API
 bool
 operator==(const dynamic_t& left, const dynamic_t& right);
@@ -346,6 +292,7 @@ operator<<(std::ostream& stream, const dynamic_t& value);
 
 } // namespace kora
 
+#include "kora/dynamic/dynamic.impl"
 #include "kora/dynamic/object.hpp"
 #include "kora/dynamic/constructors.hpp"
 #include "kora/dynamic/converters.hpp"
