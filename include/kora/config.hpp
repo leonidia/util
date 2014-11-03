@@ -26,10 +26,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 KORA_PUSH_VISIBLE
 #include <boost/lexical_cast.hpp>
-#include <boost/numeric/conversion/cast.hpp>
 KORA_POP_VISIBILITY
 
 #include <sstream>
+#include <vector>
 
 namespace kora {
 
@@ -69,131 +69,102 @@ private:
 namespace detail
 {
 
-enum {
-    boolean_type = 1,
-    integral_type = 2,
-    floating_point_type = 4,
-    string_type = 8,
-    vector_type = 16
-};
+struct config_conversion_controller_t {
+    config_conversion_controller_t(const std::string &path) :
+        m_root_path(path)
+    { }
 
-template <typename T, int specific>
-struct config_value_caster_specific_helper;
-
-template <typename T>
-struct is_vector : public std::false_type { };
-
-template <typename T>
-struct is_vector<std::vector<T>> : public std::true_type { };
-
-
-template <typename T>
-struct config_value_caster_helper
-{
-    enum {
-        boolean = std::is_same<T, bool>::value ? boolean_type : 0,
-        integral = std::is_integral<T>::value && !boolean ? integral_type : 0,
-        floating_point = std::is_floating_point<T>::value ? floating_point_type : 0,
-        string = std::is_same<T, std::string>::value ? string_type : 0,
-        vector = is_vector<T>::value ? vector_type : 0,
-        type = integral | floating_point | string | boolean | vector
-    };
-
-    static_assert(integral || floating_point || string || boolean || vector, "Unsupported type");
-    static_assert((type == integral) || (type == floating_point) || (type == string) || (type == boolean) || (type == vector), "Internal type check error");
-
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        return config_value_caster_specific_helper<T, type>::cast(path, value);
+    void
+    start_array(const dynamic_t&) {
+        // Prepare place for the indices.
+        m_backtrace.emplace_back(0);
     }
-};
 
-template <typename T>
-struct config_value_caster : public config_value_caster_helper<typename std::remove_all_extents<T>::type>
-{
-};
-
-template <typename T>
-struct config_value_caster_specific_helper<T, boolean_type>
-{
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        if (!value.is_bool())
-            throw config_error(path + " must be a bool");
-
-        return value.as_bool();
+    void
+    finish_array(){
+        m_backtrace.pop_back();
     }
-};
 
-template <typename T>
-struct config_value_caster_specific_helper<T, integral_type>
-{
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        try {
-            if (value.is_int()) {
-                return boost::numeric_cast<T>(value.as_int());
-            } else if (value.is_uint()) {
-                return boost::numeric_cast<T>(value.as_uint());
+    void
+    item(size_t index){
+        m_backtrace.back() = index;
+    }
+
+    void
+    start_object(const dynamic_t&){
+        // Prepare place for the keys.
+        m_backtrace.emplace_back(std::string());
+    }
+
+    void
+    finish_object(){
+        m_backtrace.pop_back();
+    }
+
+    void
+    item(const std::string &key){
+        m_backtrace.back() = key;
+    }
+
+    template<class Exception>
+    KORA_NORETURN
+    void
+    fail(const Exception& e, const dynamic_t&) const {
+        std::stringstream error;
+        prepare_message(error);
+        error << e.what();
+
+        throw config_error(std::move(error.str()));
+    }
+
+    template<class TargetType>
+    KORA_NORETURN
+    void
+    fail(const numeric_overflow_t<TargetType>&, const dynamic_t&) const {
+        std::stringstream error;
+        prepare_message(error);
+        error << "the value must be an integer between "
+              << std::numeric_limits<TargetType>::min() << " and "
+              << std::numeric_limits<TargetType>::max();
+
+        throw config_error(std::move(error.str()));
+    }
+
+    KORA_NORETURN
+    void
+    fail(const expected_tuple_t& e, const dynamic_t&) const {
+        std::stringstream error;
+        prepare_message(error);
+        error << "the value must be an array of size " << e.expected_size();
+
+        throw config_error(std::move(error.str()));
+    }
+
+private:
+    void
+    prepare_message(std::stringstream &stream) const {
+        stream << "error in item " << buildup_path() << ": ";
+    }
+
+    std::string
+    buildup_path() const {
+        std::stringstream path;
+        path << m_root_path;
+
+        for (auto it = m_backtrace.begin(); it != m_backtrace.end(); ++it) {
+            if (boost::get<size_t>(&(*it))) {
+                path << "[" << boost::get<size_t>(*it) << "]";
+            } else {
+                path << "." << boost::get<std::string>(*it);
             }
-        } catch (boost::numeric::bad_numeric_cast &) {
-            throw_limits_error(path);
         }
 
-        throw_limits_error(path);
-        return T();
+        return path.str();
     }
 
-    static void throw_limits_error(const std::string &path)
-    {
-        std::stringstream error;
-        error << path << " must be an integer between "
-              << std::numeric_limits<T>::min() << " and " << std::numeric_limits<T>::max();
-        throw config_error(error.str());
-    }
-};
-
-template <typename T>
-struct config_value_caster_specific_helper<T, floating_point_type>
-{
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        if (!value.is_double())
-            throw config_error(path + " must be a floating point number");
-
-        return value.to<dynamic_t::double_t>();
-    }
-};
-
-template <typename T>
-struct config_value_caster_specific_helper<T, string_type>
-{
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        if (!value.is_string())
-            throw config_error(path + " must be a string");
-
-        return value.as_string();
-    }
-};
-
-template <typename T>
-struct config_value_caster_specific_helper<T, vector_type>
-{
-    static T cast(const std::string &path, const dynamic_t &value)
-    {
-        typedef config_value_caster<typename T::value_type> caster;
-
-        if (!value.is_array())
-            throw config_error(path + " must be an array");
-
-        const dynamic_t::array_t &array = value.as_array();
-
-        T result;
-        for (size_t i = 0; i < array.size(); ++i)
-            result.emplace_back(caster::cast(path + "[" + boost::lexical_cast<std::string>(i) + "]", array[i]));
-        return result;
-    }
+private:
+    const std::string &m_root_path;
+    std::vector<boost::variant<size_t, std::string>> m_backtrace;
 };
 
 } // namespace detail
@@ -212,13 +183,13 @@ public:
         if (!has(name))
             return default_value;
 
-        return at(name).as<T>();
+        return at(name).to<T>();
     }
 
     template <typename T>
     T at(const std::string &name) const
     {
-        return at(name).as<T>();
+        return at(name).to<T>();
     }
 
     KORA_API size_t size() const;
@@ -231,19 +202,19 @@ public:
         if (!has(index))
             return default_value;
 
-        return at(index).as<T>();
+        return at(index).to<T>();
     }
 
     template <typename T>
     T at(size_t index) const
     {
-        return at(index).as<T>();
+        return at(index).to<T>();
     }
 
     template <typename T>
-    T as() const
-    {
-        return detail::config_value_caster<T>::cast(m_path, m_value);
+    typename dynamic_converter<typename pristine<T>::type>::result_type
+    to() const {
+        return m_value.to<T>(detail::config_conversion_controller_t(m_path));
     }
 
     KORA_API const std::string &path() const;
