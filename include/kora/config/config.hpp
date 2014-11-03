@@ -129,42 +129,58 @@ private:
 
 class config_t {
 public:
-    KORA_API config_t(const std::string &path, const dynamic_t *value);
+    KORA_API
+    config_t(const std::string &path, const dynamic_t *value);
 
-    KORA_API bool has(const std::string &name) const;
-    KORA_API config_t at(const std::string &name) const;
+    KORA_API
+    bool
+    has(const std::string &name) const;
+
+    KORA_API
+    config_t
+    at(const std::string &name) const;
 
     template <typename T>
-    T at(const std::string &name, const T &default_value) const
-    {
-        if (!has(name))
+    T
+    at(const std::string &name, const T &default_value) const {
+        if (!has(name)) {
             return default_value;
+        }
 
         return at(name).to<T>();
     }
 
     template <typename T>
-    T at(const std::string &name) const
-    {
+    T
+    at(const std::string &name) const {
         return at(name).to<T>();
     }
 
-    KORA_API size_t size() const;
-    KORA_API bool has(size_t index) const;
-    KORA_API config_t at(size_t index) const;
+    KORA_API
+    size_t
+    size() const;
+
+    KORA_API
+    bool
+    has(size_t index) const;
+
+    KORA_API
+    config_t
+    at(size_t index) const;
 
     template <typename T>
-    T at(size_t index, const T &default_value) const
-    {
-        if (!has(index))
+    T
+    at(size_t index, const T &default_value) const {
+        if (!has(index)) {
             return default_value;
+        }
 
         return at(index).to<T>();
     }
 
     template <typename T>
-    T at(size_t index) const
-    {
+    T
+    at(size_t index) const {
         return at(index).to<T>();
     }
 
@@ -174,12 +190,21 @@ public:
         return m_value.to<T>(detail::config_conversion_controller_t(m_path));
     }
 
-    KORA_API const std::string &path() const;
+    KORA_API
+    const std::string&
+    path() const;
 
-    KORA_API std::string to_string() const;
+    KORA_API
+    std::string
+    to_string() const;
 
-    KORA_API void assert_array() const;
-    KORA_API void assert_object() const;
+    KORA_API
+    void
+    assert_array() const;
+
+    KORA_API
+    void
+    assert_object() const;
 
 protected:
     std::string m_path;

@@ -31,16 +31,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
-class config_parser_t
-{
+class config_parser_t {
 public:
-    KORA_API config_parser_t();
-    KORA_API ~config_parser_t();
+    KORA_API
+    config_parser_t();
 
-    KORA_API void open(const std::string &path);
-    KORA_API void parse(std::istream &stream);
+    KORA_API
+    ~config_parser_t();
 
-    KORA_API config_t root() const;
+    KORA_API
+    void
+    open(const std::string &path);
+
+    KORA_API
+    void
+    parse(std::istream &stream);
+
+    KORA_API
+    config_t
+    root() const;
 
 private:
     dynamic_t m_root;
