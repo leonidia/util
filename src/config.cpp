@@ -91,10 +91,20 @@ config_conversion_controller_t::throw_config_error(const char *message) const {
 
 KORA_NORETURN
 void
-config_conversion_controller_t::throw_numeric_overflow_error(const char *min, const char *max) const {
+config_conversion_controller_t::throw_integer_overflow_error(const char *min, const char *max) const {
     std::stringstream error;
     prepare_message(error);
     error << "the value must be an integer between " << min << " and " << max;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_float_overflow_error(const char *min, const char *max) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be a number between " << min << " and " << max;
 
     throw config_error_t(std::move(error.str()));
 }

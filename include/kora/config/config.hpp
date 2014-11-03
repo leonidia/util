@@ -31,6 +31,7 @@ KORA_PUSH_VISIBLE
 #include <boost/variant.hpp>
 KORA_POP_VISIBILITY
 
+#include <type_traits>
 #include <vector>
 
 namespace kora {
@@ -77,10 +78,17 @@ struct config_conversion_controller_t {
     KORA_NORETURN
     void
     fail(const numeric_overflow_t<TargetType>&, const dynamic_t&) const {
-        throw_numeric_overflow_error(
-            boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::min()).c_str(),
-            boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::max()).c_str()
-        );
+        if (std::is_floating_point<TargetType>::value) {
+            throw_float_overflow_error(
+                boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::min()).c_str(),
+                boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::max()).c_str()
+            );
+        } else {
+            throw_integer_overflow_error(
+                boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::min()).c_str(),
+                boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::max()).c_str()
+            );
+        }
     }
 
     KORA_API
@@ -92,7 +100,12 @@ private:
     KORA_API
     KORA_NORETURN
     void
-    throw_numeric_overflow_error(const char *min, const char *max) const;
+    throw_integer_overflow_error(const char *min, const char *max) const;
+
+    KORA_API
+    KORA_NORETURN
+    void
+    throw_float_overflow_error(const char *min, const char *max) const;
 
     KORA_API
     KORA_NORETURN
