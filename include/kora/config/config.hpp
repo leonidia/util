@@ -112,11 +112,9 @@ private:
     void
     throw_config_error(const char *message) const;
 
-    KORA_API
     void
     prepare_message(std::stringstream &stream) const;
 
-    KORA_API
     std::string
     buildup_path() const;
 
@@ -197,11 +195,10 @@ public:
     const dynamic_t&
     underlying_object() const;
 
-    KORA_API
+private:
     void
     assert_array() const;
 
-    KORA_API
     void
     assert_object() const;
 
