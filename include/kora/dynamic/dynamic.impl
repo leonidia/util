@@ -26,8 +26,6 @@ namespace kora {
 namespace detail { namespace dynamic {
 
 struct default_conversion_controller_t {
-    default_conversion_controller_t() { }
-
     void
     start_array(const dynamic_t&) const { }
 
