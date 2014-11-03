@@ -234,6 +234,10 @@ public:
     bool
     convertible_to() const;
 
+    template<class T, class Controller>
+    typename dynamic_converter<typename pristine<T>::type>::result_type
+    to(Controller&& controller) const;
+
     template<class T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to() const;

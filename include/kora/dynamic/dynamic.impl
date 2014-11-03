@@ -79,11 +79,22 @@ dynamic_t::convertible_to() const {
     return dynamic_converter<typename pristine<T>::type>::convertible(*this);
 }
 
+template<class T, class Controller>
+typename dynamic_converter<typename pristine<T>::type>::result_type
+dynamic_t::to(Controller&& controller) const {
+    // Convert lvalue and const references to themselves, and rvalue reference to const reference.
+    typedef typename std::add_const<Controller>::type const_type;
+    typedef typename std::add_lvalue_reference<const_type>::type reference_type;
+
+    reference_type controller_reference = controller;
+
+    return dynamic_converter<typename pristine<T>::type>::convert(*this, controller_reference);
+}
+
 template<class T>
 typename dynamic_converter<typename pristine<T>::type>::result_type
 dynamic_t::to() const {
-    const detail::dynamic::default_conversion_controller_t controller;
-    return dynamic_converter<typename pristine<T>::type>::convert(*this, controller);
+    return this->to<T>(detail::dynamic::default_conversion_controller_t());
 }
 
 template<class Visitor>
