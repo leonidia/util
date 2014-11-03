@@ -141,7 +141,7 @@ public:
     at(const std::string &name) const;
 
     template <typename T>
-    T
+    typename dynamic_converter<typename pristine<T>::type>::result_type
     at(const std::string &name, const T &default_value) const {
         if (!has(name)) {
             return default_value;
@@ -151,7 +151,7 @@ public:
     }
 
     template <typename T>
-    T
+    typename dynamic_converter<typename pristine<T>::type>::result_type
     at(const std::string &name) const {
         return at(name).to<T>();
     }
@@ -169,7 +169,7 @@ public:
     at(size_t index) const;
 
     template <typename T>
-    T
+    typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index, const T &default_value) const {
         if (!has(index)) {
             return default_value;
@@ -179,7 +179,7 @@ public:
     }
 
     template <typename T>
-    T
+    typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index) const {
         return at(index).to<T>();
     }
