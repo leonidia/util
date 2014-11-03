@@ -329,7 +329,7 @@ void config_parser_t::parse(std::istream &stream)
 
 config_t config_parser_t::root() const
 {
-    return config_t("path", m_root);
+    return config_t("<root>", m_root);
 }
 
 std::ostream&
