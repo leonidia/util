@@ -171,8 +171,8 @@ size_t config_parser_error_t::column_number() const
 }
 
 
-config_t::config_t(const std::string &path, const dynamic_t *value) :
-    m_path(path), m_value(*value)
+config_t::config_t(const std::string &path, const dynamic_t &value) :
+    m_path(path), m_value(value)
 {
 }
 
@@ -192,7 +192,7 @@ config_t config_t::at(const std::string &name) const
         throw config_error_t(path + " is missed");
 
     const dynamic_t::object_t &object = m_value.as_object();
-    return config_t(path, &object.find(name)->second);
+    return config_t(path, object.find(name)->second);
 }
 
 size_t config_t::size() const
@@ -217,7 +217,7 @@ config_t config_t::at(size_t index) const
         throw config_error_t(path + " is missed");
 
     const dynamic_t::array_t &array = m_value.as_array();
-    return config_t(path, &array[index]);
+    return config_t(path, array[index]);
 }
 
 const std::string &config_t::path() const
@@ -342,5 +342,5 @@ void config_parser_t::parse(std::istream &stream)
 
 config_t config_parser_t::root() const
 {
-    return config_t("path", &m_root);
+    return config_t("path", m_root);
 }

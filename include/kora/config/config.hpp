@@ -130,7 +130,7 @@ private:
 class config_t {
 public:
     KORA_API
-    config_t(const std::string &path, const dynamic_t *value);
+    config_t(const std::string &path, const dynamic_t &value);
 
     KORA_API
     bool
