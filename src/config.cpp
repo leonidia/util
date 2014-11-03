@@ -27,9 +27,98 @@ KORA_PUSH_VISIBLE
 KORA_POP_VISIBILITY
 
 #include <fstream>
+#include <sstream>
 #include <stack>
 
 using namespace kora;
+using namespace kora::detail;
+
+config_conversion_controller_t::config_conversion_controller_t(const std::string &path) :
+    m_root_path(path)
+{ }
+
+void
+config_conversion_controller_t::start_array(const dynamic_t&) {
+    // Prepare place for the indices.
+    m_backtrace.emplace_back(0);
+}
+
+void
+config_conversion_controller_t::finish_array(){
+    m_backtrace.pop_back();
+}
+
+void
+config_conversion_controller_t::item(size_t index){
+    m_backtrace.back() = index;
+}
+
+void
+config_conversion_controller_t::start_object(const dynamic_t&){
+    // Prepare place for the keys.
+    m_backtrace.emplace_back(std::string());
+}
+
+void
+config_conversion_controller_t::finish_object(){
+    m_backtrace.pop_back();
+}
+
+void
+config_conversion_controller_t::item(const std::string &key){
+    m_backtrace.back() = key;
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::fail(const expected_tuple_t& e, const dynamic_t&) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be an array of size " << e.expected_size();
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_config_error(const char *message) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << message;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_numeric_overflow_error(const char *min, const char *max) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be an integer between " << min << " and " << max;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+void
+config_conversion_controller_t::prepare_message(std::stringstream &stream) const {
+    stream << "error in item " << buildup_path() << ": ";
+}
+
+std::string
+config_conversion_controller_t::buildup_path() const {
+    std::stringstream path;
+    path << m_root_path;
+
+    for (auto it = m_backtrace.begin(); it != m_backtrace.end(); ++it) {
+        if (boost::get<size_t>(&(*it))) {
+            path << "[" << boost::get<size_t>(*it) << "]";
+        } else {
+            path << "." << boost::get<std::string>(*it);
+        }
+    }
+
+    return path.str();
+}
 
 config_error_t::config_error_t(std::string message) : m_message(std::move(message))
 {

@@ -27,10 +27,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "kora/utility.hpp"
 
 KORA_PUSH_VISIBLE
+#include <boost/lexical_cast.hpp>
 #include <boost/variant.hpp>
 KORA_POP_VISIBILITY
 
-#include <sstream>
 #include <vector>
 
 namespace kora {
@@ -39,97 +39,73 @@ namespace detail
 {
 
 struct config_conversion_controller_t {
-    config_conversion_controller_t(const std::string &path) :
-        m_root_path(path)
-    { }
+    KORA_API
+    config_conversion_controller_t(const std::string &path);
 
+    KORA_API
     void
-    start_array(const dynamic_t&) {
-        // Prepare place for the indices.
-        m_backtrace.emplace_back(0);
-    }
+    start_array(const dynamic_t&);
 
+    KORA_API
     void
-    finish_array(){
-        m_backtrace.pop_back();
-    }
+    finish_array();
 
+    KORA_API
     void
-    item(size_t index){
-        m_backtrace.back() = index;
-    }
+    item(size_t index);
 
+    KORA_API
     void
-    start_object(const dynamic_t&){
-        // Prepare place for the keys.
-        m_backtrace.emplace_back(std::string());
-    }
+    start_object(const dynamic_t&);
 
+    KORA_API
     void
-    finish_object(){
-        m_backtrace.pop_back();
-    }
+    finish_object();
 
+    KORA_API
     void
-    item(const std::string &key){
-        m_backtrace.back() = key;
-    }
+    item(const std::string &key);
 
     template<class Exception>
     KORA_NORETURN
     void
     fail(const Exception& e, const dynamic_t&) const {
-        std::stringstream error;
-        prepare_message(error);
-        error << e.what();
-
-        throw config_error_t(std::move(error.str()));
+        throw_config_error(e.what());
     }
 
     template<class TargetType>
     KORA_NORETURN
     void
     fail(const numeric_overflow_t<TargetType>&, const dynamic_t&) const {
-        std::stringstream error;
-        prepare_message(error);
-        error << "the value must be an integer between "
-              << std::numeric_limits<TargetType>::min() << " and "
-              << std::numeric_limits<TargetType>::max();
-
-        throw config_error_t(std::move(error.str()));
+        throw_numeric_overflow_error(
+            boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::min()).c_str(),
+            boost::lexical_cast<std::string>(std::numeric_limits<TargetType>::max()).c_str()
+        );
     }
 
+    KORA_API
     KORA_NORETURN
     void
-    fail(const expected_tuple_t& e, const dynamic_t&) const {
-        std::stringstream error;
-        prepare_message(error);
-        error << "the value must be an array of size " << e.expected_size();
-
-        throw config_error_t(std::move(error.str()));
-    }
+    fail(const expected_tuple_t& e, const dynamic_t&) const;
 
 private:
+    KORA_API
+    KORA_NORETURN
     void
-    prepare_message(std::stringstream &stream) const {
-        stream << "error in item " << buildup_path() << ": ";
-    }
+    throw_numeric_overflow_error(const char *min, const char *max) const;
 
+    KORA_API
+    KORA_NORETURN
+    void
+    throw_config_error(const char *message) const;
+
+    KORA_API
+    void
+    prepare_message(std::stringstream &stream) const;
+
+    KORA_API
     std::string
-    buildup_path() const {
-        std::stringstream path;
-        path << m_root_path;
-
-        for (auto it = m_backtrace.begin(); it != m_backtrace.end(); ++it) {
-            if (boost::get<size_t>(&(*it))) {
-                path << "[" << boost::get<size_t>(*it) << "]";
-            } else {
-                path << "." << boost::get<std::string>(*it);
-            }
-        }
-
-        return path.str();
-    }
+    buildup_path() const;
 
 private:
     const std::string &m_root_path;
