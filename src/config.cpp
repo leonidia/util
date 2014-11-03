@@ -123,8 +123,6 @@ const std::string &config_t::path() const
 
 std::string config_t::to_string() const
 {
-    assert_valid();
-
     std::string value_str;
 
     if (m_value.is_uint())
@@ -141,22 +139,14 @@ std::string config_t::to_string() const
     return value_str;
 }
 
-void config_t::assert_valid() const
-{
-    if (m_value.is_null())
-        throw config_error(m_path + " is missed");
-}
-
 void config_t::assert_array() const
 {
-    assert_valid();
     if (!m_value.is_array())
         throw config_error(m_path + " must be an array");
 }
 
 void config_t::assert_object() const
 {
-    assert_valid();
     if (!m_value.is_object())
         throw config_error(m_path + " must be an object");
 }

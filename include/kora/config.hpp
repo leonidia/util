@@ -243,7 +243,6 @@ public:
     template <typename T>
     T as() const
     {
-        assert_valid();
         return detail::config_value_caster<T>::cast(m_path, m_value);
     }
 
@@ -251,7 +250,6 @@ public:
 
     KORA_API std::string to_string() const;
 
-    KORA_API void assert_valid() const;
     KORA_API void assert_array() const;
     KORA_API void assert_object() const;
 
