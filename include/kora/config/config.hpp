@@ -194,9 +194,8 @@ public:
     const std::string&
     path() const;
 
-    KORA_API
-    std::string
-    to_string() const;
+    const dynamic_t&
+    underlying_object() const;
 
     KORA_API
     void
@@ -210,6 +209,10 @@ protected:
     std::string m_path;
     const dynamic_t &m_value;
 };
+
+KORA_API
+std::ostream&
+operator<<(std::ostream& stream, const config_t& value);
 
 } // namespace kora
 

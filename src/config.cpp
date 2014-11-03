@@ -225,22 +225,9 @@ const std::string &config_t::path() const
     return m_path;
 }
 
-std::string config_t::to_string() const
+const dynamic_t &config_t::underlying_object() const
 {
-    std::string value_str;
-
-    if (m_value.is_uint())
-        value_str = boost::lexical_cast<std::string>(m_value.as_uint());
-    else if (m_value.is_int())
-        value_str = boost::lexical_cast<std::string>(m_value.as_int());
-    else if (m_value.is_double())
-        value_str = boost::lexical_cast<std::string>(m_value.as_double());
-    else if (m_value.is_string())
-        value_str = m_value.to<dynamic_t::string_t>();
-    else
-        throw config_error_t(m_path + " has unknown type");
-
-    return value_str;
+    return m_value;
 }
 
 void config_t::assert_array() const
@@ -343,4 +330,10 @@ void config_parser_t::parse(std::istream &stream)
 config_t config_parser_t::root() const
 {
     return config_t("path", m_root);
+}
+
+std::ostream&
+kora::operator<<(std::ostream& stream, const config_t& value) {
+    stream << value.underlying_object();
+    return stream;
 }
