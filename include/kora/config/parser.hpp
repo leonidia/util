@@ -18,11 +18,43 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_CONFIG_HPP
-#define KORA_CONFIG_HPP
+#ifndef KORA_CONFIG_PARSER_HPP
+#define KORA_CONFIG_PARSER_HPP
 
 #include "kora/config/config.hpp"
-#include "kora/config/error.hpp"
-#include "kora/config/parser.hpp"
+
+#include "kora/dynamic.hpp"
+#include "kora/utility.hpp"
+
+#include <istream>
+#include <string>
+
+namespace kora {
+
+class config_parser_t {
+public:
+    KORA_API
+    config_parser_t();
+
+    KORA_API
+    ~config_parser_t();
+
+    KORA_API
+    void
+    open(const std::string &path);
+
+    KORA_API
+    void
+    parse(std::istream &stream);
+
+    KORA_API
+    config_t
+    root() const;
+
+private:
+    dynamic_t m_root;
+};
+
+} // namespace kora
 
 #endif

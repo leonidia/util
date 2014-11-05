@@ -38,7 +38,13 @@ type& operator=(const type&) = delete;
     #define nullptr __null
 #endif
 
-#define KORA_API __attribute__ ((visibility ("default")))
+#ifdef __GNUC__
+    #define KORA_NORETURN __attribute__ ((__noreturn__))
+#else
+    #define KORA_NORETURN [[noreturn]]
+#endif
+
+#define KORA_API __attribute__ ((__visibility__ ("default")))
 
 #ifdef __GNUC__
     #define KORA_PUSH_VISIBLE _Pragma("GCC visibility push(default)")

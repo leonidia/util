@@ -20,55 +20,159 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "kora/config.hpp"
+#include "kora/config/parser.hpp"
+
+KORA_PUSH_VISIBLE
+#include <boost/lexical_cast.hpp>
+KORA_POP_VISIBILITY
 
 #include <fstream>
+#include <sstream>
 #include <stack>
 
 using namespace kora;
+using namespace kora::detail;
 
-config_error::config_error(std::string message) : m_message(std::move(message))
+config_conversion_controller_t::config_conversion_controller_t(const std::string &path) :
+    m_root_path(path)
+{ }
+
+void
+config_conversion_controller_t::start_array(const dynamic_t&) {
+    // Prepare place for the indices.
+    m_backtrace.emplace_back(0);
+}
+
+void
+config_conversion_controller_t::finish_array(){
+    m_backtrace.pop_back();
+}
+
+void
+config_conversion_controller_t::item(size_t index){
+    m_backtrace.back() = index;
+}
+
+void
+config_conversion_controller_t::start_object(const dynamic_t&){
+    // Prepare place for the keys.
+    m_backtrace.emplace_back(std::string());
+}
+
+void
+config_conversion_controller_t::finish_object(){
+    m_backtrace.pop_back();
+}
+
+void
+config_conversion_controller_t::item(const std::string &key){
+    m_backtrace.back() = key;
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::fail(const expected_tuple_t& e, const dynamic_t&) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be an array of size " << e.expected_size();
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_config_error(const char *message) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << message;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_integer_overflow_error(const char *min, const char *max) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be an integer between " << min << " and " << max;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+KORA_NORETURN
+void
+config_conversion_controller_t::throw_float_overflow_error(const char *min, const char *max) const {
+    std::stringstream error;
+    prepare_message(error);
+    error << "the value must be a number between " << min << " and " << max;
+
+    throw config_error_t(std::move(error.str()));
+}
+
+void
+config_conversion_controller_t::prepare_message(std::stringstream &stream) const {
+    stream << "error in item " << buildup_path() << ": ";
+}
+
+std::string
+config_conversion_controller_t::buildup_path() const {
+    std::stringstream path;
+    path << m_root_path;
+
+    for (auto it = m_backtrace.begin(); it != m_backtrace.end(); ++it) {
+        if (boost::get<size_t>(&(*it))) {
+            path << "[" << boost::get<size_t>(*it) << "]";
+        } else {
+            path << "." << boost::get<std::string>(*it);
+        }
+    }
+
+    return path.str();
+}
+
+config_error_t::config_error_t(std::string message) : m_message(std::move(message))
 {
 }
 
-config_error::~config_error() KORA_NOEXCEPT
+config_error_t::~config_error_t() KORA_NOEXCEPT
 {
 }
 
-const char *config_error::what() const KORA_NOEXCEPT
+const char *config_error_t::what() const KORA_NOEXCEPT
 {
     return m_message.c_str();
 }
 
-config_parser_error::config_parser_error(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
-    config_error(std::move(message)),
+config_parser_error_t::config_parser_error_t(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
+    config_error_t(std::move(message)),
     m_parse_error(std::move(parse_error)),
     m_line_number(line_number),
     m_column_number(column_number)
 {
 }
 
-config_parser_error::~config_parser_error() KORA_NOEXCEPT
+config_parser_error_t::~config_parser_error_t() KORA_NOEXCEPT
 {
 }
 
-const std::string &config_parser_error::parse_error() const
+const std::string &config_parser_error_t::parse_error() const
 {
     return m_parse_error;
 }
 
-size_t config_parser_error::line_number() const
+size_t config_parser_error_t::line_number() const
 {
     return m_line_number;
 }
 
-size_t config_parser_error::column_number() const
+size_t config_parser_error_t::column_number() const
 {
     return m_column_number;
 }
 
 
-config_t::config_t(const std::string &path, const dynamic_t *value) :
-    m_path(path), m_value(*value)
+config_t::config_t(const std::string &path, const dynamic_t &value) :
+    m_path(path), m_value(value)
 {
 }
 
@@ -85,10 +189,10 @@ config_t config_t::at(const std::string &name) const
 {
     const std::string path = m_path + "." + name;
     if (!has(name))
-        throw config_error(path + " is missed");
+        throw config_error_t(path + " is missed");
 
     const dynamic_t::object_t &object = m_value.as_object();
-    return config_t(path, &object.find(name)->second);
+    return config_t(path, object.find(name)->second);
 }
 
 size_t config_t::size() const
@@ -110,10 +214,10 @@ config_t config_t::at(size_t index) const
     const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
     if (!has(index))
-        throw config_error(path + " is missed");
+        throw config_error_t(path + " is missed");
 
     const dynamic_t::array_t &array = m_value.as_array();
-    return config_t(path, &array[index]);
+    return config_t(path, array[index]);
 }
 
 const std::string &config_t::path() const
@@ -121,44 +225,21 @@ const std::string &config_t::path() const
     return m_path;
 }
 
-std::string config_t::to_string() const
+const dynamic_t &config_t::underlying_object() const
 {
-    assert_valid();
-
-    std::string value_str;
-
-    if (m_value.is_uint())
-        value_str = boost::lexical_cast<std::string>(m_value.as_uint());
-    else if (m_value.is_int())
-        value_str = boost::lexical_cast<std::string>(m_value.as_int());
-    else if (m_value.is_double())
-        value_str = boost::lexical_cast<std::string>(m_value.as_double());
-    else if (m_value.is_string())
-        value_str = m_value.to<dynamic_t::string_t>();
-    else
-        throw config_error(m_path + " has unknown type");
-
-    return value_str;
-}
-
-void config_t::assert_valid() const
-{
-    if (m_value.is_null())
-        throw config_error(m_path + " is missed");
+    return m_value;
 }
 
 void config_t::assert_array() const
 {
-    assert_valid();
     if (!m_value.is_array())
-        throw config_error(m_path + " must be an array");
+        throw config_error_t(m_path + " must be an array");
 }
 
 void config_t::assert_object() const
 {
-    assert_valid();
     if (!m_value.is_object())
-        throw config_error(m_path + " must be an object");
+        throw config_error_t(m_path + " must be an object");
 }
 
 config_parser_t::config_parser_t()
@@ -174,7 +255,7 @@ void config_parser_t::open(const std::string &path)
     std::ifstream stream(path.c_str());
 
     if (!stream) {
-        throw config_error("failed to open config file: '" + path + "'");
+        throw config_error_t("failed to open config file: '" + path + "'");
     }
 
     parse(stream);
@@ -236,17 +317,23 @@ void config_parser_t::parse(std::istream &stream)
                     << data.substr(std::min(line_offset, data.size())) << std::endl
                     << std::string(dash_count, ' ') << '^' << std::endl
                     << std::string(dash_count, '~') << '+' << std::endl;
-            throw config_parser_error(error.str(), e.message(), line_number, dash_count + 1);
+            throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
         }
 
-        throw config_error(std::string("parser error: at unknown line: ") + e.message());
+        throw config_error_t(std::string("parser error: at unknown line: ") + e.message());
     }
 
     if (!m_root.is_object())
-        throw config_error("root must be an object");
+        throw config_error_t("root must be an object");
 }
 
 config_t config_parser_t::root() const
 {
-    return config_t("path", &m_root);
+    return config_t("<root>", m_root);
+}
+
+std::ostream&
+kora::operator<<(std::ostream& stream, const config_t& value) {
+    stream << value.underlying_object();
+    return stream;
 }
