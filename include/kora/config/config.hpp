@@ -185,7 +185,8 @@ public:
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to() const {
-        return m_value.to<T>(detail::config_conversion_controller_t(m_path));
+        detail::config_conversion_controller_t controller(m_path);
+        return m_value.to<T>(controller);
     }
 
     KORA_API
