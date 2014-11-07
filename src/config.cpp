@@ -273,11 +273,19 @@ config_parser_t::config_parser_t()
 {
 }
 
+config_parser_t::config_parser_t(const std::string &path) {
+    open(path);
+}
+
+config_parser_t::config_parser_t(std::istream &stream) {
+    parse(stream);
+}
+
 config_parser_t::~config_parser_t()
 {
 }
 
-void config_parser_t::open(const std::string &path)
+config_t config_parser_t::open(const std::string &path)
 {
     std::ifstream stream(path.c_str());
 
@@ -285,10 +293,10 @@ void config_parser_t::open(const std::string &path)
         throw std::runtime_error("failed to open config file: '" + path + "'");
     }
 
-    parse(stream);
+    return parse(stream);
 }
 
-void config_parser_t::parse(std::istream &stream)
+config_t config_parser_t::parse(std::istream &stream)
 {
     try {
         m_root = kora::dynamic_t::from_json(stream);
@@ -352,6 +360,8 @@ void config_parser_t::parse(std::istream &stream)
 
     if (!m_root.is_object())
         throw config_error_t("<root> must be an object");
+
+    return root();
 }
 
 config_t config_parser_t::root() const

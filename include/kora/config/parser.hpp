@@ -37,14 +37,22 @@ public:
     config_parser_t();
 
     KORA_API
+    explicit
+    config_parser_t(const std::string &path);
+
+    KORA_API
+    explicit
+    config_parser_t(std::istream &stream);
+
+    KORA_API
     ~config_parser_t();
 
     KORA_API
-    void
+    config_t
     open(const std::string &path);
 
     KORA_API
-    void
+    config_t
     parse(std::istream &stream);
 
     KORA_API
