@@ -70,7 +70,7 @@ public:
 };
 
 class KORA_API expected_bool_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_bool_t() KORA_NOEXCEPT;
@@ -82,7 +82,7 @@ public:
 
 // The object should contain value of type dynamic_t::int_t.
 class KORA_API expected_int_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_int_t() KORA_NOEXCEPT;
@@ -94,7 +94,7 @@ public:
 
 // The object should contain value of type dynamic_t::uint_t.
 class KORA_API expected_uint_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_uint_t() KORA_NOEXCEPT;
@@ -106,7 +106,7 @@ public:
 
 // The object should contain any integer value (dynamic_t::int_t or dynamic_t::uint_t).
 class KORA_API expected_integer_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_integer_t() KORA_NOEXCEPT;
@@ -118,7 +118,7 @@ public:
 
 // The object should contain value of type dynamic_t::double_t.
 class KORA_API expected_double_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_double_t() KORA_NOEXCEPT;
@@ -130,7 +130,7 @@ public:
 
 // The object should contain any numeric value (floating point or integer).
 class KORA_API expected_number_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_number_t() KORA_NOEXCEPT;
@@ -141,7 +141,7 @@ public:
 };
 
 class KORA_API expected_string_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_string_t() KORA_NOEXCEPT;
@@ -152,7 +152,7 @@ public:
 };
 
 class KORA_API expected_array_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_array_t() KORA_NOEXCEPT;
@@ -163,7 +163,7 @@ public:
 };
 
 class KORA_API expected_object_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~expected_object_t() KORA_NOEXCEPT;
@@ -175,7 +175,7 @@ public:
 
 // Indicates that the object should contain an array of some fixed size.
 class KORA_API expected_tuple_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     explicit expected_tuple_t(size_t expected_size) KORA_NOEXCEPT;
@@ -195,7 +195,7 @@ private:
 
 // Unable to convert the value to a numeric type.
 class KORA_API bad_numeric_cast_t :
-    public std::bad_cast
+    public bad_cast_t
 {
 public:
     ~bad_numeric_cast_t() KORA_NOEXCEPT;
