@@ -282,7 +282,7 @@ void config_parser_t::open(const std::string &path)
     std::ifstream stream(path.c_str());
 
     if (!stream) {
-        throw config_error_t("failed to open config file: '" + path + "'");
+        throw std::runtime_error("failed to open config file: '" + path + "'");
     }
 
     parse(stream);
