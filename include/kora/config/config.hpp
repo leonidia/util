@@ -159,10 +159,6 @@ public:
     }
 
     KORA_API
-    bool
-    has(size_t index) const;
-
-    KORA_API
     config_t
     at(size_t index) const;
 
