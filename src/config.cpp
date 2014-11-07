@@ -116,6 +116,7 @@ config_conversion_controller_t::prepare_message(std::stringstream &stream) const
 std::string
 config_conversion_controller_t::buildup_path() const {
     std::stringstream path;
+
     path << m_root_path;
 
     for (auto it = m_backtrace.begin(); it != m_backtrace.end(); ++it) {
@@ -129,64 +130,64 @@ config_conversion_controller_t::buildup_path() const {
     return path.str();
 }
 
-config_error_t::config_error_t(std::string message) : m_message(std::move(message))
-{
-}
+config_error_t::config_error_t(std::string message) :
+    m_message(std::move(message))
+{ }
 
-config_error_t::~config_error_t() KORA_NOEXCEPT
-{
-}
+config_error_t::~config_error_t() KORA_NOEXCEPT { }
 
-const char *config_error_t::what() const KORA_NOEXCEPT
-{
+const char*
+config_error_t::what() const KORA_NOEXCEPT {
     return m_message.c_str();
 }
 
-config_parser_error_t::config_parser_error_t(std::string message, std::string parse_error, size_t line_number, size_t column_number) :
+config_parser_error_t::config_parser_error_t(std::string message,
+                                             std::string parse_error,
+                                             size_t line_number,
+                                             size_t column_number) :
     config_error_t(std::move(message)),
     m_parse_error(std::move(parse_error)),
     m_line_number(line_number),
     m_column_number(column_number)
-{
-}
+{ }
 
-config_parser_error_t::~config_parser_error_t() KORA_NOEXCEPT
-{
-}
+config_parser_error_t::~config_parser_error_t() KORA_NOEXCEPT { }
 
-const std::string &config_parser_error_t::parse_error() const
-{
+const std::string&
+config_parser_error_t::parse_error() const {
     return m_parse_error;
 }
 
-size_t config_parser_error_t::line_number() const
-{
+size_t
+config_parser_error_t::line_number() const {
     return m_line_number;
 }
 
-size_t config_parser_error_t::column_number() const
-{
+size_t
+config_parser_error_t::column_number() const {
     return m_column_number;
 }
 
 
 config_t::config_t(const std::string &path, const dynamic_t &value) :
-    m_path(path), m_value(value)
-{
-}
+    m_path(path),
+    m_value(value)
+{ }
 
-bool config_t::has(const std::string &name) const
-{
+bool
+config_t::has(const std::string &name) const {
     const auto &object = this->to<dynamic_t::object_t>();
 
     return object.find(name) != object.end();
 }
 
-config_t config_t::at(const std::string &name) const
-{
+config_t
+config_t::at(const std::string &name) const {
     const std::string path = m_path + "." + name;
-    if (!has(name))
+
+    if (!has(name)) {
         throw config_error_t(path + " is missed");
+    }
 
     return config_t(path, m_value.as_object().find(name)->second);
 }
@@ -240,38 +241,37 @@ namespace kora {
 
 } // namespace kora
 
-size_t config_t::size() const
-{
+size_t
+config_t::size() const {
     // Here we have a weird  way to get size of the underlying value,
     // but the type check is performed via the same code as all other ones.
     return this->to<size_tag_t>();
 }
 
-config_t config_t::at(size_t index) const
-{
+config_t
+config_t::at(size_t index) const {
     const auto &array = this->to<dynamic_t::array_t>();
 
     const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
-    if (index >= array.size())
+    if (index >= array.size()) {
         throw config_error_t(path + " is missed");
+    }
 
     return config_t(path, array[index]);
 }
 
-const std::string &config_t::path() const
-{
+const std::string&
+config_t::path() const {
     return m_path;
 }
 
-const dynamic_t &config_t::underlying_object() const
-{
+const dynamic_t&
+config_t::underlying_object() const {
     return m_value;
 }
 
-config_parser_t::config_parser_t()
-{
-}
+config_parser_t::config_parser_t() { }
 
 config_parser_t::config_parser_t(const std::string &path) {
     open(path);
@@ -281,12 +281,10 @@ config_parser_t::config_parser_t(std::istream &stream) {
     parse(stream);
 }
 
-config_parser_t::~config_parser_t()
-{
-}
+config_parser_t::~config_parser_t() { }
 
-config_t config_parser_t::open(const std::string &path)
-{
+config_t
+config_parser_t::open(const std::string &path) {
     std::ifstream stream(path.c_str());
 
     if (!stream) {
@@ -296,8 +294,8 @@ config_t config_parser_t::open(const std::string &path)
     return parse(stream);
 }
 
-config_t config_parser_t::parse(std::istream &stream)
-{
+config_t
+config_parser_t::parse(std::istream &stream) {
     try {
         m_root = kora::dynamic_t::from_json(stream);
     } catch (const kora::json_parsing_error_t& e) {
@@ -305,13 +303,15 @@ config_t config_parser_t::parse(std::istream &stream)
         if (stream) {
             size_t offset = e.offset();
             std::vector<char> buffer(offset);
+
             stream.read(buffer.data(), offset);
 
             std::string data(buffer.begin(), buffer.end());
             std::string line;
 
-            if (std::getline(stream, line))
+            if (std::getline(stream, line)) {
                 data += line;
+            }
 
             /*
              * Produce a pretty output about the error
@@ -320,17 +320,20 @@ config_t config_parser_t::parse(std::istream &stream)
              */
 
             size_t line_offset = data.find_last_of('\n');
-            if (line_offset == std::string::npos)
+
+            if (line_offset == std::string::npos) {
                 line_offset = 0;
-            else
+            } else {
                 line_offset++;
+            }
 
             for (size_t i = line_offset; i < data.size(); ++i) {
                 if (data[i] == '\t') {
                     data.replace(i, 1, std::string(4, ' '));
 
-                    if (offset > i)
+                    if (offset > i) {
                         offset += 3;
+                    }
                 }
             }
 
@@ -339,6 +342,7 @@ config_t config_parser_t::parse(std::istream &stream)
 
             for (size_t i = 0; line_offset > 1 && i < 2; ++i) {
                 line_offset = data.find_last_of('\n', line_offset - 2);
+
                 if (line_offset == std::string::npos) {
                     line_offset = 0;
                 } else {
@@ -351,6 +355,7 @@ config_t config_parser_t::parse(std::istream &stream)
                   << data.substr(std::min(line_offset, data.size())) << std::endl
                   << std::string(dash_count, ' ') << '^' << std::endl
                   << std::string(dash_count, '~') << '+' << std::endl;
+
             throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
         }
 
@@ -359,19 +364,21 @@ config_t config_parser_t::parse(std::istream &stream)
         throw config_parser_error_t(std::move(what), e.message(), 0, 0);
     }
 
-    if (!m_root.is_object())
+    if (!m_root.is_object()) {
         throw config_error_t("<root> must be an object");
+    }
 
     return root();
 }
 
-config_t config_parser_t::root() const
-{
+config_t
+config_parser_t::root() const {
     return config_t("<root>", m_root);
 }
 
 std::ostream&
 kora::operator<<(std::ostream& stream, const config_t& value) {
     stream << value.underlying_object();
+    
     return stream;
 }
