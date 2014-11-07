@@ -347,15 +347,16 @@ config_t config_parser_t::parse(std::istream &stream)
             }
 
             std::stringstream error;
-            error
-                    << "parser error at line " << line_number << ": " << e.message() << std::endl
-                    << data.substr(std::min(line_offset, data.size())) << std::endl
-                    << std::string(dash_count, ' ') << '^' << std::endl
-                    << std::string(dash_count, '~') << '+' << std::endl;
+            error << "parser error at line " << line_number << ": " << e.message() << std::endl
+                  << data.substr(std::min(line_offset, data.size())) << std::endl
+                  << std::string(dash_count, ' ') << '^' << std::endl
+                  << std::string(dash_count, '~') << '+' << std::endl;
             throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
         }
 
-        throw config_error_t(std::string("parser error: at unknown line: ") + e.message());
+        std::string what = std::string("parser error: at unknown line: ") + e.message();
+
+        throw config_parser_error_t(std::move(what), e.message(), 0, 0);
     }
 
     if (!m_root.is_object())
