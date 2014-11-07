@@ -18,17 +18,21 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_UTILITY_HPP
-#define KORA_UTILITY_HPP
+#ifndef KORA_UTILITY_TYPE_TRAITS_HPP
+#define KORA_UTILITY_TYPE_TRAITS_HPP
 
-#include "kora/utility/noexcept.hpp"
-#include "kora/utility/noncopyable.hpp"
-#include "kora/utility/noreturn.hpp"
-#include "kora/utility/nullptr.hpp"
-#include "kora/utility/platform.hpp"
-#include "kora/utility/sfinae.hpp"
-#include "kora/utility/stdatomic.hpp"
-#include "kora/utility/type_traits.hpp"
-#include "kora/utility/visibility.hpp"
+#include <type_traits>
+
+namespace kora {
+
+// It's like std::decay, but doesn't convert arrays to pointers.
+template<class T>
+struct pristine {
+    typedef typename std::remove_cv<
+        typename std::remove_reference<T>::type
+    >::type type;
+};
+
+} // namespace kora
 
 #endif

@@ -18,17 +18,29 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_UTILITY_HPP
-#define KORA_UTILITY_HPP
+#ifndef KORA_UTILITY_SFINAE_HPP
+#define KORA_UTILITY_SFINAE_HPP
 
-#include "kora/utility/noexcept.hpp"
-#include "kora/utility/noncopyable.hpp"
-#include "kora/utility/noreturn.hpp"
-#include "kora/utility/nullptr.hpp"
-#include "kora/utility/platform.hpp"
-#include "kora/utility/sfinae.hpp"
-#include "kora/utility/stdatomic.hpp"
-#include "kora/utility/type_traits.hpp"
-#include "kora/utility/visibility.hpp"
+namespace kora {
+
+// Use it instead of std::enable_if to enable a specialization if your dependent type T has
+// some nested type.
+// Usage: template<class T> struct some_struct<T, typename depends<T::nested_type>::type> { }
+template<class T, class Result = void>
+struct requires_type {
+    typedef Result type;
+};
+
+// Use it instead of std::enable_if to enable a specialization if your dependent type T has
+// some method.
+// Usage:
+// template<class T>
+// struct some_struct<T, typename requires_method<void(T::*)(int, double), T::method_name>::type> { }
+template<class Method, Method, class Result = void>
+struct requires_method {
+    typedef Result type;
+};
+
+} // namespace kora
 
 #endif

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2011-2013 Andrey Sibiryov <me@kobology.ru>
+Copyright (c) 2013 Andrey Goryachev <andrey.goryachev@gmail.com>
 Copyright (c) 2011-2013 Other contributors as noted in the AUTHORS file.
 
 This file is part of Kora.
@@ -18,25 +18,15 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_PLATFORM_HPP
-#define KORA_PLATFORM_HPP
+#ifndef KORA_UTILITY_NOEXCEPT_HPP
+#define KORA_UTILITY_NOEXCEPT_HPP
 
-#if defined(__GNUC__)
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 4
-#define KORA_HAVE_GCC44
-#endif
+#include "kora/utility/platform.hpp"
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 6
-#define KORA_HAVE_GCC46
-#endif
-
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 7
-#define KORA_HAVE_GCC47
-#endif
-#endif
-
-#if !defined(KORA_HAVE_GCC44) || defined(KORA_HAVE_GCC46)
-#define KORA_NOT_BAD
+#ifdef KORA_NOT_BAD
+    #define KORA_NOEXCEPT noexcept
+#else
+    #define KORA_NOEXCEPT throw()
 #endif
 
 #endif

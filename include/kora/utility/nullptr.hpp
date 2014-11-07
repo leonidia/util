@@ -18,17 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_UTILITY_HPP
-#define KORA_UTILITY_HPP
+#ifndef KORA_UTILITY_NULLPTR_HPP
+#define KORA_UTILITY_NULLPTR_HPP
 
-#include "kora/utility/noexcept.hpp"
-#include "kora/utility/noncopyable.hpp"
-#include "kora/utility/noreturn.hpp"
-#include "kora/utility/nullptr.hpp"
 #include "kora/utility/platform.hpp"
-#include "kora/utility/sfinae.hpp"
-#include "kora/utility/stdatomic.hpp"
-#include "kora/utility/type_traits.hpp"
-#include "kora/utility/visibility.hpp"
+
+#if !defined(KORA_NOT_BAD)
+    #define nullptr __null
+#endif
 
 #endif

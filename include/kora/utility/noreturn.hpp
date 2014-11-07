@@ -18,15 +18,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_STDATOMIC_HPP
-#define KORA_STDATOMIC_HPP
+#ifndef KORA_UTILITY_NORETURN_HPP
+#define KORA_UTILITY_NORETURN_HPP
 
-#include "kora/platform.hpp"
-
-#ifdef KORA_NOT_BAD
-    #include <atomic>
+#ifdef __GNUC__
+    #define KORA_NORETURN __attribute__ ((__noreturn__))
 #else
-    #include <cstdatomic>
+    #define KORA_NORETURN [[noreturn]]
 #endif
 
 #endif

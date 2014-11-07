@@ -18,17 +18,17 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_UTILITY_HPP
-#define KORA_UTILITY_HPP
+#ifndef KORA_UTILITY_VISIBILITY_HPP
+#define KORA_UTILITY_VISIBILITY_HPP
 
-#include "kora/utility/noexcept.hpp"
-#include "kora/utility/noncopyable.hpp"
-#include "kora/utility/noreturn.hpp"
-#include "kora/utility/nullptr.hpp"
-#include "kora/utility/platform.hpp"
-#include "kora/utility/sfinae.hpp"
-#include "kora/utility/stdatomic.hpp"
-#include "kora/utility/type_traits.hpp"
-#include "kora/utility/visibility.hpp"
+#ifdef __GNUC__
+    #define KORA_API __attribute__ ((__visibility__ ("default")))
+    #define KORA_PUSH_VISIBLE _Pragma("GCC visibility push(default)")
+    #define KORA_POP_VISIBILITY _Pragma("GCC visibility pop")
+#else
+    #define KORA_API
+    #define KORA_PUSH_VISIBLE
+    #define KORA_POP_VISIBILITY
+#endif
 
 #endif
