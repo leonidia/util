@@ -191,17 +191,60 @@ config_t config_t::at(const std::string &name) const
     return config_t(path, m_value.as_object().find(name)->second);
 }
 
+namespace {
+
+    class KORA_API expected_nonscalar_t :
+        public bad_cast_t
+    {
+    public:
+        ~expected_nonscalar_t() KORA_NOEXCEPT { }
+
+        virtual
+        const char*
+        what() const KORA_NOEXCEPT {
+            return "the value expected to be a string, an array or an object";
+        }
+    };
+
+    struct size_tag_t { };
+
+} // namespace
+
+namespace kora {
+
+    template<>
+    struct dynamic_converter<size_tag_t> {
+        typedef size_t result_type;
+
+        template<class Controller>
+        static inline
+        result_type
+        convert(const dynamic_t& from, Controller& controller) {
+            if (from.is_string()) {
+                return from.as_string().size();
+            } else if (from.is_array()) {
+                return from.as_array().size();
+            } else if (from.is_object()) {
+                return from.as_object().size();
+            } else {
+                controller.fail(expected_nonscalar_t(), from);
+            }
+        }
+
+        static inline
+        bool
+        convertible(const dynamic_t& from) {
+            return from.is_string() || from.is_array() || from.is_object();
+        }
+    };
+
+} // namespace kora
+
 size_t config_t::size() const
 {
-    if (m_value.is_string()) {
-        return m_value.as_string().size();
-    } else if (m_value.is_array()) {
-        return m_value.as_array().size();
-    } else if (m_value.is_object()) {
-        return m_value.as_object().size();
-    } else {
-        throw config_error_t(m_path + " must be a string, an array or an object");
-    }
+    // Here we have a weird  way to get size of the underlying value,
+    // but the type check is performed via the same code as all other ones.
+    return this->to<size_tag_t>();
 }
 
 config_t config_t::at(size_t index) const
