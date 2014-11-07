@@ -191,8 +191,7 @@ config_t config_t::at(const std::string &name) const
     if (!has(name))
         throw config_error_t(path + " is missed");
 
-    const dynamic_t::object_t &object = m_value.as_object();
-    return config_t(path, object.find(name)->second);
+    return config_t(path, m_value.as_object().find(name)->second);
 }
 
 size_t config_t::size() const
@@ -208,23 +207,16 @@ size_t config_t::size() const
     }
 }
 
-bool config_t::has(size_t index) const
+config_t config_t::at(size_t index) const
 {
     assert_array();
 
-    const dynamic_t::array_t &array = m_value.as_array();
-    return index < array.size();
-}
-
-config_t config_t::at(size_t index) const
-{
     const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
-    if (!has(index))
+    if (index >= size())
         throw config_error_t(path + " is missed");
 
-    const dynamic_t::array_t &array = m_value.as_array();
-    return config_t(path, array[index]);
+    return config_t(path, m_value.as_array()[index]);
 }
 
 const std::string &config_t::path() const

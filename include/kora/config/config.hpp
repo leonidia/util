@@ -165,7 +165,9 @@ public:
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index, const T &default_value) const {
-        if (!has(index)) {
+        assert_array();
+
+        if (index >= size()) {
             return default_value;
         }
 
