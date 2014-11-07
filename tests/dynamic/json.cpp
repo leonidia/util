@@ -218,6 +218,49 @@ TEST(DynamicJson, GarbageIsBadJson) {
     check_parsing_error("fdkjfj!@#j");
 }
 
+TEST(DynamicJson, ValuesToJson) {
+    std::ostringstream output;
+
+    kora::dynamic_t().to_json(output);
+    EXPECT_EQ("null", output.str());
+
+    output.str("");
+    kora::dynamic_t(true).to_json(output);
+    EXPECT_EQ("true", output.str());
+
+    output.str("");
+    kora::dynamic_t(false).to_json(output);
+    EXPECT_EQ("false", output.str());
+
+    output.str("");
+    kora::dynamic_t(5).to_json(output);
+    EXPECT_EQ("5", output.str());
+
+    output.str("");
+    kora::dynamic_t(-5).to_json(output);
+    EXPECT_EQ("-5", output.str());
+
+    output.str("");
+    kora::dynamic_t(25.2).to_json(output);
+    EXPECT_EQ("25.2", output.str());
+
+    output.str("");
+    kora::dynamic_t(-25.2).to_json(output);
+    EXPECT_EQ("-25.2", output.str());
+
+    output.str("");
+    kora::dynamic_t("xd").to_json(output);
+    EXPECT_EQ("\"xd\"", output.str());
+
+    output.str("");
+    kora::dynamic_t(kora::dynamic_t::array_t()).to_json(output);
+    EXPECT_EQ("[]", output.str());
+
+    output.str("");
+    kora::dynamic_t(kora::dynamic_t::object_t()).to_json(output);
+    EXPECT_EQ("{}", output.str());
+}
+
 TEST(DynamicJson, ObjectToJson) {
     std::ostringstream output;
     construct_object().to_json(output);
@@ -242,11 +285,11 @@ TEST(DynamicJson, ValuesToStream) {
 
     output.str("");
     output << kora::dynamic_t(true);
-    EXPECT_EQ("true", output.str());
+    EXPECT_EQ("1", output.str());
 
     output.str("");
     output << kora::dynamic_t(false);
-    EXPECT_EQ("false", output.str());
+    EXPECT_EQ("0", output.str());
 
     output.str("");
     output << kora::dynamic_t(5);
@@ -266,7 +309,7 @@ TEST(DynamicJson, ValuesToStream) {
 
     output.str("");
     output << kora::dynamic_t("xd");
-    EXPECT_EQ("\"xd\"", output.str());
+    EXPECT_EQ("xd", output.str());
 
     output.str("");
     output << kora::dynamic_t(kora::dynamic_t::array_t());

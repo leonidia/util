@@ -821,11 +821,34 @@ dynamic_t::to_json(std::ostream &output) const {
     this->apply(to_stream_visitor(&writer));
 }
 
+namespace {
+
+struct print_vistor_t:
+    public boost::static_visitor<>
+{
+    print_vistor_t(std::ostream& stream) :
+        m_stream(stream)
+    { }
+
+    template<class T>
+    void
+    operator()(const T& v) const {
+        m_stream << v;
+    }
+
+private:
+    std::ostream& m_stream;
+};
+
+} // namespace
+
 std::ostream&
 kora::operator<<(std::ostream& stream, const dynamic_t& value) {
-    rapidjson_ostream_t rapidjson_stream = &stream;
-    ostream_writer_t writer = rapidjson_stream;
-    writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
-    value.apply(to_stream_visitor(&writer));
+    if (value.is_null() || value.is_array() || value.is_object()) {
+        value.to_json(stream);
+    } else {
+        value.apply(print_vistor_t(stream));
+    }
+
     return stream;
 }
