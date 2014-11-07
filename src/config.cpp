@@ -197,8 +197,15 @@ config_t config_t::at(const std::string &name) const
 
 size_t config_t::size() const
 {
-    assert_array();
-    return m_value.as_array().size();
+    if (m_value.is_string()) {
+        return m_value.as_string().size();
+    } else if (m_value.is_array()) {
+        return m_value.as_array().size();
+    } else if (m_value.is_object()) {
+        return m_value.as_object().size();
+    } else {
+        throw config_error_t(m_path + " must be a string, an array or an object");
+    }
 }
 
 bool config_t::has(size_t index) const

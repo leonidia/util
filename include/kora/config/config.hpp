@@ -131,6 +131,10 @@ public:
     config_t(const std::string &path, const dynamic_t &value);
 
     KORA_API
+    size_t
+    size() const;
+
+    KORA_API
     bool
     has(const std::string &name) const;
 
@@ -153,10 +157,6 @@ public:
     at(const std::string &name) const {
         return at(name).to<T>();
     }
-
-    KORA_API
-    size_t
-    size() const;
 
     KORA_API
     bool
