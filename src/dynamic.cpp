@@ -815,10 +815,9 @@ dynamic_t::from_json(std::istream &input) {
 
 void
 dynamic_t::to_json(std::ostream &output) const {
-    BOOST_ASSERT(is_object() || is_array());
-
     rapidjson_ostream_t rapidjson_stream = &output;
     ostream_writer_t writer = rapidjson_stream;
+    writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
     this->apply(to_stream_visitor(&writer));
 }
 
