@@ -28,7 +28,6 @@ KORA_POP_VISIBILITY
 
 #include <fstream>
 #include <sstream>
-#include <stack>
 
 using namespace kora;
 using namespace kora::detail;
@@ -178,9 +177,7 @@ config_t::config_t(const std::string &path, const dynamic_t &value) :
 
 bool config_t::has(const std::string &name) const
 {
-    assert_object();
-
-    const dynamic_t::object_t &object = m_value.as_object();
+    const auto &object = this->to<dynamic_t::object_t>();
 
     return object.find(name) != object.end();
 }
@@ -209,14 +206,14 @@ size_t config_t::size() const
 
 config_t config_t::at(size_t index) const
 {
-    assert_array();
+    const auto &array = this->to<dynamic_t::array_t>();
 
     const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
-    if (index >= size())
+    if (index >= array.size())
         throw config_error_t(path + " is missed");
 
-    return config_t(path, m_value.as_array()[index]);
+    return config_t(path, array[index]);
 }
 
 const std::string &config_t::path() const
@@ -227,18 +224,6 @@ const std::string &config_t::path() const
 const dynamic_t &config_t::underlying_object() const
 {
     return m_value;
-}
-
-void config_t::assert_array() const
-{
-    if (!m_value.is_array())
-        throw config_error_t(m_path + " must be an array");
-}
-
-void config_t::assert_object() const
-{
-    if (!m_value.is_object())
-        throw config_error_t(m_path + " must be an object");
 }
 
 config_parser_t::config_parser_t()

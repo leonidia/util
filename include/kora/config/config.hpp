@@ -165,13 +165,11 @@ public:
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index, const T &default_value) const {
-        assert_array();
-
-        if (index >= size()) {
+        if (index >= this->to<dynamic_t::array_t>().size()) {
             return default_value;
+        } else {
+            return at(index).to<T>();
         }
-
-        return at(index).to<T>();
     }
 
     template <typename T>
@@ -193,13 +191,6 @@ public:
 
     const dynamic_t&
     underlying_object() const;
-
-private:
-    void
-    assert_array() const;
-
-    void
-    assert_object() const;
 
 protected:
     std::string m_path;
