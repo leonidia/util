@@ -25,7 +25,7 @@ namespace kora {
 
 // Use it instead of std::enable_if to enable a specialization if your dependent type T has
 // some nested type.
-// Usage: template<class T> struct some_struct<T, typename depends<T::nested_type>::type> { }
+// Usage: template<class T> struct some_struct<T, typename requires_type<T::nested_type>::type> { }
 template<class T, class Result = void>
 struct requires_type {
     typedef Result type;
