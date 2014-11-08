@@ -76,8 +76,8 @@ TEST(Config, ParseErrorTest) {
         parser.parse(stream);
         GTEST_FAIL();
     } catch (kora::config_parser_error_t &error) {
-        GTEST_ASSERT_EQ(error.line_number(), 9);
-        GTEST_ASSERT_EQ(error.column_number(), 39);
+        GTEST_ASSERT_EQ(9, error.line_number());
+        GTEST_ASSERT_EQ(39, error.column_number());
     }
 }
 
@@ -92,8 +92,8 @@ TEST(Config, ParseErrorTest_2) {
         parser.parse(stream);
         GTEST_FAIL();
     } catch (kora::config_parser_error_t &error) {
-        GTEST_ASSERT_EQ(error.line_number(), 1);
-        GTEST_ASSERT_EQ(error.column_number(), 1);
+        GTEST_ASSERT_EQ(1, error.line_number());
+        GTEST_ASSERT_EQ(1, error.column_number());
     }
 }
 
@@ -108,7 +108,7 @@ TEST(Config, ParseErrorTest_3) {
         parser.parse(stream);
         GTEST_FAIL();
     } catch (kora::config_parser_error_t &error) {
-        GTEST_ASSERT_EQ(error.line_number(), 1);
-        GTEST_ASSERT_EQ(error.column_number(), 1);
+        GTEST_ASSERT_EQ(1, error.line_number());
+        GTEST_ASSERT_EQ(1, error.column_number());
     }
 }

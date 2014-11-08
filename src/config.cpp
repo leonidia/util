@@ -333,6 +333,20 @@ private:
     std::string m_log;
 };
 
+// Returns the last line and its position in the text.
+std::pair<std::string, size_t>
+get_last_line(const std::string& text) {
+    size_t line_offset = text.find_last_of('\n');
+
+    if (line_offset == std::string::npos) {
+        line_offset = 0;
+    } else {
+        line_offset++;
+    }
+
+    return std::pair<std::string, size_t>(text.substr(line_offset), line_offset);
+}
+
 } // namespace
 
 config_t
@@ -346,11 +360,11 @@ config_parser_t::parse(std::istream &stream) {
 
         m_root = kora::dynamic_t::from_json(proxy_stream);
     } catch (const kora::json_parsing_error_t& e) {
-        size_t offset = e.offset();
         std::string data = std::move(filter.data());
 
-        auto end_of_error_line = std::find(data.begin() + offset, data.end(), '\n');
+        auto end_of_error_line = std::find(data.begin() + e.offset(), data.end(), '\n');
 
+        // Read the entire line with the error and make it the last line of the buffer.
         if (end_of_error_line == data.end()) {
             std::string line;
 
@@ -367,44 +381,23 @@ config_parser_t::parse(std::istream &stream) {
          * the error occured.
          */
 
-        size_t line_offset = data.find_last_of('\n');
+        const size_t error_line_number = std::count(data.begin(), data.end(), '\n') + 1;
 
-        if (line_offset == std::string::npos) {
-            line_offset = 0;
-        } else {
-            line_offset++;
-        }
+        std::string error_line; size_t error_line_offset = 0;
+        std::tie(error_line, error_line_offset) = get_last_line(data);
 
-        for (size_t i = line_offset; i < data.size(); ++i) {
-            if (data[i] == '\t') {
-                data.replace(i, 1, std::string(4, ' '));
+        // Let's assume that the tab length is one for simplicity.
+        std::replace(error_line.begin(), error_line.end(), '\t', ' ');
 
-                if (offset > i) {
-                    offset += 3;
-                }
-            }
-        }
-
-        const size_t line_number = std::count(data.begin(), data.end(), '\n') + 1;
-        const size_t dash_count = line_offset < offset ? offset - line_offset - 1 : 0;
-
-        for (size_t i = 0; line_offset > 1 && i < 2; ++i) {
-            line_offset = data.find_last_of('\n', line_offset - 2);
-
-            if (line_offset == std::string::npos) {
-                line_offset = 0;
-            } else {
-                line_offset++;
-            }
-        }
+        const size_t dash_count = e.offset() - error_line_offset;
 
         std::stringstream error;
-        error << "parser error at line " << line_number << ": " << e.message() << std::endl
-              << data.substr(std::min(line_offset, data.size())) << std::endl
+        error << "parser error at line " << error_line_number << ": " << e.message() << std::endl
+              << error_line << std::endl
               << std::string(dash_count, ' ') << '^' << std::endl
               << std::string(dash_count, '~') << '+' << std::endl;
 
-        throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
+        throw config_parser_error_t(error.str(), e.message(), error_line_number, dash_count + 1);
     }
 
     if (!m_root.is_object()) {
