@@ -23,6 +23,7 @@
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
 
+#include <algorithm>
 #include <stack>
 
 using namespace kora;
@@ -803,10 +804,12 @@ dynamic_t::from_json(std::istream &input) {
     );
 
     if (!parse_success) {
+        size_t error_offset = std::max<size_t>(1, json_stream.Tell()) - 1;
+
         if (json_reader.HasParseError()) {
-            throw json_parsing_error_t(json_stream.Tell(), json_reader.GetParseError());
+            throw json_parsing_error_t(error_offset, json_reader.GetParseError());
         } else {
-            throw json_parsing_error_t(json_stream.Tell(), "unknown error");
+            throw json_parsing_error_t(error_offset, "unknown error");
         }
     }
 
