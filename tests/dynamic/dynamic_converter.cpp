@@ -577,3 +577,274 @@ TEST(DynamicConverter, UnorderedMapStringInt) {
     EXPECT_EQ(1337, destination["key1"]);
     EXPECT_EQ(-5, destination["key2"]);
 }
+
+namespace {
+
+    struct test_tag_t { };
+
+    class test_conversion_exception_t :
+        public kora::bad_cast_t
+    {
+    public:
+        ~test_conversion_exception_t() KORA_NOEXCEPT { }
+    };
+
+} // namespace
+
+namespace kora {
+
+    template<>
+    struct dynamic_converter<test_tag_t> {
+        typedef int result_type;
+
+        template<class Controller>
+        static inline
+        result_type
+        convert(const dynamic_t& from, Controller& controller) {
+            if (from.is_int()) {
+                return from.as_int();
+            } else {
+                controller.fail(test_conversion_exception_t(), from);
+            }
+        }
+
+        static inline
+        bool
+        convertible(const dynamic_t& from) {
+            return from.is_int();
+        }
+    };
+
+} // namespace kora
+
+TEST(DynamicConverter, CustomConverter) {
+    auto conversion_result = kora::dynamic_t(kora::dynamic_t::int_t(-5)).to<test_tag_t>();
+
+    static_assert(std::is_same<int, decltype(conversion_result)>::value,
+                  "Type of conversion result expected to be int");
+
+    EXPECT_EQ(-5, conversion_result);
+
+    EXPECT_THROW(kora::dynamic_t(false).to<test_tag_t>(), test_conversion_exception_t);
+}
+
+namespace {
+
+struct test_object_controller_t {
+    test_object_controller_t() :
+        start_was_called(false),
+        finish_was_called(false)
+    { }
+
+    void
+    start_array(const kora::dynamic_t&) {
+        FAIL();
+    }
+
+    void
+    finish_array() {
+        FAIL();
+    }
+
+    void
+    item(size_t) {
+        FAIL();
+    }
+
+    void
+    start_object(const kora::dynamic_t& obj) {
+        EXPECT_TRUE(obj.is_object());
+        EXPECT_TRUE(object_keys.empty());
+
+        start_was_called = true;
+    }
+
+    void
+    finish_object() {
+        finish_was_called = true;
+    }
+
+    void
+    item(const std::string &key) {
+        EXPECT_GT(5, object_keys.size());
+        EXPECT_EQ(0, object_keys.count(key));
+
+        object_keys.insert(key);
+    }
+
+    template<class Exception>
+    KORA_NORETURN
+    void
+    fail(const Exception&, const kora::dynamic_t&) const {
+        // FAIL() cannot be used here because it tries to return void (why?)
+        // and this whould be bad noreturn function.
+        ADD_FAILURE();
+        std::terminate();
+    }
+
+    std::set<std::string> object_keys;
+    bool start_was_called;
+    bool finish_was_called;
+};
+
+struct test_array_controller_t {
+    test_array_controller_t() :
+        start_was_called(false),
+        finish_was_called(false)
+    { }
+
+    void
+    start_array(const kora::dynamic_t& obj) {
+        EXPECT_TRUE(obj.is_array());
+        EXPECT_TRUE(array_indeces.empty());
+
+        start_was_called = true;
+    }
+
+    void
+    finish_array() {
+        finish_was_called = true;
+    }
+
+    void
+    item(size_t index) {
+        EXPECT_GT(5, array_indeces.size());
+        EXPECT_EQ(0, array_indeces.count(index));
+
+        array_indeces.insert(index);
+    }
+
+    void
+    start_object(const kora::dynamic_t&) {
+        FAIL();
+    }
+
+    void
+    finish_object() {
+        FAIL();
+    }
+
+    void
+    item(const std::string&) {
+        FAIL();
+    }
+
+    template<class Exception>
+    KORA_NORETURN
+    void
+    fail(const Exception&, const kora::dynamic_t&) const {
+        // FAIL() cannot be used here because it tries to return void (why?)
+        // and this whould be bad noreturn function.
+        ADD_FAILURE();
+        std::terminate();
+    }
+
+    std::set<size_t> array_indeces;
+    bool start_was_called;
+    bool finish_was_called;
+};
+
+struct test_exception_controller_t {
+    void
+    start_array(const kora::dynamic_t&) {
+        FAIL();
+    }
+
+    void
+    finish_array() {
+        FAIL();
+    }
+
+    void
+    item(size_t) {
+        FAIL();
+    }
+
+    void
+    start_object(const kora::dynamic_t& obj) {
+        EXPECT_TRUE(obj.is_object());
+        EXPECT_TRUE(object_keys.empty());
+    }
+
+    void
+    finish_object() {
+        FAIL();
+    }
+
+    void
+    item(const std::string &key) {
+        EXPECT_GT(5, object_keys.size());
+        EXPECT_EQ(0, object_keys.count(key));
+
+        object_keys.insert(key);
+        current_key = key;
+    }
+
+    template<class Exception>
+    KORA_NORETURN
+    void
+    fail(const Exception& error, const kora::dynamic_t& obj) const {
+        EXPECT_TRUE(obj.is_bool());
+
+        EXPECT_EQ("error_key", current_key);
+
+        throw error;
+    }
+
+    std::set<std::string> object_keys;
+    std::string current_key;
+};
+
+} // namespace
+
+TEST(DynamicConverter, ObjectController) {
+    kora::dynamic_t::object_t object;
+
+    object["key1"] = 5;
+    object["key2"] = 4;
+    object["key3"] = -5;
+    object["key4"] = 5.0;
+    object["key5"] = 3;
+
+    test_object_controller_t object_controller;
+    kora::dynamic_t(object).to<std::map<std::string, double>>(object_controller);
+
+    EXPECT_TRUE(object_controller.start_was_called);
+    EXPECT_TRUE(object_controller.finish_was_called);
+    EXPECT_EQ(5, object_controller.object_keys.size());
+    EXPECT_EQ(1, object_controller.object_keys.count("key1"));
+    EXPECT_EQ(1, object_controller.object_keys.count("key2"));
+    EXPECT_EQ(1, object_controller.object_keys.count("key3"));
+    EXPECT_EQ(1, object_controller.object_keys.count("key4"));
+    EXPECT_EQ(1, object_controller.object_keys.count("key5"));
+}
+
+TEST(DynamicConverter, ArrayController) {
+    kora::dynamic_t::array_t array(5, "value");
+
+    test_array_controller_t array_controller;
+    kora::dynamic_t(array).to<std::vector<std::string>>(array_controller);
+
+    EXPECT_TRUE(array_controller.start_was_called);
+    EXPECT_TRUE(array_controller.finish_was_called);
+    EXPECT_EQ(5, array_controller.array_indeces.size());
+    EXPECT_EQ(1, array_controller.array_indeces.count(0));
+    EXPECT_EQ(1, array_controller.array_indeces.count(1));
+    EXPECT_EQ(1, array_controller.array_indeces.count(2));
+    EXPECT_EQ(1, array_controller.array_indeces.count(3));
+    EXPECT_EQ(1, array_controller.array_indeces.count(4));
+}
+
+TEST(DynamicConverter, ErrorController) {
+    kora::dynamic_t::object_t ill_formed_object;
+
+    ill_formed_object["key1"] = 5;
+    ill_formed_object["key2"] = 4;
+    ill_formed_object["error_key"] = true;
+    ill_formed_object["key4"] = 5.0;
+    ill_formed_object["key5"] = 3;
+
+    test_exception_controller_t error_controller;
+    EXPECT_THROW((kora::dynamic_t(ill_formed_object).to<std::map<std::string, double>>(error_controller)),
+                 kora::bad_cast_t);
+}
