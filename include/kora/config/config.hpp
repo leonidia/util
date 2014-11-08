@@ -126,9 +126,14 @@ private:
 } // namespace detail
 
 class config_t {
+    KORA_NONCOPYABLE(config_t)
+
 public:
     KORA_API
     config_t(const std::string &path, const dynamic_t &value);
+
+    KORA_API
+    config_t(config_t&& other) KORA_NOEXCEPT;
 
     KORA_API
     size_t

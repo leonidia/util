@@ -174,6 +174,11 @@ config_t::config_t(const std::string &path, const dynamic_t &value) :
     m_value(value)
 { }
 
+config_t::config_t(config_t&& other) KORA_NOEXCEPT :
+    m_path(std::move(other.m_path)),
+    m_value(other.m_value)
+{ }
+
 bool
 config_t::has(const std::string &name) const {
     const auto &object = this->to<dynamic_t::object_t>();
@@ -379,6 +384,6 @@ config_parser_t::root() const {
 std::ostream&
 kora::operator<<(std::ostream& stream, const config_t& value) {
     stream << value.underlying_object();
-    
+
     return stream;
 }
