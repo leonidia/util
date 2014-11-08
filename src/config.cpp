@@ -23,6 +23,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "kora/config/parser.hpp"
 
 KORA_PUSH_VISIBLE
+#include <boost/iostreams/char_traits.hpp>
+#include <boost/iostreams/categories.hpp>
+#include <boost/iostreams/operations.hpp>
+#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/lexical_cast.hpp>
 KORA_POP_VISIBILITY
 
@@ -299,74 +303,108 @@ config_parser_t::open(const std::string &path) {
     return parse(stream);
 }
 
+namespace {
+
+class logging_filter_t {
+public:
+    typedef char char_type;
+    struct category: boost::iostreams::input_filter_tag, boost::iostreams::multichar_tag { };
+
+    std::string&
+    data() {
+        return m_log;
+    }
+
+    template<typename Source>
+    std::streamsize
+    read(Source& src, char *buffer, std::streamsize max_size) {
+        std::streamsize result = boost::iostreams::read(src, buffer, max_size);
+
+        if (result == -1) {
+            return -1;
+        } else {
+            m_log.append(buffer, result);
+
+            return result;
+        }
+    }
+
+private:
+    std::string m_log;
+};
+
+} // namespace
+
 config_t
 config_parser_t::parse(std::istream &stream) {
+    logging_filter_t filter;
+
     try {
-        m_root = kora::dynamic_t::from_json(stream);
+        boost::iostreams::filtering_istream proxy_stream;
+        proxy_stream.push(boost::ref(filter));
+        proxy_stream.push(boost::ref(stream));
+
+        m_root = kora::dynamic_t::from_json(proxy_stream);
     } catch (const kora::json_parsing_error_t& e) {
-        stream.seekg(0);
-        if (stream) {
-            size_t offset = e.offset();
-            std::vector<char> buffer(offset);
+        size_t offset = e.offset();
+        std::string data = std::move(filter.data());
 
-            stream.read(buffer.data(), offset);
+        auto end_of_error_line = std::find(data.begin() + offset, data.end(), '\n');
 
-            std::string data(buffer.begin(), buffer.end());
+        if (end_of_error_line == data.end()) {
             std::string line;
 
             if (std::getline(stream, line)) {
                 data += line;
             }
+        } else {
+            data.erase(end_of_error_line, data.end());
+        }
 
-            /*
-             * Produce a pretty output about the error
-             * including the line and certain place where
-             * the error occured.
-             */
+        /*
+         * Produce a pretty output about the error
+         * including the line and certain place where
+         * the error occured.
+         */
 
-            size_t line_offset = data.find_last_of('\n');
+        size_t line_offset = data.find_last_of('\n');
+
+        if (line_offset == std::string::npos) {
+            line_offset = 0;
+        } else {
+            line_offset++;
+        }
+
+        for (size_t i = line_offset; i < data.size(); ++i) {
+            if (data[i] == '\t') {
+                data.replace(i, 1, std::string(4, ' '));
+
+                if (offset > i) {
+                    offset += 3;
+                }
+            }
+        }
+
+        const size_t line_number = std::count(data.begin(), data.end(), '\n') + 1;
+        const size_t dash_count = line_offset < offset ? offset - line_offset - 1 : 0;
+
+        for (size_t i = 0; line_offset > 1 && i < 2; ++i) {
+            line_offset = data.find_last_of('\n', line_offset - 2);
 
             if (line_offset == std::string::npos) {
                 line_offset = 0;
             } else {
                 line_offset++;
             }
-
-            for (size_t i = line_offset; i < data.size(); ++i) {
-                if (data[i] == '\t') {
-                    data.replace(i, 1, std::string(4, ' '));
-
-                    if (offset > i) {
-                        offset += 3;
-                    }
-                }
-            }
-
-            const size_t line_number = std::count(data.begin(), data.end(), '\n') + 1;
-            const size_t dash_count = line_offset < offset ? offset - line_offset - 1 : 0;
-
-            for (size_t i = 0; line_offset > 1 && i < 2; ++i) {
-                line_offset = data.find_last_of('\n', line_offset - 2);
-
-                if (line_offset == std::string::npos) {
-                    line_offset = 0;
-                } else {
-                    line_offset++;
-                }
-            }
-
-            std::stringstream error;
-            error << "parser error at line " << line_number << ": " << e.message() << std::endl
-                  << data.substr(std::min(line_offset, data.size())) << std::endl
-                  << std::string(dash_count, ' ') << '^' << std::endl
-                  << std::string(dash_count, '~') << '+' << std::endl;
-
-            throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
         }
 
-        std::string what = std::string("parser error: at unknown line: ") + e.message();
+        std::stringstream error;
+        error << "parser error at line " << line_number << ": " << e.message() << std::endl
+              << data.substr(std::min(line_offset, data.size())) << std::endl
+              << std::string(dash_count, ' ') << '^' << std::endl
+              << std::string(dash_count, '~') << '+' << std::endl;
 
-        throw config_parser_error_t(std::move(what), e.message(), 0, 0);
+        throw config_parser_error_t(error.str(), e.message(), line_number, dash_count + 1);
     }
 
     if (!m_root.is_object()) {
