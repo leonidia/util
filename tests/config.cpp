@@ -109,6 +109,6 @@ TEST(Config, ParseErrorTest_3) {
         GTEST_FAIL();
     } catch (kora::config_parser_error_t &error) {
         GTEST_ASSERT_EQ(1, error.line_number());
-        GTEST_ASSERT_EQ(1, error.column_number());
+        GTEST_ASSERT_EQ(2, error.column_number());
     }
 }
