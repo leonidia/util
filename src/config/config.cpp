@@ -71,45 +71,33 @@ KORA_NORETURN
 void
 config_conversion_controller_t::fail(const expected_tuple_t& e, const dynamic_t&) const {
     std::stringstream error;
-    prepare_message(error);
     error << "the value must be an array of size " << e.expected_size();
 
-    throw config_error_t(std::move(error.str()));
+    throw config_cast_error_t(buildup_path(), std::move(error.str()));
 }
 
 KORA_NORETURN
 void
 config_conversion_controller_t::throw_config_error(const char *message) const {
-    std::stringstream error;
-    prepare_message(error);
-    error << message;
-
-    throw config_error_t(std::move(error.str()));
+    throw config_cast_error_t(buildup_path(), message);
 }
 
 KORA_NORETURN
 void
 config_conversion_controller_t::throw_integer_overflow_error(const char *min, const char *max) const {
     std::stringstream error;
-    prepare_message(error);
     error << "the value must be an integer between " << min << " and " << max;
 
-    throw config_error_t(std::move(error.str()));
+    throw config_cast_error_t(buildup_path(), std::move(error.str()));
 }
 
 KORA_NORETURN
 void
 config_conversion_controller_t::throw_float_overflow_error(const char *min, const char *max) const {
     std::stringstream error;
-    prepare_message(error);
     error << "the value must be a number between " << min << " and " << max;
 
-    throw config_error_t(std::move(error.str()));
-}
-
-void
-config_conversion_controller_t::prepare_message(std::stringstream &stream) const {
-    stream << "error in item " << buildup_path() << ": ";
+    throw config_cast_error_t(buildup_path(), std::move(error.str()));
 }
 
 std::string
@@ -151,66 +139,23 @@ config_t::at(const std::string &name) const {
     const std::string path = m_path + "." + name;
 
     if (!has(name)) {
-        throw config_error_t(path + " is missed");
+        throw config_access_error_t(path, "the value is missed");
     }
 
     return config_t(path, m_value.as_object().find(name)->second);
 }
 
-namespace {
-
-    class KORA_API expected_nonscalar_t :
-        public bad_cast_t
-    {
-    public:
-        ~expected_nonscalar_t() KORA_NOEXCEPT { }
-
-        virtual
-        const char*
-        what() const KORA_NOEXCEPT {
-            return "the value expected to be a string, an array or an object";
-        }
-    };
-
-    struct size_tag_t { };
-
-} // namespace
-
-namespace kora {
-
-    template<>
-    struct dynamic_converter<size_tag_t> {
-        typedef size_t result_type;
-
-        template<class Controller>
-        static inline
-        result_type
-        convert(const dynamic_t& from, Controller& controller) {
-            if (from.is_string()) {
-                return from.as_string().size();
-            } else if (from.is_array()) {
-                return from.as_array().size();
-            } else if (from.is_object()) {
-                return from.as_object().size();
-            } else {
-                controller.fail(expected_nonscalar_t(), from);
-            }
-        }
-
-        static inline
-        bool
-        convertible(const dynamic_t& from) {
-            return from.is_string() || from.is_array() || from.is_object();
-        }
-    };
-
-} // namespace kora
-
 size_t
 config_t::size() const {
-    // Here we have a weird  way to get size of the underlying value,
-    // but the type check is performed via the same code as all other ones, and it's good.
-    return this->to<size_tag_t>();
+    if (m_value.is_string()) {
+        return m_value.as_string().size();
+    } else if (m_value.is_array()) {
+        return m_value.as_array().size();
+    } else if (m_value.is_object()) {
+        return m_value.as_object().size();
+    } else {
+        throw config_cast_error_t(m_path, "the value expected to be a string, an array or an object");
+    }
 }
 
 config_t
@@ -220,7 +165,7 @@ config_t::at(size_t index) const {
     const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
 
     if (index >= array.size()) {
-        throw config_error_t(path + " is missed");
+        throw config_access_error_t(path, "the value is missed");
     }
 
     return config_t(path, array[index]);

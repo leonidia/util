@@ -34,6 +34,36 @@ config_error_t::what() const KORA_NOEXCEPT {
     return m_message.c_str();
 }
 
+config_value_error_t::config_value_error_t(std::string path, std::string message) :
+    config_error_t("error in item " + path + ": " + message),
+    m_path(std::move(path)),
+    m_message(std::move(message))
+{ }
+
+config_value_error_t::~config_value_error_t() KORA_NOEXCEPT { }
+
+const std::string&
+config_value_error_t::path() const {
+    return m_path;
+}
+
+const std::string&
+config_value_error_t::message() const {
+    return m_message;
+}
+
+config_access_error_t::config_access_error_t(std::string path, std::string message) :
+    config_value_error_t(path, message)
+{ }
+
+config_access_error_t::~config_access_error_t() KORA_NOEXCEPT { }
+
+config_cast_error_t::config_cast_error_t(std::string path, std::string message) :
+    config_value_error_t(path, message)
+{ }
+
+config_cast_error_t::~config_cast_error_t() KORA_NOEXCEPT { }
+
 config_parser_error_t::config_parser_error_t(std::string message,
                                              std::string parse_error,
                                              size_t line_number,

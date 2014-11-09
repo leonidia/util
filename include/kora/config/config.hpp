@@ -112,9 +112,6 @@ private:
     void
     throw_config_error(const char *message) const;
 
-    void
-    prepare_message(std::stringstream &stream) const;
-
     std::string
     buildup_path() const;
 

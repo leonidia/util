@@ -44,6 +44,43 @@ private:
     std::string m_message;
 };
 
+class KORA_API config_value_error_t :
+    public config_error_t
+{
+public:
+    config_value_error_t(std::string path, std::string message);
+
+    ~config_value_error_t() KORA_NOEXCEPT;
+
+    const std::string&
+    path() const;
+
+    const std::string&
+    message() const;
+
+private:
+    std::string m_path;
+    std::string m_message;
+};
+
+class KORA_API config_access_error_t :
+    public config_value_error_t
+{
+public:
+    config_access_error_t(std::string path, std::string message);
+
+    ~config_access_error_t() KORA_NOEXCEPT;
+};
+
+class KORA_API config_cast_error_t :
+    public config_value_error_t
+{
+public:
+    config_cast_error_t(std::string path, std::string message);
+
+    ~config_cast_error_t() KORA_NOEXCEPT;
+};
+
 class KORA_API config_parser_error_t :
     public config_error_t
 {

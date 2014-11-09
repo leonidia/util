@@ -154,7 +154,7 @@ config_parser_t::parse(std::istream &stream) {
     }
 
     if (!m_root.is_object()) {
-        throw config_error_t("<root> must be an object");
+        throw config_cast_error_t("<root>", "the value must be an object");
     }
 
     return root();
