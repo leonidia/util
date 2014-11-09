@@ -17,8 +17,13 @@ INCLUDE_DIRECTORIES(BEFORE
 )
 
 ADD_LIBRARY(kora-util SHARED
-    src/dynamic
-    src/config
+    src/dynamic/dynamic
+    src/dynamic/error
+    src/dynamic/json
+    src/dynamic/object
+    src/config/config
+    src/config/error
+    src/config/parser
 )
 
 TARGET_LINK_LIBRARIES(kora-util

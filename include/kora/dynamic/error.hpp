@@ -23,8 +23,8 @@
 
 #include "kora/utility.hpp"
 
-#include <functional>
 #include <stdexcept>
+#include <string>
 #include <typeinfo>
 
 namespace kora {

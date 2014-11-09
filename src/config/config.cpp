@@ -19,18 +19,13 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kora/config.hpp"
-#include "kora/config/parser.hpp"
+#include "kora/config/config.hpp"
+#include "kora/config/error.hpp"
 
 KORA_PUSH_VISIBLE
-#include <boost/iostreams/char_traits.hpp>
-#include <boost/iostreams/categories.hpp>
-#include <boost/iostreams/operations.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
 #include <boost/lexical_cast.hpp>
 KORA_POP_VISIBILITY
 
-#include <fstream>
 #include <sstream>
 
 using namespace kora;
@@ -134,45 +129,6 @@ config_conversion_controller_t::buildup_path() const {
     return path.str();
 }
 
-config_error_t::config_error_t(std::string message) :
-    m_message(std::move(message))
-{ }
-
-config_error_t::~config_error_t() KORA_NOEXCEPT { }
-
-const char*
-config_error_t::what() const KORA_NOEXCEPT {
-    return m_message.c_str();
-}
-
-config_parser_error_t::config_parser_error_t(std::string message,
-                                             std::string parse_error,
-                                             size_t line_number,
-                                             size_t column_number) :
-    config_error_t(std::move(message)),
-    m_parse_error(std::move(parse_error)),
-    m_line_number(line_number),
-    m_column_number(column_number)
-{ }
-
-config_parser_error_t::~config_parser_error_t() KORA_NOEXCEPT { }
-
-const std::string&
-config_parser_error_t::parse_error() const {
-    return m_parse_error;
-}
-
-size_t
-config_parser_error_t::line_number() const {
-    return m_line_number;
-}
-
-size_t
-config_parser_error_t::column_number() const {
-    return m_column_number;
-}
-
-
 config_t::config_t(const std::string &path, const dynamic_t &value) :
     m_path(path),
     m_value(value)
@@ -253,7 +209,7 @@ namespace kora {
 size_t
 config_t::size() const {
     // Here we have a weird  way to get size of the underlying value,
-    // but the type check is performed via the same code as all other ones.
+    // but the type check is performed via the same code as all other ones, and it's good.
     return this->to<size_tag_t>();
 }
 
@@ -278,143 +234,4 @@ config_t::path() const {
 const dynamic_t&
 config_t::underlying_object() const {
     return m_value;
-}
-
-config_parser_t::config_parser_t() { }
-
-config_parser_t::config_parser_t(const std::string &path) {
-    open(path);
-}
-
-config_parser_t::config_parser_t(std::istream &stream) {
-    parse(stream);
-}
-
-config_parser_t::~config_parser_t() { }
-
-config_t
-config_parser_t::open(const std::string &path) {
-    std::ifstream stream(path.c_str());
-
-    if (!stream) {
-        throw std::runtime_error("failed to open config file: '" + path + "'");
-    }
-
-    return parse(stream);
-}
-
-namespace {
-
-class logging_filter_t {
-public:
-    typedef char char_type;
-    struct category: boost::iostreams::input_filter_tag, boost::iostreams::multichar_tag { };
-
-    std::string&
-    data() {
-        return m_log;
-    }
-
-    template<typename Source>
-    std::streamsize
-    read(Source& src, char *buffer, std::streamsize max_size) {
-        std::streamsize result = boost::iostreams::read(src, buffer, max_size);
-
-        if (result == -1) {
-            return -1;
-        } else {
-            m_log.append(buffer, result);
-
-            return result;
-        }
-    }
-
-private:
-    std::string m_log;
-};
-
-// Returns the last line and its position in the text.
-std::pair<std::string, size_t>
-get_last_line(const std::string& text) {
-    size_t line_offset = text.find_last_of('\n');
-
-    if (line_offset == std::string::npos) {
-        line_offset = 0;
-    } else {
-        line_offset++;
-    }
-
-    return std::pair<std::string, size_t>(text.substr(line_offset), line_offset);
-}
-
-} // namespace
-
-config_t
-config_parser_t::parse(std::istream &stream) {
-    logging_filter_t filter;
-
-    try {
-        boost::iostreams::filtering_istream proxy_stream;
-        proxy_stream.push(boost::ref(filter));
-        proxy_stream.push(boost::ref(stream));
-
-        m_root = kora::dynamic_t::from_json(proxy_stream);
-    } catch (const kora::json_parsing_error_t& e) {
-        std::string data = std::move(filter.data());
-
-        auto end_of_error_line = std::find(data.begin() + e.offset(), data.end(), '\n');
-
-        // Read the entire line with the error and make it the last line of the buffer.
-        if (end_of_error_line == data.end()) {
-            std::string line;
-
-            if (std::getline(stream, line)) {
-                data += line;
-            }
-        } else {
-            data.erase(end_of_error_line, data.end());
-        }
-
-        /*
-         * Produce a pretty output about the error
-         * including the line and certain place where
-         * the error occured.
-         */
-
-        const size_t error_line_number = std::count(data.begin(), data.end(), '\n') + 1;
-
-        std::string error_line; size_t error_line_offset = 0;
-        std::tie(error_line, error_line_offset) = get_last_line(data);
-
-        // Let's assume that the tab length is one for simplicity.
-        std::replace(error_line.begin(), error_line.end(), '\t', ' ');
-
-        const size_t dash_count = e.offset() - error_line_offset;
-
-        std::stringstream error;
-        error << "parser error at line " << error_line_number << ": " << e.message() << std::endl
-              << error_line << std::endl
-              << std::string(dash_count, ' ') << '^' << std::endl
-              << std::string(dash_count, '~') << '+' << std::endl;
-
-        throw config_parser_error_t(error.str(), e.message(), error_line_number, dash_count + 1);
-    }
-
-    if (!m_root.is_object()) {
-        throw config_error_t("<root> must be an object");
-    }
-
-    return root();
-}
-
-config_t
-config_parser_t::root() const {
-    return config_t("<root>", m_root);
-}
-
-std::ostream&
-kora::operator<<(std::ostream& stream, const config_t& value) {
-    stream << value.underlying_object();
-
-    return stream;
 }
