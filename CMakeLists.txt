@@ -4,6 +4,7 @@ PROJECT(KORA-UTIL)
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 OPTION(ENABLE_TESTING "Enable testing" ON)
+OPTION(BUILD_DOC "Generate Doxygen documentation" ON)
 
 FIND_PACKAGE(Boost 1.40.0 REQUIRED)
 
@@ -56,3 +57,21 @@ INSTALL(
 IF(ENABLE_TESTING)
     ADD_SUBDIRECTORY(tests)
 ENDIF()
+
+IF(BUILD_DOC)
+    FIND_PACKAGE(Doxygen)
+
+    IF(DOXYGEN_FOUND)
+        SET(DOC_TARGET "doc")
+        CONFIGURE_FILE(
+            doc/Doxyfile.in
+            ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+            @ONLY
+        )
+        ADD_CUSTOM_TARGET(${DOC_TARGET}
+            ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/doc/Doxyfile
+            COMMENT "Building documentation"
+            SOURCE doc/Doxyfile.in
+        )
+    endif()
+endif()
