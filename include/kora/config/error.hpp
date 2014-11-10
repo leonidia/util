@@ -53,10 +53,10 @@ public:
     ~config_value_error_t() KORA_NOEXCEPT;
 
     const std::string&
-    path() const;
+    path() const KORA_NOEXCEPT;
 
     const std::string&
-    message() const;
+    message() const KORA_NOEXCEPT;
 
 private:
     std::string m_path;
@@ -93,13 +93,13 @@ public:
     ~config_parser_error_t() KORA_NOEXCEPT;
 
     const std::string&
-    parse_error() const;
+    parse_error() const KORA_NOEXCEPT;
 
     size_t
-    line_number() const;
+    line_number() const KORA_NOEXCEPT;
 
     size_t
-    column_number() const;
+    column_number() const KORA_NOEXCEPT;
 
 private:
     std::string m_parse_error;

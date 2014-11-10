@@ -33,7 +33,7 @@ KORA_POP_VISIBILITY
 
 using namespace kora;
 
-config_parser_t::config_parser_t() { }
+config_parser_t::config_parser_t() KORA_NOEXCEPT { }
 
 config_parser_t::config_parser_t(const std::string &path) {
     open(path);
@@ -43,7 +43,7 @@ config_parser_t::config_parser_t(std::istream &stream) {
     parse(stream);
 }
 
-config_parser_t::~config_parser_t() { }
+config_parser_t::~config_parser_t() KORA_NOEXCEPT { }
 
 config_t
 config_parser_t::open(const std::string &path) {

@@ -188,10 +188,10 @@ public:
 
     KORA_API
     const std::string&
-    path() const;
+    path() const KORA_NOEXCEPT;
 
     const dynamic_t&
-    underlying_object() const;
+    underlying_object() const KORA_NOEXCEPT;
 
 protected:
     std::string m_path;

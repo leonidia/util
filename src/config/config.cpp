@@ -172,11 +172,11 @@ config_t::at(size_t index) const {
 }
 
 const std::string&
-config_t::path() const {
+config_t::path() const KORA_NOEXCEPT {
     return m_path;
 }
 
 const dynamic_t&
-config_t::underlying_object() const {
+config_t::underlying_object() const KORA_NOEXCEPT {
     return m_value;
 }

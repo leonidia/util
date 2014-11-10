@@ -34,7 +34,7 @@ namespace kora {
 class config_parser_t {
 public:
     KORA_API
-    config_parser_t();
+    config_parser_t() KORA_NOEXCEPT;
 
     KORA_API
     explicit
@@ -45,7 +45,7 @@ public:
     config_parser_t(std::istream &stream);
 
     KORA_API
-    ~config_parser_t();
+    ~config_parser_t() KORA_NOEXCEPT;
 
     KORA_API
     config_t
