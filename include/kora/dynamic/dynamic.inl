@@ -18,18 +18,13 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_DYNAMIC_DYNAMIC_IMPL
-#define KORA_DYNAMIC_DYNAMIC_IMPL
+#ifndef KORA_DYNAMIC_DYNAMIC_INL
+#define KORA_DYNAMIC_DYNAMIC_INL
 
 namespace kora {
 
 namespace detail { namespace dynamic {
 
-/*!
- * \brief Default conversion errors handler.
- * It ignores any information about the traversed object structure
- * and just rethrows all exceptions.
- */
 struct default_conversion_controller_t {
     void
     start_array(const dynamic_t&) const { }
