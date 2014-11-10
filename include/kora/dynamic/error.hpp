@@ -39,7 +39,7 @@ public:
      *
      * \param[in] offset Position of the error in the input stream.
      * \param[in] message Message describing the error.
-     * \exception std::bad_alloc
+     * \throws std::bad_alloc
      */
     json_parsing_error_t(size_t offset, std::string message);
 
@@ -234,8 +234,9 @@ public:
  * Instead it's supposed to be analysed from a user-defined conversion controller,
  * where this analisys may be done in a general way via a template method.
  *
- * \sa bad_numeric_cast_t
  * \tparam TargetType The type which the dynamic_t object should have been converted to.
+ *
+ * \sa bad_numeric_cast_t
  */
 template<class TargetType>
 class KORA_API numeric_overflow_t :

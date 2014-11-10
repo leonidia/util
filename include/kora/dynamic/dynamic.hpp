@@ -246,8 +246,9 @@ public:
      * This constructor participates in overload resolution only if
      * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
      *
-     * \sa dynamic_constructor
      * \throws Any exception thrown by dynamic_constructor.
+     *
+     * \sa dynamic_constructor
      */
     template<class T>
     dynamic_t(
@@ -315,8 +316,9 @@ public:
      * This operator participates in overload resolution only if
      * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
      *
-     * \sa dynamic_constructor
      * \throws Any exception thrown by dynamic_constructor.
+     *
+     * \sa dynamic_constructor
      */
     template<class T>
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
@@ -326,7 +328,7 @@ public:
     /*!
      * \brief Calls the visitor with the value stored in the object.
      *
-     * Performs function call \p visitor(x) where \p x is value stored in the dynamic object and has
+     * Performs function call \p visitor(x) where \p x is the value stored in the dynamic object and has
      * one of the following types:
      *  - dynamic_t::null_t
      *  - dynamic_t::bool_t
@@ -446,9 +448,10 @@ public:
      * It uses dynamic_converter::convertible() to perform the check.\n
      * Specialization being used: <tt>dynamic_converter<typename pristine<T>::type></tt>
      *
-     * \sa dynamic_converter
      * \tparam T Type determining dynamic_converter.
      * \returns \p true if the conversion is possible and \p false otherwise.
+     *
+     * \sa dynamic_converter
      */
     template<class T>
     bool
@@ -459,12 +462,13 @@ public:
      *
      * It uses <tt>dynamic_converter<typename pristine<T>::type></tt> to perform the conversion.
      *
-     * \sa dynamic_converter
      * \tparam T Type determining dynamic_converter.
      * \tparam Controller Type of the controller.
      * \param controller Object handling conversion errors. Forwarded to the underlying dynamic_converter.
      * \returns Result of conversion returned by dynamic_converter.
      * \throws Any exceptions thrown by dynamic_converter and by the controller.
+     *
+     * \sa dynamic_converter
      *
      * \todo Provide example of a controller.
      */
@@ -484,6 +488,8 @@ public:
      * \returns Result of conversion returned by dynamic_converter.
      * \throws Any exceptions thrown by dynamic_converter.
      * \throws Any errors passed to the controller by dynamic_converter.
+     *
+     * \sa dynamic_converter
      */
     template<class T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
@@ -556,7 +562,7 @@ operator==(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 /*!
  * \relates dynamic_t
  * \sa operator==(const dynamic_t&, const dynamic_t&)
- * \returns opposite to the operator==(const dynamic_t&, const dynamic_t&).
+ * \returns Opposite to the operator==(const dynamic_t&, const dynamic_t&).
  */
 KORA_API
 bool

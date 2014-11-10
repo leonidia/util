@@ -29,7 +29,7 @@ namespace kora {
  * \brief Type to store unordered associative arrays in dynamic_t (object in terms of JSON).
  *
  * Keys are strings, values are dynamic_t objects.
- * It's guaranteed to have API backward compatible with \p std::map<std::string, dynamic_t>
+ * It's guaranteed to have API backward compatible with std::map<std::string, dynamic_t>
  * except that the order of the keys is not defined and user-provided allocators aren't supported.
  */
 class dynamic_t::object_t :
@@ -108,7 +108,7 @@ public:
      *
      * \param[in] key The key to search in the object.
      * \returns Value stored by the key.
-     * \exception std::out_of_range when the object doesn't contain the key.
+     * \throws std::out_of_range When the object doesn't contain the key.
      */
     KORA_API
     const dynamic_t&
