@@ -381,61 +381,61 @@ public:
     is_object() const KORA_NOEXCEPT;
 
     //! \returns Stored bool value.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::bool_t.
+    //! \throws expected_bool_t if the object doesn't contain value of type dynamic_t::bool_t.
     KORA_API
     bool_t
     as_bool() const;
 
     //! \returns Stored int value.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::int_t.
+    //! \throws expected_int_t if the object doesn't contain value of type dynamic_t::int_t.
     KORA_API
     int_t
     as_int() const;
 
     //! \returns Stored uint value.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::uint_t.
+    //! \throws expected_uint_t if the object doesn't contain value of type dynamic_t::uint_t.
     KORA_API
     uint_t
     as_uint() const;
 
     //! \returns Stored double value.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::double_t.
+    //! \throws expected_double_t if the object doesn't contain value of type dynamic_t::double_t.
     KORA_API
     double_t
     as_double() const;
 
     //! \returns Stored string.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::string_t.
+    //! \throws expected_string_t if the object doesn't contain value of type dynamic_t::string_t.
     KORA_API
     const string_t&
     as_string() const;
 
     //! \returns Stored array.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::array_t.
+    //! \throws expected_array_t if the object doesn't contain value of type dynamic_t::array_t.
     KORA_API
     const array_t&
     as_array() const;
 
     //! \returns Stored object.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::object_t.
+    //! \throws expected_object_t if the object doesn't contain value of type dynamic_t::object_t.
     KORA_API
     const object_t&
     as_object() const;
 
     //! \returns Stored string.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::string_t.
+    //! \throws expected_string_t if the object doesn't contain value of type dynamic_t::string_t.
     KORA_API
     string_t&
     as_string();
 
     //! \returns Stored array.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::array_t.
+    //! \throws expected_array_t if the object doesn't contain value of type dynamic_t::array_t.
     KORA_API
     array_t&
     as_array();
 
     //! \returns Stored object.
-    //! \throws bad_cast_t if the object doesn't contain value of type dynamic_t::object_t.
+    //! \throws expected_object_t if the object doesn't contain value of type dynamic_t::object_t.
     KORA_API
     object_t&
     as_object();
@@ -522,14 +522,6 @@ public:
     to_json(std::ostream &output) const;
 
 private:
-    template<class T>
-    T&
-    get();
-
-    template<class T>
-    const T&
-    get() const;
-
     template<class T>
     bool
     is() const;

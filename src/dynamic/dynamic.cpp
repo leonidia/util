@@ -283,56 +283,112 @@ dynamic_t::operator=(dynamic_t::object_t value) {
 
 dynamic_t::bool_t
 dynamic_t::as_bool() const {
-    return get<bool_t>();
+    auto ptr = boost::get<bool_t>(&m_value);
+
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_bool_t();
+    }
 }
 
 dynamic_t::int_t
 dynamic_t::as_int() const {
-    return get<int_t>();
+    auto ptr = boost::get<int_t>(&m_value);
+
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_int_t();
+    }
 }
 
 dynamic_t::uint_t
 dynamic_t::as_uint() const {
-    return get<uint_t>();
+    auto ptr = boost::get<uint_t>(&m_value);
+
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_uint_t();
+    }
 }
 
 dynamic_t::double_t
 dynamic_t::as_double() const {
-    return get<double_t>();
+    auto ptr = boost::get<double_t>(&m_value);
+
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_double_t();
+    }
 }
 
 const dynamic_t::string_t&
 dynamic_t::as_string() const {
-    return get<string_t>();
+    auto ptr = boost::get<string_t>(&m_value);
+
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_string_t();
+    }
 }
 
 const dynamic_t::array_t&
 dynamic_t::as_array() const {
-    return get<detail::dynamic::incomplete_wrapper<array_t>>().get();
+    auto ptr = boost::get<detail::dynamic::incomplete_wrapper<array_t>>(&m_value);
+
+    if (ptr) {
+        return ptr->get();
+    } else {
+        throw expected_array_t();
+    }
 }
 
 const dynamic_t::object_t&
 dynamic_t::as_object() const {
-    return get<detail::dynamic::incomplete_wrapper<object_t>>().get();
+    auto ptr = boost::get<detail::dynamic::incomplete_wrapper<object_t>>(&m_value);
+
+    if (ptr) {
+        return ptr->get();
+    } else {
+        throw expected_object_t();
+    }
 }
 
 dynamic_t::string_t&
 dynamic_t::as_string() {
-    if (is_null()) {
-        *this = string_t();
-    }
+    auto ptr = boost::get<string_t>(&m_value);
 
-    return get<string_t>();
+    if (ptr) {
+        return *ptr;
+    } else {
+        throw expected_string_t();
+    }
 }
 
 dynamic_t::array_t&
 dynamic_t::as_array() {
-    return get<detail::dynamic::incomplete_wrapper<array_t>>().get();
+    auto ptr = boost::get<detail::dynamic::incomplete_wrapper<array_t>>(&m_value);
+
+    if (ptr) {
+        return ptr->get();
+    } else {
+        throw expected_array_t();
+    }
 }
 
 dynamic_t::object_t&
 dynamic_t::as_object() {
-    return get<detail::dynamic::incomplete_wrapper<object_t>>().get();
+    auto ptr = boost::get<detail::dynamic::incomplete_wrapper<object_t>>(&m_value);
+
+    if (ptr) {
+        return ptr->get();
+    } else {
+        throw expected_object_t();
+    }
 }
 
 bool

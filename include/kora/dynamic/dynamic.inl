@@ -104,30 +104,6 @@ dynamic_t::apply(Visitor&& visitor) const {
 }
 
 template<class T>
-T&
-dynamic_t::get() {
-    T* ptr = boost::get<T>(&m_value);
-
-    if (ptr) {
-        return *ptr;
-    } else {
-        throw std::bad_cast();
-    }
-}
-
-template<class T>
-const T&
-dynamic_t::get() const {
-    const T* ptr = boost::get<T>(&m_value);
-
-    if (ptr) {
-        return *ptr;
-    } else {
-        throw std::bad_cast();
-    }
-}
-
-template<class T>
 bool
 dynamic_t::is() const {
     return static_cast<bool>(boost::get<T>(&m_value));
