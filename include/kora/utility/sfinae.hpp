@@ -23,8 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
-/*!
- * \brief SFINAE helper to match on types having required nested type.
+/*! SFINAE helper to match on types having required nested type.
  *
  * Use it instead of \p std::enable_if to enable a specialization if the dependent type has some nested type.
  *
@@ -35,8 +34,7 @@ struct requires_type {
     typedef Result type;
 };
 
-/*!
- * \brief SFINAE helper to match on types having required method.
+/*! SFINAE helper to match on types having required method.
  *
  * Use it instead of \p std::enable_if to enable a specialization
  * if the dependent type has method with given name and signature.

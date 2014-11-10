@@ -25,8 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
-/*!
- * \brief Remove references and cv-qualifiers.
+/*! Remove references and cv-qualifiers.
  *
  * It's like \p std::decay, but doesn't convert arrays to pointers.
  */

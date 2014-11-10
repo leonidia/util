@@ -35,8 +35,7 @@ namespace kora {
 
 class dynamic_t;
 
-/*!
- * \brief Trait class to convert data types to dynamic_t.
+/*! Trait class to convert data types to dynamic_t.
  *
  * It's called from constructors and assignment operators of dynamic_t
  * to create the dynamic_t object from a value of type \p From.
@@ -54,8 +53,7 @@ struct dynamic_constructor {
     //! This constant should be \p true to enable the specialization.
     static const bool enable = false;
 
-    /*!
-     * \brief Performs the conversion.
+    /*! Performs the conversion.
      * \param[in] from Value to create a dynamic_t object from.
      * \param[out] to Variable to store the conversion result.
      */
@@ -64,8 +62,7 @@ struct dynamic_constructor {
     convert(From from, dynamic_t& to);
 };
 
-/*!
- * \brief Trait class to convert dynamic_t to other data types.
+/*! Trait class to convert dynamic_t to other data types.
  *
  * Method dynamic_t::to() calls this trait to convert dynamic_t to other types.
  * User may specialize it to enable conversion to new types.
@@ -79,8 +76,7 @@ struct dynamic_constructor {
  */
 template<class To, class = void>
 struct dynamic_converter {
-    /*!
-     * \brief Performs conversion of dynamic_t to the result type.
+    /*! Performs conversion of dynamic_t to the result type.
      *
      * It's provided with a user-defined "controller" which performs error handling.
      * It means that the function shouldn't throw errors itself. Instead it should call
@@ -103,8 +99,7 @@ struct dynamic_converter {
     To
     convert(const dynamic_t& from, Controller& controller);
 
-    /*!
-     * \brief Checks whether the conversion of the object to the type is possible.
+    /*! Checks whether the conversion of the object to the type is possible.
      *
      * \warning This function shouldn't throw exceptions.
      *
@@ -116,8 +111,7 @@ struct dynamic_converter {
     convertible(const dynamic_t& from) KORA_NOEXCEPT;
 };
 
-/*!
- * \brief Recursive data structure to store JSON-like data.
+/*! Recursive data structure to store JSON-like data.
  *
  * It can store data of any of the following types:
  *  - Null
@@ -134,50 +128,50 @@ struct dynamic_converter {
  */
 class dynamic_t {
 public:
-    //! Type used to store null values.
-    /*!
+    /*! Type used to store null values.
+     *
      * \typedef null_t;
      * All values of this type are equal.
      */
     typedef boost::blank null_t;
 
-    //! Type used to store boolean values.
-    /*!
+    /*! Type used to store boolean values.
+     *
      * \typedef bool_t;
      * It may be used instead of type bool in any context.
      */
     typedef bool bool_t;
 
-    //! Arithmetic type used to store integer values.
-    /*!
+    /*! Arithmetic type used to store integer values.
+     *
      * \typedef int_t;
      * It's guaranteed to be able to store any value of type int64_t.
      */
     typedef int64_t int_t;
 
-    //! Arithmetic type used to store unsigned integer values.
-    /*!
+    /*! Arithmetic type used to store unsigned integer values.
+     *
      * \typedef uint_t;
      * It's guaranteed to be able to store any value of type uint64_t.
      */
     typedef uint64_t uint_t;
 
-    //! Arithmetic type used to store floating point numbers.
-    /*!
+    /*! Arithmetic type used to store floating point numbers.
+     *
      * \typedef double_t;
      * It's guaranteed to be able to store any value of type double.
      */
     typedef double double_t;
 
-    //! Type used to store strings.
-    /*!
+    /*! Type used to store strings.
+     *
      * \typedef string_t;
      * It's guaranteed to have API backward compatible with std::string.
      */
     typedef std::string string_t;
 
-    //! Type used to store arrays.
-    /*!
+    /*! Type used to store arrays.
+     *
      * \typedef array_t;
      * It's guaranteed to have API backward compatible with std::vector<dynamic_t>.
      */
@@ -193,13 +187,15 @@ public:
     KORA_API static const dynamic_t empty_object;
 
 public:
-    //! \brief Default constructor.
-    //! \post <tt>this->is_null() == true</tt>
+    /*! Default constructor.
+     * \post <tt>this->is_null() == true</tt>
+     */
     KORA_API
     dynamic_t() KORA_NOEXCEPT;
 
-    //! \brief Copy constructor.
-    //! \throws std::bad_alloc
+    /*! Copy constructor.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(const dynamic_t& other);
 
@@ -221,26 +217,28 @@ public:
     KORA_API
     dynamic_t(double_t value) KORA_NOEXCEPT;
 
-    //! \brief Creates dynamic object containing a string value.
-    //! \throws std::bad_alloc
+    /*! Creates dynamic object containing a string value.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(const string_t& value);
 
     KORA_API
     dynamic_t(string_t&& value) KORA_NOEXCEPT;
 
-    //! \brief Creates dynamic object containing an array.
-    //! \throws std::bad_alloc
+    /*! Creates dynamic object containing an array.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(array_t value);
 
-    //! \brief Creates dynamic_t containing an object.
-    //! \throws std::bad_alloc
+    /*! Creates dynamic_t containing an object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(object_t value);
 
-    /*!
-     * \brief Construct dynamic object from an arbitrary type.
+    /*! Construct dynamic object from an arbitrary type.
      *
      * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to construct the object.\n
      * This constructor participates in overload resolution only if
@@ -256,8 +254,9 @@ public:
         typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
     );
 
-    //! \brief Copy assignment operator.
-    //! \throws std::bad_alloc
+    /*! Copy assignment operator.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(const dynamic_t& other);
@@ -286,8 +285,9 @@ public:
     dynamic_t&
     operator=(double_t value) KORA_NOEXCEPT;
 
-    //! \brief Assigns string value to the object.
-    //! \throws std::bad_alloc
+    /*! Assigns string value to the object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(const string_t& value);
@@ -296,21 +296,22 @@ public:
     dynamic_t&
     operator=(string_t&& value) KORA_NOEXCEPT;
 
-    //! \brief Assigns array to the object.
-    //! \throws std::bad_alloc
+    /*! Assigns array to the object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(array_t value);
 
-    //! \brief Assigns object to the dynamic_t.
-    //! \throws std::bad_alloc
+    /*! Assigns object to the dynamic_t.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(object_t value);
 
-    /*!
+    /*! Assigns value of an arbitrary type to the dynamic object.
      * \fn template<class T> dynamic_t& operator=(T&& from)
-     * \brief Assigns value of an arbitrary type to the dynamic object.
      *
      * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to perform the conversion.\n
      * This operator participates in overload resolution only if
@@ -325,8 +326,7 @@ public:
     operator=(T&& from);
 
 
-    /*!
-     * \brief Calls the visitor with the value stored in the object.
+    /*! Calls a visitor with the value stored in the object.
      *
      * Performs function call \p visitor(x) where \p x is the value stored in the dynamic object and has
      * one of the following types:
@@ -442,8 +442,7 @@ public:
     object_t&
     as_object();
 
-    /*!
-     * \brief Checks whether the conversion of the object to a type is possible.
+    /*! Checks whether the conversion of the object to a type is possible.
      *
      * It uses dynamic_converter::convertible() to perform the check.\n
      * Specialization being used: <tt>dynamic_converter<typename pristine<T>::type></tt>
@@ -457,8 +456,7 @@ public:
     bool
     convertible_to() const KORA_NOEXCEPT;
 
-    /*!
-     * \brief Converts the object to an arbitrary type.
+    /*! Converts the object to an arbitrary type.
      *
      * It uses <tt>dynamic_converter<typename pristine<T>::type></tt> to perform the conversion.
      *
@@ -476,8 +474,7 @@ public:
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to(Controller&& controller) const;
 
-    /*!
-     * \brief Converts the object to an arbitrary type.
+    /*! Converts the object to an arbitrary type.
      *
      * It's the same as the previous function, but always uses controller
      * which ignores any information about the traversed object structure and
@@ -496,8 +493,7 @@ public:
     to() const;
 
 public:
-    /*!
-     * \brief Creates dynamic object from JSON.
+    /*! Creates dynamic object from JSON.
      *
      * This function doesn't require the input stream to contain only one JSON object.
      * It reads one JSON object with surrounding spaces and leaves other data untouched.
@@ -513,8 +509,7 @@ public:
     dynamic_t
     from_json(std::istream &input);
 
-    /*!
-     * \brief Serializes the object into JSON format.
+    /*! Serializes the object into JSON format.
      *
      * This method may serialize not only objects and arrays, but any dynamic_t object.
      * It's not like standard JSON, and you should perform additional checks on yourown
