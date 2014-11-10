@@ -35,12 +35,9 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
-// This namespace is not detail because my Doxygen is set up to ignore "detail" symbol.
-namespace aux { namespace dynamic {
+namespace detail { namespace dynamic {
 
-// These structs are here because Doxygen doesn't understand giant multiline
-// template specializations like these. But I want it to understand dynamic_constructor specializations,
-// so I use these structures to make those specializations shorter.
+// Helper traits.
 template<class T>
 struct match_uint_t :
     std::integral_constant<bool,
@@ -64,25 +61,30 @@ struct match_double_t :
                            sizeof(T) <= sizeof(dynamic_t::double_t)>
 { };
 
-}} // namespace aux::dynamic
+}} // namespace detail::dynamic
 
 /*!
  * \brief Converts unsigned integer types to dynamic_t.
  *
  * Enabled only for integer types which can be converted to dynamic_t::uint_t without data loss.
  */
-template<class From>
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<SignedInteger>
+#else
+template<class SignedInteger>
 struct dynamic_constructor<
-    From,
-    typename std::enable_if<aux::dynamic::match_uint_t<From>::value>::type
+   SignedInteger,
+   typename std::enable_if<detail::dynamic::match_uint_t<SignedInteger>::value>::type
 >
+#endif
 {
     static const bool enable = true;
 
     //! \post <tt>to.is_uint() == true && to.as_uint() == static_cast<dynamic_t::uint_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
+    convert(SignedInteger from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::uint_t>(from);
     }
 };
@@ -92,59 +94,73 @@ struct dynamic_constructor<
  *
  * Enabled only for integer types which can be converted to dynamic_t::int_t without data loss.
  */
-template<class From>
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<UnsignedInteger>
+#else
+template<class UnsignedInteger>
 struct dynamic_constructor<
-    From,
-    typename std::enable_if<aux::dynamic::match_int_t<From>::value>::type
+    UnsignedInteger,
+    typename std::enable_if<detail::dynamic::match_int_t<UnsignedInteger>::value>::type
 >
-{
-    static const bool enable = true;
-
-    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
-    static inline
-    void
-    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
-        to = static_cast<dynamic_t::int_t>(from);
-
-    }
-};
-
-#ifdef KORA_NOT_BAD
-//! \brief Converts enum types to dynamic_t.
-template<class From>
-struct dynamic_constructor<
-    From,
-    typename std::enable_if<std::is_enum<From>::value>::type
->
-{
-    static const bool enable = true;
-
-    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
-    static inline
-    void
-    convert(const From& from, dynamic_t& to) KORA_NOEXCEPT {
-        to = static_cast<dynamic_t::int_t>(from);
-    }
-};
 #endif
+{
+    static const bool enable = true;
+
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
+    static inline
+    void
+    convert(UnsignedInteger from, dynamic_t& to) KORA_NOEXCEPT {
+        to = static_cast<dynamic_t::int_t>(from);
+
+    }
+};
+
+#if defined(KORA_NOT_BAD) || defined(KORA_DOXYGEN)
+
+//! \brief Converts enum types to dynamic_t.
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<Enum>
+#else
+template<class Enum>
+struct dynamic_constructor<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
+#endif
+{
+    static const bool enable = true;
+
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
+    static inline
+    void
+    convert(const Enum& from, dynamic_t& to) KORA_NOEXCEPT {
+        to = static_cast<dynamic_t::int_t>(from);
+    }
+};
+
+#endif // defined(KORA_NOT_BAD) || defined(KORA_DOXYGEN)
 
 /*!
  * \brief Converts floating point types to dynamic_t.
  *
  * Enabled only for types which can be converted to dynamic_t::double_t without data loss.
  */
-template<class From>
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<FloatingPoint>
+#else
+template<class FloatingPoint>
 struct dynamic_constructor<
-    From,
-    typename std::enable_if<aux::dynamic::match_double_t<From>::value>::type
+    FloatingPoint,
+    typename std::enable_if<detail::dynamic::match_double_t<FloatingPoint>::value>::type
 >
+#endif // KORA_DOXYGEN
 {
     static const bool enable = true;
 
     //! \post <tt>to.is_double() == true && to.as_double() == static_cast<dynamic_t::double_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
+    convert(FloatingPoint from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::double_t>(from);
     }
 };
@@ -181,11 +197,7 @@ struct dynamic_constructor<const char*> {
 
 //! \brief Converts std::vector to dynamic_t.
 template<class T>
-struct dynamic_constructor<
-    std::vector<T>,
-    typename std::enable_if<!std::is_same<T, dynamic_t>::value>::type
->
-{
+struct dynamic_constructor<std::vector<T>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_array() == true && to.as_array().size() == from.size()</tt>
@@ -276,11 +288,7 @@ struct dynamic_constructor<std::map<dynamic_t::string_t, dynamic_t>> {
 
 //! \brief Converts std::map<std::string, T> to dynamic_t.
 template<class T>
-struct dynamic_constructor<
-    std::map<std::string, T>,
-    typename std::enable_if<!std::is_same<T, dynamic_t>::value>::type
->
-{
+struct dynamic_constructor<std::map<std::string, T>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>

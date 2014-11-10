@@ -85,13 +85,18 @@ struct dynamic_converter<bool> {
 };
 
 //! \brief Converts dynamic_t to integral types.
-template<class To>
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<Integral>
+#else
+template<class Integral>
 struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_integral<To>::value>::type
+    Integral,
+    typename std::enable_if<std::is_integral<Integral>::value>::type
 >
+#endif
 {
-    typedef To result_type;
+    typedef Integral result_type;
 
     //! Doesn't call any controller's traverse methods.\n
     //! Fails with \p expected_integer_t error if <tt>from.is_int() == false && from.is_uint() == false</tt>.\n
@@ -136,13 +141,18 @@ struct dynamic_converter<
 };
 
 //! \brief Converts dynamic_t to floating point types.
-template<class To>
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<FloatingPoint>
+#else
+template<class FloatingPoint>
 struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_floating_point<To>::value>::type
+    FloatingPoint,
+    typename std::enable_if<std::is_floating_point<FloatingPoint>::value>::type
 >
+#endif
 {
-    typedef To result_type;
+    typedef FloatingPoint result_type;
 
     //! Doesn't call any controller's traverse methods.\n
     //! Fails with \p expected_number_t error if <tt>!from.is_int() && !from.is_uint() && !from.is_double()</tt>.\n
@@ -188,13 +198,15 @@ struct dynamic_converter<
 };
 
 //! \brief Converts dynamic_t to enum types.
-template<class To>
-struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_enum<To>::value>::type
->
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<Enum>
+#else
+template<class Enum>
+struct dynamic_converter<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
+#endif
 {
-    typedef To result_type;
+    typedef Enum result_type;
 
     //! Doesn't call any controller's traverse methods.\n
     //! Fails with \p expected_int_t error if <tt>!from.is_int()</tt>.\n

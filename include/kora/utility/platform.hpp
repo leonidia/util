@@ -27,33 +27,25 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
  * These macros are used to workaround bugs and limitations of specific compilers.
  */
 
- /*!
-  * \def KORA_HAVE_GCCXY
-  *
-  * These macros are defined when we have GCC of version not older than X.Y.
-  */
-
-#if defined(__GNUC__)
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 4
+#if defined(__GNUC__) || defined(KORA_DOXYGEN)
+#if __GNUC__ == 4 && __GNUC_MINOR__ >= 4 || defined(KORA_DOXYGEN)
+//! Defined when we have GCC not older than 4.4.
 #define KORA_HAVE_GCC44
 #endif
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 6
+#if __GNUC__ == 4 && __GNUC_MINOR__ >= 6 || defined(KORA_DOXYGEN)
+//! Defined when we have GCC not older than 4.6.
 #define KORA_HAVE_GCC46
 #endif
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 7
+#if __GNUC__ == 4 && __GNUC_MINOR__ >= 7 || defined(KORA_DOXYGEN)
+//! Defined when we have GCC not older than 4.7.
 #define KORA_HAVE_GCC47
 #endif
 #endif
 
- /*!
-  * \def KORA_NOT_BAD
-  *
-  * This macro is defined when we are not on g++ 4.4. Because when we are, it's very bad.
-  */
-
 #if !defined(KORA_HAVE_GCC44) || defined(KORA_HAVE_GCC46)
+//! This macro is defined when we are not on g++ 4.4. Because when we are, it's very bad.
 #define KORA_NOT_BAD
 #endif
 

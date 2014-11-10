@@ -248,11 +248,16 @@ public:
      *
      * \sa dynamic_constructor
      */
+#ifdef KORA_DOXYGEN
+    template<class T>
+    dynamic_t(T&& from);
+#else
     template<class T>
     dynamic_t(
         T&& from,
         typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
     );
+#endif
 
     /*! Copy assignment operator.
      * \throws std::bad_alloc
@@ -321,9 +326,15 @@ public:
      *
      * \sa dynamic_constructor
      */
+#ifdef KORA_DOXYGEN
+    template<class T>
+    dynamic_t&
+    operator=(T&& from);
+#else
     template<class T>
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
+#endif
 
 
     /*! Calls a visitor with the value stored in the object.
