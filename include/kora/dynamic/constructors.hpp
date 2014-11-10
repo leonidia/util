@@ -118,7 +118,9 @@ struct dynamic_constructor<
 
 #if defined(KORA_NOT_BAD) || defined(KORA_DOXYGEN)
 
-//! \brief Converts enum types to dynamic_t.
+/*! Converts enum types to dynamic_t.
+ * \note This specialization is not available on GCC 4.4.
+ */
 #ifdef KORA_DOXYGEN
 template<>
 struct dynamic_constructor<Enum>
