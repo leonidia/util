@@ -100,62 +100,87 @@ get_last_line(const std::string& text) {
     return std::pair<std::string, size_t>(text.substr(line_offset), line_offset);
 }
 
+std::string
+complete_line(std::string log, size_t line_pointer, std::istream& input) {
+    auto end_of_error_line = std::find(log.begin() + line_pointer, log.end(), '\n');
+
+    // Read the entire line with the error and make it the last line of the buffer.
+    if (end_of_error_line == log.end()) {
+        std::string line;
+
+        if (std::getline(input, line)) {
+            log += line;
+        }
+    } else {
+        log.erase(end_of_error_line, log.end());
+    }
+
+    return log;
+}
+
+KORA_NORETURN
+void
+throw_parser_error(std::string&& config, size_t error_offset, const char *message) {
+    /*
+     * Produce a pretty output about the error
+     * including the line and certain place where
+     * the error occured.
+     */
+
+    const size_t error_line_number = std::count(config.begin(), config.end(), '\n') + 1;
+
+    std::string error_line; size_t error_line_offset = 0;
+    std::tie(error_line, error_line_offset) = get_last_line(config);
+
+    // Let's assume that the tab length is one for simplicity.
+    std::replace(error_line.begin(), error_line.end(), '\t', ' ');
+
+    const size_t dash_count = error_offset - error_line_offset;
+
+    std::stringstream error;
+    error << "parser error at line " << error_line_number << ": " << message << std::endl
+          << error_line << std::endl
+          << std::string(dash_count, ' ') << '^' << std::endl
+          << std::string(dash_count, '~') << '+' << std::endl;
+
+    throw config_parser_error_t(error.str(), message, error_line_number, dash_count + 1);
+}
+
 } // namespace
 
 config_t
 config_parser_t::parse(std::istream &stream) {
+    dynamic_t parsed;
+
     logging_filter_t filter;
+    boost::iostreams::filtering_istream proxy_stream;
+    proxy_stream.push(boost::ref(filter));
+    proxy_stream.push(boost::ref(stream));
 
     try {
-        boost::iostreams::filtering_istream proxy_stream;
-        proxy_stream.push(boost::ref(filter));
-        proxy_stream.push(boost::ref(stream));
-
-        m_root = kora::dynamic_t::from_json(proxy_stream);
+        parsed = kora::dynamic_t::from_json(proxy_stream);
     } catch (const kora::json_parsing_error_t& e) {
-        std::string data = std::move(filter.data());
-
-        auto end_of_error_line = std::find(data.begin() + e.offset(), data.end(), '\n');
-
-        // Read the entire line with the error and make it the last line of the buffer.
-        if (end_of_error_line == data.end()) {
-            std::string line;
-
-            if (std::getline(stream, line)) {
-                data += line;
-            }
-        } else {
-            data.erase(end_of_error_line, data.end());
-        }
-
-        /*
-         * Produce a pretty output about the error
-         * including the line and certain place where
-         * the error occured.
-         */
-
-        const size_t error_line_number = std::count(data.begin(), data.end(), '\n') + 1;
-
-        std::string error_line; size_t error_line_offset = 0;
-        std::tie(error_line, error_line_offset) = get_last_line(data);
-
-        // Let's assume that the tab length is one for simplicity.
-        std::replace(error_line.begin(), error_line.end(), '\t', ' ');
-
-        const size_t dash_count = e.offset() - error_line_offset;
-
-        std::stringstream error;
-        error << "parser error at line " << error_line_number << ": " << e.message() << std::endl
-              << error_line << std::endl
-              << std::string(dash_count, ' ') << '^' << std::endl
-              << std::string(dash_count, '~') << '+' << std::endl;
-
-        throw config_parser_error_t(error.str(), e.message(), error_line_number, dash_count + 1);
+        throw_parser_error(complete_line(std::move(filter.data()), e.offset(), stream),
+                           e.offset(),
+                           e.message());
     }
 
-    if (!m_root.is_object()) {
+    // Because proxy_stream may read from the original stream little more than the parser consumes,
+    // checking the original stream on eof() may produce false-negatives.
+    // So we should check proxy_stream.
+    if (!proxy_stream.eof()) {
+        size_t offset = filter.data().size() - 1;
+
+        throw_parser_error(complete_line(std::move(filter.data()), offset, stream),
+                           offset,
+                           "The input shouldn't contain anything after the root object.");
+    }
+
+    if (!parsed.is_object()) {
         throw config_cast_error_t("<root>", "the value must be an object");
     }
+
+    m_root = parsed;
 
     return root();
 }
