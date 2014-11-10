@@ -188,7 +188,7 @@ dynamic_t::dynamic_t(const dynamic_t::string_t& value) :
     m_value(value)
 { }
 
-dynamic_t::dynamic_t(dynamic_t::string_t&& value) :
+dynamic_t::dynamic_t(dynamic_t::string_t&& value) KORA_NOEXCEPT :
     m_value(dynamic_t::string_t())
 {
     as_string() = std::move(value);
@@ -259,7 +259,7 @@ dynamic_t::operator=(const dynamic_t::string_t& value) {
 }
 
 dynamic_t&
-dynamic_t::operator=(dynamic_t::string_t&& value) {
+dynamic_t::operator=(dynamic_t::string_t&& value) KORA_NOEXCEPT {
     m_value = dynamic_t::string_t();
     as_string() = std::move(value);
     return *this;
@@ -336,42 +336,42 @@ dynamic_t::as_object() {
 }
 
 bool
-dynamic_t::is_null() const {
+dynamic_t::is_null() const KORA_NOEXCEPT {
     return is<null_t>();
 }
 
 bool
-dynamic_t::is_bool() const {
+dynamic_t::is_bool() const KORA_NOEXCEPT {
     return is<bool_t>();
 }
 
 bool
-dynamic_t::is_int() const {
+dynamic_t::is_int() const KORA_NOEXCEPT {
     return is<int_t>();
 }
 
 bool
-dynamic_t::is_uint() const {
+dynamic_t::is_uint() const KORA_NOEXCEPT {
     return is<uint_t>();
 }
 
 bool
-dynamic_t::is_double() const {
+dynamic_t::is_double() const KORA_NOEXCEPT {
     return is<double_t>();
 }
 
 bool
-dynamic_t::is_string() const {
+dynamic_t::is_string() const KORA_NOEXCEPT {
     return is<string_t>();
 }
 
 bool
-dynamic_t::is_array() const {
+dynamic_t::is_array() const KORA_NOEXCEPT {
     return is<detail::dynamic::incomplete_wrapper<array_t>>();
 }
 
 bool
-dynamic_t::is_object() const {
+dynamic_t::is_object() const KORA_NOEXCEPT {
     return is<detail::dynamic::incomplete_wrapper<object_t>>();
 }
 

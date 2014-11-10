@@ -35,13 +35,40 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
+namespace detail { namespace dynamic {
+
+// These structs are here because Doxygen doesn't understand giant multiline
+// template specializations like these. But I want it to understand dynamic_constructor specializations,
+// so I use these structures to make those specializations shorter.
+template<class T>
+struct match_uint_t :
+    std::integral_constant<bool,
+                           std::is_integral<T>::value &&
+                           std::is_unsigned<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::uint_t)>
+{ };
+
+template<class T>
+struct match_int_t :
+    std::integral_constant<bool,
+                           std::is_integral<T>::value &&
+                           std::is_signed<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::int_t)>
+{ };
+
+template<class T>
+struct match_double_t :
+    std::integral_constant<bool,
+                           std::is_floating_point<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::double_t)>
+{ };
+
+}} // namespace detail::dynamic
+
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_integral<From>::value &&
-                            std::is_unsigned<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::uint_t)
-                            >::type
+    typename std::enable_if<detail::dynamic::match_uint_t<From>::value>::type
 >
 {
     static const bool enable = true;
@@ -56,10 +83,7 @@ struct dynamic_constructor<
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_integral<From>::value &&
-                            std::is_signed<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::int_t)
-                            >::type
+    typename std::enable_if<detail::dynamic::match_int_t<From>::value>::type
 >
 {
     static const bool enable = true;
@@ -92,9 +116,7 @@ struct dynamic_constructor<
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<std::is_floating_point<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::double_t)
-                            >::type
+    typename std::enable_if<detail::dynamic::match_double_t<From>::value>::type
 >
 {
     static const bool enable = true;
@@ -156,6 +178,18 @@ template<class... Args>
 struct dynamic_constructor<std::tuple<Args...>> {
     static const bool enable = true;
 
+    static inline
+    void
+    convert(const std::tuple<Args...>& from, dynamic_t& to) {
+        dynamic_t::array_t buffer;
+        buffer.reserve(sizeof...(Args));
+
+        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
+
+        to = std::move(buffer);
+    }
+
+private:
     template<size_t N, size_t I, class... Args2>
     struct copy_tuple_to_vector {
         static inline
@@ -183,17 +217,6 @@ struct dynamic_constructor<std::tuple<Args...>> {
             // Empty.
         }
     };
-
-    static inline
-    void
-    convert(const std::tuple<Args...>& from, dynamic_t& to) {
-        dynamic_t::array_t buffer;
-        buffer.reserve(sizeof...(Args));
-
-        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
-
-        to = std::move(buffer);
-    }
 };
 
 template<>

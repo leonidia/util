@@ -25,6 +25,13 @@
 
 namespace kora {
 
+/*!
+ * \brief Type to store unordered associative arrays in dynamic_t (object in terms of JSON).
+ *
+ * Keys are strings, values are dynamic_t objects.
+ * It's guaranteed to have API backward compatible with \p std::map<std::string, dynamic_t>
+ * except that the order of the keys is not defined and user-provided allocators aren't supported.
+ */
 class dynamic_t::object_t :
     public std::map<std::string, dynamic_t>
 {
@@ -42,7 +49,7 @@ public:
         base_type(other)
     { }
 
-    object_t(object_t&& other) :
+    object_t(object_t&& other) KORA_NOEXCEPT :
         base_type(std::move(other))
     { }
 
@@ -54,7 +61,7 @@ public:
         base_type(other)
     { }
 
-    object_t(base_type&& other) :
+    object_t(base_type&& other) KORA_NOEXCEPT :
         base_type(std::move(other))
     { }
 
@@ -65,23 +72,44 @@ public:
     }
 
     object_t&
-    operator=(object_t&& other) {
+    operator=(object_t&& other) KORA_NOEXCEPT {
         base_type::operator=(std::move(other));
         return *this;
     }
 
     using base_type::at;
 
+    /*!
+     * \brief Get value by key.
+     *
+     * \param[in] key The key to search in the object.
+     * \param[in] default_ The value to return in case if the object doesn't contain the key.
+     * \returns Value stored by the key or \p default_ if the object doesn't contain the key.
+     */
     KORA_API
     dynamic_t&
-    at(const std::string& key, dynamic_t& default_);
+    at(const std::string& key, dynamic_t& default_) KORA_NOEXCEPT;
 
+    /*!
+     * \brief Get value by key.
+     *
+     * \param[in] key The key to search in the object.
+     * \param[in] default_ The value to return in case if the object doesn't contain the key.
+     * \returns Value stored by the key or \p default_ if the object doesn't contain the key.
+     */
     KORA_API
     const dynamic_t&
-    at(const std::string& key, const dynamic_t& default_) const;
+    at(const std::string& key, const dynamic_t& default_) const KORA_NOEXCEPT;
 
     using base_type::operator[];
 
+    /*!
+     * \brief Get value by key.
+     *
+     * \param[in] key The key to search in the object.
+     * \returns Value stored by the key.
+     * \exception std::out_of_range when the object doesn't contain the key.
+     */
     KORA_API
     const dynamic_t&
     operator[](const std::string& key) const;

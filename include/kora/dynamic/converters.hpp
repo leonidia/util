@@ -48,7 +48,7 @@ struct dynamic_converter<dynamic_t> {
 
     static inline
     bool
-    convertible(const dynamic_t&) {
+    convertible(const dynamic_t&) KORA_NOEXCEPT {
         return true;
     }
 };
@@ -70,7 +70,7 @@ struct dynamic_converter<bool> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_bool();
     }
 };
@@ -106,7 +106,7 @@ struct dynamic_converter<
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
@@ -148,7 +148,7 @@ struct dynamic_converter<
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
@@ -185,7 +185,7 @@ struct dynamic_converter<
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_int();
     }
 };
@@ -207,7 +207,7 @@ struct dynamic_converter<std::string> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_string();
     }
 };
@@ -229,7 +229,7 @@ struct dynamic_converter<const char*> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_string();
     }
 };
@@ -251,7 +251,7 @@ struct dynamic_converter<std::vector<dynamic_t>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array();
     }
 };
@@ -283,7 +283,7 @@ struct dynamic_converter<std::vector<T>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array() && std::all_of(
             from.as_array().begin(),
             from.as_array().end(),
@@ -319,7 +319,7 @@ struct dynamic_converter<std::set<T>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array() && std::all_of(
             from.as_array().begin(),
             from.as_array().end(),
@@ -349,7 +349,7 @@ struct dynamic_converter<std::tuple<Args...>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_array() && sizeof...(Args) == from.as_array().size()) {
             if (sizeof...(Args) == 0) {
                 return true;
@@ -445,7 +445,7 @@ struct dynamic_converter<std::pair<First, Second>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_array() && from.as_array().size() == 2) {
             return from.as_array()[0].convertible_to<First>() &&
                    from.as_array()[1].convertible_to<Second>();
@@ -472,7 +472,7 @@ struct dynamic_converter<dynamic_t::object_t> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_object();
     }
 };
@@ -494,7 +494,7 @@ struct dynamic_converter<std::map<std::string, dynamic_t>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_object();
     }
 };
@@ -526,7 +526,7 @@ struct dynamic_converter<std::map<std::string, T>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (!from.is_object()) {
             return false;
         }
@@ -570,7 +570,7 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (!from.is_object()) {
             return false;
         }

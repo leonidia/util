@@ -25,6 +25,11 @@ namespace kora {
 
 namespace detail { namespace dynamic {
 
+/*!
+ * \brief Default conversion errors handler.
+ * It ignores any information about the traversed object structure
+ * and just rethrows all exceptions.
+ */
 struct default_conversion_controller_t {
     void
     start_array(const dynamic_t&) const { }
@@ -73,7 +78,7 @@ dynamic_t::operator=(T&& from) {
 
 template<class T>
 bool
-dynamic_t::convertible_to() const {
+dynamic_t::convertible_to() const KORA_NOEXCEPT {
     return dynamic_converter<typename pristine<T>::type>::convertible(*this);
 }
 
