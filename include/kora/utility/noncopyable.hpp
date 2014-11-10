@@ -21,7 +21,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef KORA_UTILITY_NONCOPYABLE_HPP
 #define KORA_UTILITY_NONCOPYABLE_HPP
 
-// Write KORA_NONCOPYABLE(YourClass) in YourClass to delete copy constructor/assignment operator.
+/*!
+ * \def KORA_NONCOPYABLE(Class)
+ *
+ * Declares class as non-copyable.
+ * Just write \p KORA_NONCOPYABLE(YourClassName) without semicolon in the definition of your class to
+ * delete its copy-constructor and copy-assignment operator.
+ */
+
 #define KORA_NONCOPYABLE(type) \
 type(const type&) = delete; \
 type& operator=(const type&) = delete;

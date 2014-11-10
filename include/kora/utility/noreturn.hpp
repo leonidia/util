@@ -21,6 +21,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef KORA_UTILITY_NORETURN_HPP
 #define KORA_UTILITY_NORETURN_HPP
 
+/*!
+ * \def KORA_NORETURN
+ *
+ * Specifies that the function doesn't return.
+ * It should be put before declaration of the function.
+ *
+ * Example: <tt>template<...> KORA_NORETURN void f()</tt>;
+ */
+
 #ifdef __GNUC__
     #define KORA_NORETURN __attribute__ ((__noreturn__))
 #else

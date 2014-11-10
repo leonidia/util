@@ -21,6 +21,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef KORA_UTILITY_PLATFORM_HPP
 #define KORA_UTILITY_PLATFORM_HPP
 
+/*! \file platform.hpp
+ *
+ * Defines macros to detect current compiler.
+ * These macros are used to workaround bugs and limitations of specific compilers.
+ */
+
+ /*!
+  * \def KORA_HAVE_GCCXY
+  *
+  * These macros are defined when we have GCC of version not older than X.Y.
+  */
+
 #if defined(__GNUC__)
 #if __GNUC__ == 4 && __GNUC_MINOR__ >= 4
 #define KORA_HAVE_GCC44
@@ -34,6 +46,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define KORA_HAVE_GCC47
 #endif
 #endif
+
+ /*!
+  * \def KORA_NOT_BAD
+  *
+  * This macro is defined when we are not on g++ 4.4. Because when we are, it's very bad.
+  */
 
 #if !defined(KORA_HAVE_GCC44) || defined(KORA_HAVE_GCC46)
 #define KORA_NOT_BAD

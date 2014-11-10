@@ -23,6 +23,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/utility/platform.hpp"
 
+/*! \file nullptr.hpp
+ *
+ * Defines C++11 nullptr on some ancient compilers which don't support it.
+ */
+
 #if !defined(KORA_NOT_BAD)
     #define nullptr __null
 #endif
