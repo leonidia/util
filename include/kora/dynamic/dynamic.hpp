@@ -579,7 +579,7 @@ operator<<(std::ostream& stream, const dynamic_t& value);
 
 } // namespace kora
 
-#include "kora/dynamic/dynamic.impl"
+#include "kora/dynamic/dynamic.inl"
 #include "kora/dynamic/object.hpp"
 #include "kora/dynamic/constructors.hpp"
 #include "kora/dynamic/converters.hpp"
