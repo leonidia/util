@@ -555,7 +555,7 @@ private:
  */
 KORA_API
 bool
-operator==(const dynamic_t& left, const dynamic_t& right);
+operator==(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
 /*!
  * \sa operator==(const dynamic_t&, const dynamic_t&)
@@ -563,7 +563,7 @@ operator==(const dynamic_t& left, const dynamic_t& right);
  */
 KORA_API
 bool
-operator!=(const dynamic_t& left, const dynamic_t& right);
+operator!=(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
 /*!
  * Prints the value stored in the dynamic object. Null value is printed as "null",

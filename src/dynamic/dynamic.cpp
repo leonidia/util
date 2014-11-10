@@ -376,11 +376,11 @@ dynamic_t::is_object() const KORA_NOEXCEPT {
 }
 
 bool
-kora::operator==(const dynamic_t& left, const dynamic_t& right) {
+kora::operator==(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT {
     return left.apply(equals_visitor(right));
 }
 
 bool
-kora::operator!=(const dynamic_t& left, const dynamic_t& right) {
+kora::operator!=(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT {
     return !left.apply(equals_visitor(right));
 }
