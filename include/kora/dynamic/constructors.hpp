@@ -35,7 +35,8 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
-namespace detail { namespace dynamic {
+// This namespace is not detail because my Doxygen is set up to ignore "detail" symbol.
+namespace aux { namespace dynamic {
 
 // These structs are here because Doxygen doesn't understand giant multiline
 // template specializations like these. But I want it to understand dynamic_constructor specializations,
@@ -63,40 +64,53 @@ struct match_double_t :
                            sizeof(T) <= sizeof(dynamic_t::double_t)>
 { };
 
-}} // namespace detail::dynamic
+}} // namespace aux::dynamic
 
+/*!
+ * \brief Converts unsigned integer types to dynamic_t.
+ *
+ * Enabled only for integer types which can be converted to dynamic_t::uint_t without data loss.
+ */
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<detail::dynamic::match_uint_t<From>::value>::type
+    typename std::enable_if<aux::dynamic::match_uint_t<From>::value>::type
 >
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_uint() == true && to.as_uint() == static_cast<dynamic_t::uint_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) {
+    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::uint_t>(from);
     }
 };
 
+/*!
+ * \brief Converts signed integer types to dynamic_t.
+ *
+ * Enabled only for integer types which can be converted to dynamic_t::int_t without data loss.
+ */
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<detail::dynamic::match_int_t<From>::value>::type
+    typename std::enable_if<aux::dynamic::match_int_t<From>::value>::type
 >
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) {
+    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::int_t>(from);
 
     }
 };
 
 #ifdef KORA_NOT_BAD
+//! \brief Converts enum types to dynamic_t.
 template<class From>
 struct dynamic_constructor<
     From,
@@ -105,33 +119,43 @@ struct dynamic_constructor<
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
     static inline
     void
-    convert(const From& from, dynamic_t& to) {
+    convert(const From& from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::int_t>(from);
     }
 };
 #endif
 
+/*!
+ * \brief Converts floating point types to dynamic_t.
+ *
+ * Enabled only for types which can be converted to dynamic_t::double_t without data loss.
+ */
 template<class From>
 struct dynamic_constructor<
     From,
-    typename std::enable_if<detail::dynamic::match_double_t<From>::value>::type
+    typename std::enable_if<aux::dynamic::match_double_t<From>::value>::type
 >
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_double() == true && to.as_double() == static_cast<dynamic_t::double_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) {
+    convert(From from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::double_t>(from);
     }
 };
 
+//! \brief Converts string literals to dynamic_t.
 template<size_t N>
 struct dynamic_constructor<char[N]> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
+    //! \throws std::bad_alloc
     static inline
     void
     convert(const char* from, dynamic_t& to) {
@@ -140,10 +164,13 @@ struct dynamic_constructor<char[N]> {
     }
 };
 
+//! \brief Converts C-strings to dynamic_t.
 template<>
 struct dynamic_constructor<const char*> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
+    //! \throws std::bad_alloc
     static inline
     void
     convert(const char* from, dynamic_t& to) {
@@ -152,6 +179,7 @@ struct dynamic_constructor<const char*> {
     }
 };
 
+//! \brief Converts std::vector to dynamic_t.
 template<class T>
 struct dynamic_constructor<
     std::vector<T>,
@@ -160,6 +188,10 @@ struct dynamic_constructor<
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_array() == true && to.as_array().size() == from.size()</tt>
+    //! \post For all <tt>size_t i; i < from.size() ==> to.as_array()[i] == dynamic_t(from[i])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::vector<T>& from, dynamic_t& to) {
@@ -174,10 +206,15 @@ struct dynamic_constructor<
     }
 };
 
+//! \brief Converts std::tuple to dynamic_t.
 template<class... Args>
 struct dynamic_constructor<std::tuple<Args...>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_array() == true && to.as_array().size() == sizeof...(Args)</tt>
+    //! \post For all <tt>size_t i; i < sizeof...(Args) ==> to.as_array()[i] == dynamic_t(std::get<i>(from))</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<Args>())...</tt>
     static inline
     void
     convert(const std::tuple<Args...>& from, dynamic_t& to) {
@@ -219,10 +256,16 @@ private:
     };
 };
 
+//! \brief Converts std::map<dynamic_t::string_t, dynamic_t> to dynamic_t.
 template<>
-struct dynamic_constructor<std::map<std::string, dynamic_t>> {
+struct dynamic_constructor<std::map<dynamic_t::string_t, dynamic_t>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == from[key]</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by dynamic_t copy constructor.
     template<class Object>
     static inline
     void
@@ -231,6 +274,7 @@ struct dynamic_constructor<std::map<std::string, dynamic_t>> {
     }
 };
 
+//! \brief Converts std::map<std::string, T> to dynamic_t.
 template<class T>
 struct dynamic_constructor<
     std::map<std::string, T>,
@@ -239,6 +283,11 @@ struct dynamic_constructor<
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == dynamic_t(from[key])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::map<std::string, T>& from, dynamic_t& to) {
@@ -252,10 +301,16 @@ struct dynamic_constructor<
     }
 };
 
+//! \brief Converts std::unordered_map<std::string, T> to dynamic_t.
 template<class T>
 struct dynamic_constructor<std::unordered_map<std::string, T>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == dynamic_t(from[key])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::unordered_map<std::string, T>& from, dynamic_t& to) {

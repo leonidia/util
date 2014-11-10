@@ -36,10 +36,10 @@ namespace kora {
 class dynamic_t;
 
 /*!
- * \brief Trait class to convert data types to \p dynamic_t.
+ * \brief Trait class to convert data types to dynamic_t.
  *
- * It's called from constructors and assignment operators of \p dynamic_t
- * to create the \p dynamic_t object from a value of type \p From.
+ * It's called from constructors and assignment operators of dynamic_t
+ * to create the dynamic_t object from a value of type \p From.
  * User may specialize this trait to enable conversion from new types.
  *
  * \warning All specializations are required to be exception-safe, i.e. they should leave
@@ -47,7 +47,7 @@ class dynamic_t;
  *
  * The second template argument may be used to do the SFINAE magic.
  *
- * \tparam From The type being converted to \p dynamic_t.
+ * \tparam From The type being converted to dynamic_t.
  */
 template<class From, class = void>
 struct dynamic_constructor {
@@ -56,7 +56,7 @@ struct dynamic_constructor {
 
     /*!
      * \brief Performs the conversion.
-     * \param[in] from Value to create a \p dynamic_t object from.
+     * \param[in] from Value to create a dynamic_t object from.
      * \param[out] to Variable to store the conversion result.
      */
     static inline
@@ -65,32 +65,32 @@ struct dynamic_constructor {
 };
 
 /*!
- * \brief Trait class to convert \p dynamic_t to other data types.
+ * \brief Trait class to convert dynamic_t to other data types.
  *
- * Method \p dynamic_t::to() calls this trait to convert \p dynamic_t to other types.
+ * Method dynamic_t::to() calls this trait to convert dynamic_t to other types.
  * User may specialize it to enable conversion to new types.
  *
  * \note All specializations should define nested type \p result_type which is the resulting type of the conversion.
  *
  * The second template argument may be used to do the SFINAE magic.
  *
- * \tparam To The type passed to method \p dynamic_t::to() as the first template argument.
+ * \tparam To The type passed to method dynamic_t::to() as the first template argument.
  * \sa dynamic_converter<bool>
  */
 template<class To, class = void>
 struct dynamic_converter {
     /*!
-     * \brief Performs conversion of \p dynamic_t to the result type.
+     * \brief Performs conversion of dynamic_t to the result type.
      *
      * It's provided with a user-defined "controller" which performs error handling.
      * It means that the function shouldn't throw errors itself. Instead it should call
-     * controller's \p fail() method with an error of a type derived from \p kora::bad_cast_t.
+     * controller's \p fail() method with an error of a type derived from kora::bad_cast_t.
      * Also if the function traverses complex data structures (arrays and objects), it must
      * let the controller know about it via calling special member functions.
      *
      * \warning None of controller's methods may be called after \p fail().
      * It means that this function shouldn't continue conversion after any call
-     * to \p dynamic_t::to() method throws.
+     * to dynamic_t::to() method throws.
      * Probably you don't even want to catch these exceptions.
      *
      * \tparam Controller Type of the controller.
@@ -127,7 +127,7 @@ struct dynamic_converter {
  *  - Floating point
  *  - String
  *  - Array of dynamic_t objects
- *  - Associative array indexed by strings and storing \p dynamic_t objects
+ *  - Associative array indexed by strings and storing dynamic_t objects
  *
  * The reason why the integer type and unsigned integer type are separated is because the latter
  * can store positive numbers of wider range. This ability may be important in some usecases.
@@ -144,42 +144,42 @@ public:
     //! Type used to store boolean values.
     /*!
      * \typedef bool_t;
-     * It may be used instead of \p bool in any context.
+     * It may be used instead of type bool in any context.
      */
     typedef bool bool_t;
 
     //! Arithmetic type used to store integer values.
     /*!
      * \typedef int_t;
-     * It's guaranteed to be able to store any value of type \p int64_t.
+     * It's guaranteed to be able to store any value of type int64_t.
      */
     typedef int64_t int_t;
 
     //! Arithmetic type used to store unsigned integer values.
     /*!
      * \typedef uint_t;
-     * It's guaranteed to be able to store any value of type \p uint64_t.
+     * It's guaranteed to be able to store any value of type uint64_t.
      */
     typedef uint64_t uint_t;
 
     //! Arithmetic type used to store floating point numbers.
     /*!
      * \typedef double_t;
-     * It's guaranteed to be able to store any value of type \p double.
+     * It's guaranteed to be able to store any value of type double.
      */
     typedef double double_t;
 
     //! Type used to store strings.
     /*!
      * \typedef string_t;
-     * It's guaranteed to have API backward compatible with \p std::string.
+     * It's guaranteed to have API backward compatible with std::string.
      */
     typedef std::string string_t;
 
     //! Type used to store arrays.
     /*!
      * \typedef array_t;
-     * It's guaranteed to have API backward compatible with \p std::vector<dynamic_t>.
+     * It's guaranteed to have API backward compatible with std::vector<dynamic_t>.
      */
     typedef std::vector<dynamic_t> array_t;
 
@@ -326,7 +326,7 @@ public:
     /*!
      * \brief Calls the visitor with the value stored in the object.
      *
-     * Performs function call \visitor(x) where \p x is value stored in the dynamic object and has
+     * Performs function call \p visitor(x) where \p x is value stored in the dynamic object and has
      * one of the following types:
      *  - dynamic_t::null_t
      *  - dynamic_t::bool_t
@@ -443,7 +443,7 @@ public:
     /*!
      * \brief Checks whether the conversion of the object to a type is possible.
      *
-     * It uses \p dynamic_converter::convertible() to perform the check.\n
+     * It uses dynamic_converter::convertible() to perform the check.\n
      * Specialization being used: <tt>dynamic_converter<typename pristine<T>::type></tt>
      *
      * \sa dynamic_converter
@@ -462,9 +462,9 @@ public:
      * \sa dynamic_converter
      * \tparam T Type determining dynamic_converter.
      * \tparam Controller Type of the controller.
-     * \param controller Object handling conversion errors. Forwarded to the underlying \p dynamic_converter.
-     * \returns Result of conversion returned by \p dynamic_converter.
-     * \throws Any exceptions thrown by \p dynamic_converter and by the controller.
+     * \param controller Object handling conversion errors. Forwarded to the underlying dynamic_converter.
+     * \returns Result of conversion returned by dynamic_converter.
+     * \throws Any exceptions thrown by dynamic_converter and by the controller.
      *
      * \todo Provide example of a controller.
      */
@@ -477,12 +477,13 @@ public:
      *
      * It's the same as the previous function, but always uses controller
      * which ignores any information about the traversed object structure and
-     * just throws errors generated by \p dynamic_converter.
+     * just throws errors generated by dynamic_converter.
      *
      * \sa dynamic_converter
      * \tparam T Type determining dynamic_converter.
-     * \returns Result of conversion returned by \p dynamic_converter.
-     * \throws Any exceptions thrown by \p dynamic_converter and errors passed to the controller by \p dynamic_converter.
+     * \returns Result of conversion returned by dynamic_converter.
+     * \throws Any exceptions thrown by dynamic_converter.
+     * \throws Any errors passed to the controller by dynamic_converter.
      */
     template<class T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
@@ -544,6 +545,7 @@ private:
 };
 
 /*!
+ * \relates dynamic_t
  * \returns \p true if \p left and \p right store equal values of the same type,
  * or if they store equal numeric values (<tt>5.0 == 5</tt>). Otherwise it returns \p false.
  */
@@ -552,14 +554,16 @@ bool
 operator==(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
 /*!
+ * \relates dynamic_t
  * \sa operator==(const dynamic_t&, const dynamic_t&)
- * \returns opposite to the <tt>operator==(const dynamic_t&, const dynamic_t&)</tt>.
+ * \returns opposite to the operator==(const dynamic_t&, const dynamic_t&).
  */
 KORA_API
 bool
 operator!=(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
 /*!
+ * \relates dynamic_t
  * Prints the value stored in the dynamic object. Null value is printed as "null",
  * boolean as value of type \p bool, array and object are printed in JSON format.
  *
