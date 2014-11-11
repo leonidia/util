@@ -1,3 +1,13 @@
+kora-util (1.0.1-1) unstable; urgency=low
+
+  * A lot of tests.
+  * Doxygen documentation.
+  * New exceptions hierarchy.
+  * A lot of external and internal changes in config_t.
+  * WARNING: This is still not a stable release.
+
+ -- Andrey Goryachev <bugsbunny@yandex-team.ru>  Tue, 11 Nov 2014 21:05:43 +0400
+
 kora-util (1.0.0-1) unstable; urgency=low
 
   * New library name: Kora. All API is broken :(
