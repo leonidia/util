@@ -25,16 +25,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace {
 
-    enum test_enum_t {
-        const1 = 1,
-        const2
-    };
-
-    enum class test_enum_class_t {
-        const1 = 1,
-        const2
-    };
-
     template<class Exception>
     void
     test_forbidden_casts(const kora::dynamic_t& source) {
@@ -43,20 +33,12 @@ namespace {
             EXPECT_THROW(source.to<bool>(), std::bad_cast);
         }
 
-        if ((!std::is_integral<Exception>::value && !std::is_enum<Exception>::value) ||
-            std::is_same<Exception, bool>::value)
-        {
+        if (!std::is_integral<Exception>::value || std::is_same<Exception, bool>::value) {
             EXPECT_FALSE(source.convertible_to<int>());
             EXPECT_THROW(source.to<int>(), std::bad_cast);
 
             EXPECT_FALSE(source.convertible_to<unsigned int>());
             EXPECT_THROW(source.to<unsigned int>(), std::bad_cast);
-
-            EXPECT_FALSE(source.convertible_to<test_enum_t>());
-            EXPECT_THROW(source.to<test_enum_t>(), std::bad_cast);
-
-            EXPECT_FALSE(source.convertible_to<test_enum_class_t>());
-            EXPECT_THROW(source.to<test_enum_class_t>(), std::bad_cast);
 
             if (!std::is_arithmetic<Exception>::value) {
                 EXPECT_FALSE(source.convertible_to<double>());
@@ -311,40 +293,6 @@ TEST(DynamicConverter, FloatOverflow) {
 
     ASSERT_FALSE(source.convertible_to<float>());
     EXPECT_THROW(source.to<float>(), kora::bad_numeric_cast_t);
-}
-
-TEST(DynamicConverter, Enum) {
-    kora::dynamic_t source = kora::to_underlying_type(const2);
-
-    test_forbidden_casts<test_enum_t>(source);
-
-    ASSERT_TRUE(source.convertible_to<test_enum_t>());
-
-    auto destination = source.to<test_enum_t>();
-
-    static_assert(
-        std::is_same<test_enum_t, std::decay<decltype(destination)>::type>::value,
-        "Expected result of type test_enum_t."
-    );
-
-    EXPECT_EQ(const2, destination);
-}
-
-TEST(DynamicConverter, EnumClass) {
-    kora::dynamic_t source = kora::to_underlying_type(test_enum_class_t::const2);
-
-    test_forbidden_casts<test_enum_class_t>(source);
-
-    ASSERT_TRUE(source.convertible_to<test_enum_class_t>());
-
-    auto destination = source.to<test_enum_class_t>();
-
-    static_assert(
-        std::is_same<test_enum_class_t, std::decay<decltype(destination)>::type>::value,
-        "Expected result of type test_enum_class_t."
-    );
-
-    EXPECT_EQ(test_enum_class_t::const2, destination);
 }
 
 TEST(DynamicConverter, DynamicString) {

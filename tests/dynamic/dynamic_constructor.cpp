@@ -89,42 +89,6 @@ TEST(DynamicConstructor, SignedInt) {
     EXPECT_EQ(-13, assigned.as_int());
 }
 
-#ifdef KORA_NOT_BAD
-TEST(DynamicConstructor, Enum) {
-    enum test_enum_t: int {
-        const1 = 1,
-        const2,
-        const3
-    };
-
-    kora::dynamic_t constructed = const1;
-    EXPECT_TRUE(constructed.is_int());
-    EXPECT_EQ(1, constructed.as_int());
-
-    kora::dynamic_t assigned;
-    assigned = const2;
-    EXPECT_TRUE(assigned.is_int());
-    EXPECT_EQ(2, assigned.as_int());
-}
-
-TEST(DynamicConstructor, EnumClass) {
-    enum class test_enum_t: unsigned int {
-        const1 = 1,
-        const2,
-        const3
-    };
-
-    kora::dynamic_t constructed = test_enum_t::const1;
-    EXPECT_TRUE(constructed.is_uint());
-    EXPECT_EQ(1, constructed.as_uint());
-
-    kora::dynamic_t assigned;
-    assigned = test_enum_t::const2;
-    EXPECT_TRUE(assigned.is_uint());
-    EXPECT_EQ(2, assigned.as_uint());
-}
-#endif
-
 TEST(DynamicConstructor, Float) {
     kora::dynamic_t constructed = (float)2.0;
     EXPECT_TRUE(constructed.is_double());

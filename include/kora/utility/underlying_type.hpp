@@ -23,6 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/utility/platform.hpp"
 
+#include <cstdint>
 #include <type_traits>
 
 /*! \file underlying_type.hpp

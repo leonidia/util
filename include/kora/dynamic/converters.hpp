@@ -197,38 +197,6 @@ struct dynamic_converter<
     }
 };
 
-//! \brief Converts dynamic_t to enum types.
-#ifdef KORA_DOXYGEN
-template<>
-struct dynamic_converter<Enum>
-#else
-template<class Enum>
-struct dynamic_converter<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
-#endif
-{
-    typedef Enum result_type;
-
-    //! It tries to convert dynamic_t to the Enum's underlying type retrieved by kora::underlying_type.
-    //! \warning It's UB if the dynamic object stores a number created via not assignment of kora::to_underlying_type(value_of_the_enum_type).
-    //! Doesn't call any controller's traverse methods.\n
-    //! Fails with any error produced by <tt>from.to<enum_underlying_type>(controller)</tt>.\n
-    //! \returns <tt>static_cast<result_type>(from.to<enum_underlying_type>())</tt>
-    //! \throws Any exception thrown by <tt>from.to<enum_underlying_type>(controller)</tt>.
-    template<class Controller>
-    static inline
-    result_type
-    convert(const dynamic_t& from, Controller& controller) {
-        return static_cast<Enum>(from.to<typename kora::underlying_type<Enum>::type>(controller));
-    }
-
-    //! \returns <tt>from.convertible_to<typename kora::underlying_type<Enum>::type>()</tt>
-    static inline
-    bool
-    convertible(const dynamic_t& from) KORA_NOEXCEPT {
-        return from.convertible_to<typename kora::underlying_type<Enum>::type>();
-    }
-};
-
 //! \brief Converts dynamic_t to std::string and to dynamic_t::string_t (they are the same now).
 template<>
 struct dynamic_converter<std::string> {
