@@ -122,28 +122,56 @@ private:
 
 } // namespace detail
 
+/*! Observer of dynamic_t object which provides nice human readable errors.
+ * \warning It's just a view class and it doesn't own the underlying dynamic_t object.
+ * You should do the lifetime control on yourown.
+ */
 class config_t {
     KORA_NONCOPYABLE(config_t)
 
 public:
+    //! \param path Path of the object in the original config.
+    //! \param value Actually the config data.
+    //! \throws std::bad_alloc
     KORA_API
     config_t(const std::string &path, const dynamic_t &value);
 
     KORA_API
     config_t(config_t&& other) KORA_NOEXCEPT;
 
+    //! \returns Size of the underlying string, array or object.
+    //! \throws config_cast_error_t if the underlying object is not a string, an array, or an object.
     KORA_API
     size_t
     size() const;
 
+    /*! Check whether the underlying object contains given key.
+     * \param name The key.
+     * \returns \p true if the underlying object contains the key and \p false otherwise.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an object.
+     */
     KORA_API
     bool
     has(const std::string &name) const;
 
+    /*! Access an item of the underlying object by key.
+     * \param name The key.
+     * \returns Config stored by the key. Path of the resulting config equals this->path() + "." + \p name.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an object.
+     * \throws config_access_error_t if the underlying object doesn't contain the key.
+     */
     KORA_API
     config_t
     at(const std::string &name) const;
 
+    /*! Access an item of the underlying object by key.
+     * \param name The key.
+     * \param default_value Value to return if the object doesn't contain the key.
+     * \returns Dynamic object stored by the key converted to \p T,
+     * or \p default_value if the object doesn't contain the key.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an object.
+     * \throws config_cast_error_t if the object stored by the key can't be converted to \p T.
+     */
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(const std::string &name, const T &default_value) const {
@@ -154,16 +182,37 @@ public:
         return at(name).to<T>();
     }
 
+    /*! Access an item of the underlying object by key.
+     * \param name The key.
+     * \returns Dynamic object stored by the key converted to \p T.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an object.
+     * \throws config_cast_error_t if the object stored by the key can't be converted to \p T.
+     * \throws config_access_error_t if the underlying object doesn't contain the key.
+     */
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(const std::string &name) const {
         return at(name).to<T>();
     }
 
+    /*! Access an item of the underlying array by index.
+     * \param index The index.
+     * \returns Config stored by the index. Path of the resulting config equals this->path() + "[" + \p index + "]".
+     * \throws config_cast_error_t if the underlying dynamic_t is not an array.
+     * \throws config_access_error_t if <tt>size() >= index</tt>.
+     */
     KORA_API
     config_t
     at(size_t index) const;
 
+    /*! Access an item of the underlying array by index.
+     * \param index The index.
+     * \param default_value Value to return if the object doesn't contain the key.
+     * \returns Config stored by the index converted to \p T,
+     * or \p default_value if the array doesn't have this index.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an array.
+     * \throws config_cast_error_t if the object stored by the index can't be converted to \p T.
+     */
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index, const T &default_value) const {
@@ -174,30 +223,57 @@ public:
         }
     }
 
+    /*! Access an item of the underlying array by index.
+     * \param index The index.
+     * \returns Config stored by the index converted to \p T.
+     * \throws config_cast_error_t if the underlying dynamic_t is not an array.
+     * \throws config_cast_error_t if the object stored by the index can't be converted to \p T.
+     * \throws config_access_error_t if <tt>size() >= index</tt>.
+     */
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     at(size_t index) const {
         return at(index).to<T>();
     }
 
+    /*! Converts the config to an arbitrary type.
+     *
+     * It call dynamic_t::to() method for the underlying object to perform the conversion.
+     *
+     * \tparam T Type determining dynamic_converter.
+     * \returns Result of the conversion returned by dynamic_t::to().
+     * \throws config_cast_error_t If the underlying object is not convertible to the result type.
+     */
     template <typename T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to() const {
         return m_value.to<T>(detail::config_conversion_controller_t(m_path));
     }
 
+    //! \returns Path to the object in the original config.
     KORA_API
     const std::string&
-    path() const;
+    path() const KORA_NOEXCEPT;
 
+    //! \returns Underlying dynamic_t object which this config_t provides access to.
     const dynamic_t&
-    underlying_object() const;
+    underlying_object() const KORA_NOEXCEPT;
 
-protected:
+private:
     std::string m_path;
     const dynamic_t &m_value;
 };
 
+/*!
+ * \relates config_t
+ * Prints the value stored in the underlying dynamic_t object.
+ *
+ * \param stream Stream to print to.
+ * \param value Config to print.
+ * \returns \p stream
+ *
+ * \sa \p operator<<(std::ostream&, const dynamic_t&)
+ */
 KORA_API
 std::ostream&
 operator<<(std::ostream& stream, const config_t& value);

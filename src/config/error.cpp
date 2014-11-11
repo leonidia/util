@@ -43,12 +43,12 @@ config_value_error_t::config_value_error_t(std::string path, std::string message
 config_value_error_t::~config_value_error_t() KORA_NOEXCEPT { }
 
 const std::string&
-config_value_error_t::path() const {
+config_value_error_t::path() const KORA_NOEXCEPT {
     return m_path;
 }
 
 const std::string&
-config_value_error_t::message() const {
+config_value_error_t::message() const KORA_NOEXCEPT {
     return m_message;
 }
 
@@ -77,16 +77,16 @@ config_parser_error_t::config_parser_error_t(std::string message,
 config_parser_error_t::~config_parser_error_t() KORA_NOEXCEPT { }
 
 const std::string&
-config_parser_error_t::parse_error() const {
+config_parser_error_t::parse_error() const KORA_NOEXCEPT {
     return m_parse_error;
 }
 
 size_t
-config_parser_error_t::line_number() const {
+config_parser_error_t::line_number() const KORA_NOEXCEPT {
     return m_line_number;
 }
 
 size_t
-config_parser_error_t::column_number() const {
+config_parser_error_t::column_number() const KORA_NOEXCEPT {
     return m_column_number;
 }

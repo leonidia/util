@@ -18,8 +18,8 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_DYNAMIC_DYNAMIC_IMPL
-#define KORA_DYNAMIC_DYNAMIC_IMPL
+#ifndef KORA_DYNAMIC_DYNAMIC_INL
+#define KORA_DYNAMIC_DYNAMIC_INL
 
 namespace kora {
 
@@ -73,7 +73,7 @@ dynamic_t::operator=(T&& from) {
 
 template<class T>
 bool
-dynamic_t::convertible_to() const {
+dynamic_t::convertible_to() const KORA_NOEXCEPT {
     return dynamic_converter<typename pristine<T>::type>::convertible(*this);
 }
 
@@ -101,30 +101,6 @@ typename std::decay<Visitor>::type::result_type
 dynamic_t::apply(Visitor&& visitor) const {
     typedef detail::dynamic::dynamic_visitor_applier<Visitor> applier_type;
     return boost::apply_visitor(applier_type(&visitor), m_value);
-}
-
-template<class T>
-T&
-dynamic_t::get() {
-    T* ptr = boost::get<T>(&m_value);
-
-    if (ptr) {
-        return *ptr;
-    } else {
-        throw std::bad_cast();
-    }
-}
-
-template<class T>
-const T&
-dynamic_t::get() const {
-    const T* ptr = boost::get<T>(&m_value);
-
-    if (ptr) {
-        return *ptr;
-    } else {
-        throw std::bad_cast();
-    }
 }
 
 template<class T>

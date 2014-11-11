@@ -33,24 +33,151 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
+class dynamic_t;
+
+/*! Trait class to convert data types to dynamic_t.
+ *
+ * It's called from constructors and assignment operators of dynamic_t
+ * to create the dynamic_t object from a value of type \p From.
+ * User may specialize this trait to enable conversion from new types.
+ *
+ * \warning All specializations are required to be exception-safe, i.e. they should leave
+ * the dynamic object untouched in case of an exception being thrown.
+ *
+ * The second template argument may be used to do the SFINAE magic.
+ *
+ * \tparam From The type being converted to dynamic_t.
+ */
 template<class From, class = void>
 struct dynamic_constructor {
+    //! This constant should be \p true to enable the specialization.
     static const bool enable = false;
+
+    /*! Performs the conversion.
+     * \param[in] from Value to create a dynamic_t object from.
+     * \param[out] to Variable to store the conversion result.
+     */
+    static inline
+    void
+    convert(From from, dynamic_t& to);
 };
 
+/*! Trait class to convert dynamic_t to other data types.
+ *
+ * Method dynamic_t::to() calls this trait to convert dynamic_t to other types.
+ * User may specialize it to enable conversion to new types.
+ *
+ * \note All specializations should define nested type \p result_type which is the resulting type of the conversion.
+ *
+ * The second template argument may be used to do the SFINAE magic.
+ *
+ * \tparam To The type passed to method dynamic_t::to() as the first template argument.
+ * \sa dynamic_converter<bool>
+ */
 template<class To, class = void>
-struct dynamic_converter { };
+struct dynamic_converter {
+    /*! Performs conversion of dynamic_t to the result type.
+     *
+     * It's provided with a user-defined "controller" which performs error handling.
+     * It means that the function shouldn't throw errors itself. Instead it should call
+     * controller's \p fail() method with an error of a type derived from kora::bad_cast_t.
+     * Also if the function traverses complex data structures (arrays and objects), it must
+     * let the controller know about it via calling special member functions.
+     *
+     * \warning None of controller's methods may be called after \p fail().
+     * It means that this function shouldn't continue conversion after any call
+     * to dynamic_t::to() method throws.
+     * Probably you don't even want to catch these exceptions.
+     *
+     * \tparam Controller Type of the controller.
+     * \param[in] from The object being converted.
+     * \param[in,out] controller Controller provided by the caller.
+     * \returns The conversion result.
+     */
+    template<class Controller>
+    static inline
+    To
+    convert(const dynamic_t& from, Controller& controller);
 
+    /*! Checks whether the conversion of the object to the type is possible.
+     *
+     * \warning This function shouldn't throw exceptions.
+     *
+     * \param[in] from The object being converted.
+     * \returns \p true if the conversion is possible and \p false otherwise.
+     */
+    static inline
+    bool
+    convertible(const dynamic_t& from) KORA_NOEXCEPT;
+};
+
+/*! Recursive data structure to store JSON-like data.
+ *
+ * It can store data of any of the following types:
+ *  - Null
+ *  - Boolean
+ *  - Integer
+ *  - Unsigned integer
+ *  - Floating point
+ *  - String
+ *  - Array of dynamic_t objects
+ *  - Associative array indexed by strings and storing dynamic_t objects
+ *
+ * The reason why the integer type and unsigned integer type are separated is because the latter
+ * can store positive numbers of wider range. This ability may be important in some usecases.
+ */
 class dynamic_t {
 public:
-    typedef boost::blank           null_t;
-    typedef bool                   bool_t;
-    typedef int64_t                int_t;
-    typedef uint64_t               uint_t;
-    typedef double                 double_t;
-    typedef std::string            string_t;
+    /*! Type used to store null values.
+     *
+     * \typedef null_t;
+     * All values of this type are equal.
+     */
+    typedef boost::blank null_t;
+
+    /*! Type used to store boolean values.
+     *
+     * \typedef bool_t;
+     * It may be used instead of type bool in any context.
+     */
+    typedef bool bool_t;
+
+    /*! Arithmetic type used to store integer values.
+     *
+     * \typedef int_t;
+     * It's guaranteed to be able to store any value of type int64_t.
+     */
+    typedef int64_t int_t;
+
+    /*! Arithmetic type used to store unsigned integer values.
+     *
+     * \typedef uint_t;
+     * It's guaranteed to be able to store any value of type uint64_t.
+     */
+    typedef uint64_t uint_t;
+
+    /*! Arithmetic type used to store floating point numbers.
+     *
+     * \typedef double_t;
+     * It's guaranteed to be able to store any value of type double.
+     */
+    typedef double double_t;
+
+    /*! Type used to store strings.
+     *
+     * \typedef string_t;
+     * It's guaranteed to have API backward compatible with std::string.
+     */
+    typedef std::string string_t;
+
+    /*! Type used to store arrays.
+     *
+     * \typedef array_t;
+     * It's guaranteed to have API backward compatible with std::vector<dynamic_t>.
+     */
     typedef std::vector<dynamic_t> array_t;
 
+    // See comments in the definition of the class.
     class object_t;
 
     // Just useful constants which may be accessed by reference from any place of the program.
@@ -60,9 +187,15 @@ public:
     KORA_API static const dynamic_t empty_object;
 
 public:
+    /*! Default constructor.
+     * \post <tt>this->is_null() == true</tt>
+     */
     KORA_API
     dynamic_t() KORA_NOEXCEPT;
 
+    /*! Copy constructor.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(const dynamic_t& other);
 
@@ -84,24 +217,51 @@ public:
     KORA_API
     dynamic_t(double_t value) KORA_NOEXCEPT;
 
+    /*! Creates dynamic object containing a string value.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(const string_t& value);
 
     KORA_API
-    dynamic_t(string_t&& value);
+    dynamic_t(string_t&& value) KORA_NOEXCEPT;
 
+    /*! Creates dynamic object containing an array.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(array_t value);
 
+    /*! Creates dynamic_t containing an object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t(object_t value);
 
+    /*! Construct dynamic object from an arbitrary type.
+     *
+     * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to construct the object.\n
+     * This constructor participates in overload resolution only if
+     * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
+     *
+     * \throws Any exception thrown by dynamic_constructor.
+     *
+     * \sa dynamic_constructor
+     */
+#ifdef KORA_DOXYGEN
+    template<class T>
+    dynamic_t(T&& from);
+#else
     template<class T>
     dynamic_t(
         T&& from,
         typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
     );
+#endif
 
+    /*! Copy assignment operator.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(const dynamic_t& other);
@@ -130,137 +290,251 @@ public:
     dynamic_t&
     operator=(double_t value) KORA_NOEXCEPT;
 
+    /*! Assigns string value to the object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(const string_t& value);
 
     KORA_API
     dynamic_t&
-    operator=(string_t&& value);
+    operator=(string_t&& value) KORA_NOEXCEPT;
 
+    /*! Assigns array to the object.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(array_t value);
 
+    /*! Assigns object to the dynamic_t.
+     * \throws std::bad_alloc
+     */
     KORA_API
     dynamic_t&
     operator=(object_t value);
 
+    /*! Assigns value of an arbitrary type to the dynamic object.
+     * \fn template<class T> dynamic_t& operator=(T&& from)
+     *
+     * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to perform the conversion.\n
+     * This operator participates in overload resolution only if
+     * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
+     *
+     * \throws Any exception thrown by dynamic_constructor.
+     *
+     * \sa dynamic_constructor
+     */
+#ifdef KORA_DOXYGEN
+    template<class T>
+    dynamic_t&
+    operator=(T&& from);
+#else
     template<class T>
     typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
+#endif
 
+
+    /*! Calls a visitor with the value stored in the object.
+     *
+     * Performs function call \p visitor(x) where \p x is the value stored in the dynamic object and has
+     * one of the following types:
+     *  - dynamic_t::null_t
+     *  - dynamic_t::bool_t
+     *  - dynamic_t::int_t
+     *  - dynamic_t::uint_t
+     *  - dynamic_t::double_t
+     *  - dynamic_t::string_t
+     *  - dynamic_t::array_t
+     *  - dynamic_t::object_t
+     *
+     * \throws Any exception thrown by the visitor.
+     */
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
     apply(Visitor&& visitor);
 
+    //! \overload
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
     apply(Visitor&& visitor) const;
 
     KORA_API
     bool
-    is_null() const;
+    is_null() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_bool() const;
+    is_bool() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_int() const;
+    is_int() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_uint() const;
+    is_uint() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_double() const;
+    is_double() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_string() const;
+    is_string() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_array() const;
+    is_array() const KORA_NOEXCEPT;
 
     KORA_API
     bool
-    is_object() const;
+    is_object() const KORA_NOEXCEPT;
 
+    //! \returns Stored bool value.
+    //! \throws expected_bool_t if the object doesn't contain value of type dynamic_t::bool_t.
     KORA_API
     bool_t
     as_bool() const;
 
+    //! \returns Stored int value.
+    //! \throws expected_int_t if the object doesn't contain value of type dynamic_t::int_t.
     KORA_API
     int_t
     as_int() const;
 
+    //! \returns Stored uint value.
+    //! \throws expected_uint_t if the object doesn't contain value of type dynamic_t::uint_t.
     KORA_API
     uint_t
     as_uint() const;
 
+    //! \returns Stored double value.
+    //! \throws expected_double_t if the object doesn't contain value of type dynamic_t::double_t.
     KORA_API
     double_t
     as_double() const;
 
+    //! \returns Stored string.
+    //! \throws expected_string_t if the object doesn't contain value of type dynamic_t::string_t.
     KORA_API
     const string_t&
     as_string() const;
 
+    //! \returns Stored array.
+    //! \throws expected_array_t if the object doesn't contain value of type dynamic_t::array_t.
     KORA_API
     const array_t&
     as_array() const;
 
+    //! \returns Stored object.
+    //! \throws expected_object_t if the object doesn't contain value of type dynamic_t::object_t.
     KORA_API
     const object_t&
     as_object() const;
 
+    //! \returns Stored string.
+    //! \throws expected_string_t if the object doesn't contain value of type dynamic_t::string_t.
     KORA_API
     string_t&
     as_string();
 
+    //! \returns Stored array.
+    //! \throws expected_array_t if the object doesn't contain value of type dynamic_t::array_t.
     KORA_API
     array_t&
     as_array();
 
+    //! \returns Stored object.
+    //! \throws expected_object_t if the object doesn't contain value of type dynamic_t::object_t.
     KORA_API
     object_t&
     as_object();
 
+    /*! Checks whether the conversion of the object to a type is possible.
+     *
+     * It uses dynamic_converter::convertible() to perform the check.\n
+     * Specialization being used: <tt>dynamic_converter<typename pristine<T>::type></tt>
+     *
+     * \tparam T Type determining dynamic_converter.
+     * \returns \p true if the conversion is possible and \p false otherwise.
+     *
+     * \sa dynamic_converter
+     */
     template<class T>
     bool
-    convertible_to() const;
+    convertible_to() const KORA_NOEXCEPT;
 
+    /*! Converts the object to an arbitrary type.
+     *
+     * It uses <tt>dynamic_converter<typename pristine<T>::type></tt> to perform the conversion.
+     *
+     * \tparam T Type determining dynamic_converter.
+     * \tparam Controller Type of the controller.
+     * \param controller Object handling conversion errors. Forwarded to the underlying dynamic_converter.
+     * \returns Result of conversion returned by dynamic_converter.
+     * \throws Any exceptions thrown by dynamic_converter and by the controller.
+     *
+     * \sa dynamic_converter
+     *
+     * \todo Provide example of a controller.
+     */
     template<class T, class Controller>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to(Controller&& controller) const;
 
+    /*! Converts the object to an arbitrary type.
+     *
+     * It's the same as the previous function, but always uses controller
+     * which ignores any information about the traversed object structure and
+     * just throws errors generated by dynamic_converter.
+     *
+     * \sa dynamic_converter
+     * \tparam T Type determining dynamic_converter.
+     * \returns Result of conversion returned by dynamic_converter.
+     * \throws Any exceptions thrown by dynamic_converter.
+     * \throws Any errors passed to the controller by dynamic_converter.
+     *
+     * \sa dynamic_converter
+     */
     template<class T>
     typename dynamic_converter<typename pristine<T>::type>::result_type
     to() const;
 
 public:
+    /*! Creates dynamic object from JSON.
+     *
+     * This function doesn't require the input stream to contain only one JSON object.
+     * It reads one JSON object with surrounding spaces and leaves other data untouched.
+     *
+     * \param input Stream containing the JSON.
+     * \returns Constructed dynamic object.
+     * \throws json_parsing_error_t
+     * \throws std::bad_alloc
+     * \throws Any exception thrown by \p input.
+     */
     KORA_API
     static
     dynamic_t
     from_json(std::istream &input);
 
+    /*! Serializes the object into JSON format.
+     *
+     * This method may serialize not only objects and arrays, but any dynamic_t object.
+     * It's not like standard JSON, and you should perform additional checks on yourown
+     * if you want to receive a JSON object or array.
+     *
+     * \param output Stream to write the resulting JSON to.
+     * \throws std::bad_alloc
+     * \throws Any exception thrown by \p output.
+     */
     KORA_API
     void
     to_json(std::ostream &output) const;
 
 private:
-    template<class T>
-    T&
-    get();
-
-    template<class T>
-    const T&
-    get() const;
-
     template<class T>
     bool
     is() const;
@@ -282,21 +556,40 @@ private:
     value_t m_value;
 };
 
+/*!
+ * \relates dynamic_t
+ * \returns \p true if \p left and \p right store equal values of the same type,
+ * or if they store equal numeric values (<tt>5.0 == 5</tt>). Otherwise it returns \p false.
+ */
 KORA_API
 bool
-operator==(const dynamic_t& left, const dynamic_t& right);
+operator==(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
+/*!
+ * \relates dynamic_t
+ * \sa operator==(const dynamic_t&, const dynamic_t&)
+ * \returns Opposite to the operator==(const dynamic_t&, const dynamic_t&).
+ */
 KORA_API
 bool
-operator!=(const dynamic_t& left, const dynamic_t& right);
+operator!=(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 
+/*!
+ * \relates dynamic_t
+ * Prints the value stored in the dynamic object. Null value is printed as "null",
+ * boolean as value of type \p bool, array and object are printed in JSON format.
+ *
+ * \param stream Stream to print to.
+ * \param value Object to print.
+ * \returns \p stream
+ */
 KORA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
 
 } // namespace kora
 
-#include "kora/dynamic/dynamic.impl"
+#include "kora/dynamic/dynamic.inl"
 #include "kora/dynamic/object.hpp"
 #include "kora/dynamic/constructors.hpp"
 #include "kora/dynamic/converters.hpp"

@@ -23,6 +23,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/utility/platform.hpp"
 
+/*! \file stdatomic.hpp
+ *
+ * Provides std::atomic.
+ */
+
 #ifdef KORA_NOT_BAD
     #include <atomic>
 #else

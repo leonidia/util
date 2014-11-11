@@ -23,6 +23,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/utility/platform.hpp"
 
+/*!
+ * \def KORA_NOEXCEPT
+ *
+ * Declares that a function doesn't throw exceptions.
+ * Use it instead of \p throw() or \p noexcept.
+ * This macro has been introduced because some ancient compilers don't support \p noexcept specifier,
+ * and \p throw() is depricated.
+ */
+
 #ifdef KORA_NOT_BAD
     #define KORA_NOEXCEPT noexcept
 #else

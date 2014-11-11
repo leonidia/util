@@ -23,19 +23,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
-// Use it instead of std::enable_if to enable a specialization if your dependent type T has
-// some nested type.
-// Usage: template<class T> struct some_struct<T, typename requires_type<T::nested_type>::type> { }
+/*! SFINAE helper to match on types having required nested type.
+ *
+ * Use it instead of \p std::enable_if to enable a specialization if the dependent type has some nested type.
+ *
+ * Usage: <tt>template<class T> struct some_struct<T, typename requires_type<T::nested_type>::type> { } </tt>
+ */
 template<class T, class Result = void>
 struct requires_type {
     typedef Result type;
 };
 
-// Use it instead of std::enable_if to enable a specialization if your dependent type T has
-// some method.
-// Usage:
-// template<class T>
-// struct some_struct<T, typename requires_method<void(T::*)(int, double), T::method_name>::type> { }
+/*! SFINAE helper to match on types having required method.
+ *
+ * Use it instead of \p std::enable_if to enable a specialization
+ * if the dependent type has method with given name and signature.
+ *
+ * Usage: <tt>template<class T> struct some_struct<T, typename requires_method<void(T::*)(int, double), T::method_name>::type> { };</tt>
+ */
 template<class Method, Method, class Result = void>
 struct requires_method {
     typedef Result type;

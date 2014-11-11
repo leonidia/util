@@ -28,10 +28,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
+//! Base class of all custom exceptions thrown by config_t and config_parser_t.
 class KORA_API config_error_t :
     public std::exception
 {
 public:
+    //! \post <tt>this->what() == message</tt>
+    //! \param message Error message, obviously.
     explicit
     config_error_t(std::string message);
 
@@ -44,47 +47,66 @@ private:
     std::string m_message;
 };
 
+//! Base class of all custom exceptions thrown by config_t.
 class KORA_API config_value_error_t :
     public config_error_t
 {
 public:
+    //! \post this->what() provides some nice human readable error message
+    //! pointing to the related place in the config.
+    //! \param path Path to a place in the config which the error is related to.
+    //! \param message Description of the error.
     config_value_error_t(std::string path, std::string message);
 
     ~config_value_error_t() KORA_NOEXCEPT;
 
+    //! \returns Path to a place in the config which the error is related to.
     const std::string&
-    path() const;
+    path() const KORA_NOEXCEPT;
 
+    //! \returns Description of the error.
     const std::string&
-    message() const;
+    message() const KORA_NOEXCEPT;
 
 private:
     std::string m_path;
     std::string m_message;
 };
 
+//! Thrown by config_t when the user tried to access a value which doesn't exist in the config.
 class KORA_API config_access_error_t :
     public config_value_error_t
 {
 public:
+    //! \sa config_value_error_t::config_value_error_t(std::string, std::string)
     config_access_error_t(std::string path, std::string message);
 
     ~config_access_error_t() KORA_NOEXCEPT;
 };
 
+//! Indicates converison error. When the user tried to do something incompatible with actual config_t's value.
 class KORA_API config_cast_error_t :
     public config_value_error_t
 {
 public:
+    //! \sa config_value_error_t::config_value_error_t(std::string, std::string)
     config_cast_error_t(std::string path, std::string message);
 
     ~config_cast_error_t() KORA_NOEXCEPT;
 };
 
+//! Thrown by config_parser_t trying to parse incorrect data.
 class KORA_API config_parser_error_t :
     public config_error_t
 {
 public:
+    /*!
+     * \post <tt>this->what() == message</tt>
+     * \param message Human readable message describing the error and place where it has occured.
+     * \param parse_error Text description of the error.
+     * \param line_number Line where the error has occured.
+     * \param column_number Column in which the error has occured.
+     */
     config_parser_error_t(std::string message,
                           std::string parse_error,
                           size_t line_number,
@@ -92,14 +114,17 @@ public:
 
     ~config_parser_error_t() KORA_NOEXCEPT;
 
+    //! \returns Text description of the error.
     const std::string&
-    parse_error() const;
+    parse_error() const KORA_NOEXCEPT;
 
+    //! \returns Line where the error has occured.
     size_t
-    line_number() const;
+    line_number() const KORA_NOEXCEPT;
 
+    //! \returns Column in which the error has occured.
     size_t
-    column_number() const;
+    column_number() const KORA_NOEXCEPT;
 
 private:
     std::string m_parse_error;

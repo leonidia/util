@@ -35,28 +35,36 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
+//! \brief Converts dynamic_t to dynamic_t. It's here for convenience.
 template<>
 struct dynamic_converter<dynamic_t> {
     typedef const dynamic_t& result_type;
 
+    //! Doesn't call the controller. Never fails.
+    //! \returns \p from
     template<class Controller>
     static inline
     const dynamic_t&
-    convert(const dynamic_t& from, Controller&) {
+    convert(const dynamic_t& from, Controller&) KORA_NOEXCEPT {
         return from;
     }
 
+    //! \returns \p true
     static inline
     bool
-    convertible(const dynamic_t&) {
+    convertible(const dynamic_t&) KORA_NOEXCEPT {
         return true;
     }
 };
 
+//! \brief Converts dynamic_t to bool and dynamic_t::bool_t (they are the same now).
 template<>
 struct dynamic_converter<bool> {
     typedef bool result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with expected_bool_t error if <tt>from.is_bool() == false</tt>.\n
+    //! \returns \p from.as_bool()
     template<class Controller>
     static inline
     result_type
@@ -68,21 +76,32 @@ struct dynamic_converter<bool> {
         }
     }
 
+    //! \returns \p from.is_bool()
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_bool();
     }
 };
 
-template<class To>
+//! \brief Converts dynamic_t to integral types.
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<Integral>
+#else
+template<class Integral>
 struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_integral<To>::value>::type
+    Integral,
+    typename std::enable_if<std::is_integral<Integral>::value>::type
 >
+#endif
 {
-    typedef To result_type;
+    typedef Integral result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_integer_t error if <tt>from.is_int() == false && from.is_uint() == false</tt>.\n
+    //! Fails with \p numeric_overflow_t<result_type> if the stored number can't be represented in the result type.\n
+    //! \returns The stored number casted to the result type
     template<class Controller>
     static inline
     result_type
@@ -104,9 +123,11 @@ struct dynamic_converter<
         }
     }
 
+    //! \returns \p true if \p from stores an integer number and this number can be represented
+    //! in the result type without data loss. Otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
@@ -119,14 +140,24 @@ struct dynamic_converter<
     }
 };
 
-template<class To>
+//! \brief Converts dynamic_t to floating point types.
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<FloatingPoint>
+#else
+template<class FloatingPoint>
 struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_floating_point<To>::value>::type
+    FloatingPoint,
+    typename std::enable_if<std::is_floating_point<FloatingPoint>::value>::type
 >
+#endif
 {
-    typedef To result_type;
+    typedef FloatingPoint result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_number_t error if <tt>!from.is_int() && !from.is_uint() && !from.is_double()</tt>.\n
+    //! Fails with \p numeric_overflow_t<result_type> if the stored number can't be represented in the result type.\n
+    //! \returns The stored number casted to the result type
     template<class Controller>
     static inline
     result_type
@@ -146,9 +177,11 @@ struct dynamic_converter<
         }
     }
 
+    //! \returns \p true if \p from stores a number and this number can be represented
+    //! in the result type without data loss. Otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_int()) {
             boost::numeric::converter<result_type, dynamic_t::int_t> converter;
             return converter.out_of_range(from.as_int()) == boost::numeric::cInRange;
@@ -164,14 +197,20 @@ struct dynamic_converter<
     }
 };
 
-template<class To>
-struct dynamic_converter<
-    To,
-    typename std::enable_if<std::is_enum<To>::value>::type
->
+//! \brief Converts dynamic_t to enum types.
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_converter<Enum>
+#else
+template<class Enum>
+struct dynamic_converter<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
+#endif
 {
-    typedef To result_type;
+    typedef Enum result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_int_t error if <tt>!from.is_int()</tt>.\n
+    //! \returns <tt>static_cast<result_type>(from.as_int())</tt>
     template<class Controller>
     static inline
     result_type
@@ -183,17 +222,22 @@ struct dynamic_converter<
         }
     }
 
+    //! \returns <tt>from.is_int()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_int();
     }
 };
 
+//! \brief Converts dynamic_t to std::string and to dynamic_t::string_t (they are the same now).
 template<>
 struct dynamic_converter<std::string> {
     typedef const std::string& result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_string_t error if <tt>!from.is_string()</tt>.\n
+    //! \returns <tt>from.as_string()</tt>
     template<class Controller>
     static inline
     result_type
@@ -205,17 +249,22 @@ struct dynamic_converter<std::string> {
         }
     }
 
+    //! \returns <tt>from.is_string()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_string();
     }
 };
 
+//! \brief Converts dynamic_t to C-string.
 template<>
 struct dynamic_converter<const char*> {
     typedef const char *result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_string_t error if <tt>!from.is_string()</tt>.\n
+    //! \returns <tt>from.as_string().c_str()</tt>
     template<class Controller>
     static inline
     result_type
@@ -227,17 +276,22 @@ struct dynamic_converter<const char*> {
         }
     }
 
+    //! \returns <tt>from.is_string()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_string();
     }
 };
 
+//! \brief Converts dynamic_t to std::vector<dynamic_t> and dynamic_t::array_t (they are the same now).
 template<>
 struct dynamic_converter<std::vector<dynamic_t>> {
     typedef const std::vector<dynamic_t>& result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_array_t error if <tt>!from.is_array()</tt>.\n
+    //! \returns <tt>from.as_array()</tt>
     template<class Controller>
     static inline
     result_type
@@ -249,17 +303,25 @@ struct dynamic_converter<std::vector<dynamic_t>> {
         }
     }
 
+    //! \returns <tt>from.is_array()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array();
     }
 };
 
+//! \brief Converts dynamic_t to std::vector.
 template<class T>
 struct dynamic_converter<std::vector<T>> {
     typedef std::vector<T> result_type;
 
+    //! Traverses the array stored in \p from. Converts items of the array to \p T.\n
+    //! Fails with errors generated by <tt>dynamic_t::to<T>()</tt>.\n
+    //! Fails with \p expected_array_t error if <tt>!from.is_array()</tt>.\n
+    //! \returns Vector of <tt>from</tt>'s items converted to \p T.
+    //! \throws std::bad_alloc
+    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -281,9 +343,11 @@ struct dynamic_converter<std::vector<T>> {
         }
     }
 
+    //! \returns \p true if <tt>from.is_array()</tt> and all <tt>from</tt>'s items are
+    //! convertible to \p T, otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array() && std::all_of(
             from.as_array().begin(),
             from.as_array().end(),
@@ -292,10 +356,17 @@ struct dynamic_converter<std::vector<T>> {
     }
 };
 
+//! \brief Converts dynamic_t to std::set.
 template<class T>
 struct dynamic_converter<std::set<T>> {
     typedef std::set<T> result_type;
 
+    //! Traverses the array stored in \p from. Converts items of the array to \p T.\n
+    //! Fails with errors generated by <tt>dynamic_t::to<T>()</tt>.\n
+    //! Fails with \p expected_array_t error if <tt>!from.is_array()</tt>.\n
+    //! \returns Set of <tt>from</tt>'s items converted to \p T.
+    //! \throws std::bad_alloc
+    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -317,9 +388,11 @@ struct dynamic_converter<std::set<T>> {
         }
     }
 
+    //! \returns \p true if <tt>from.is_array()</tt> and all <tt>from</tt>'s items are
+    //! convertible to \p T, otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_array() && std::all_of(
             from.as_array().begin(),
             from.as_array().end(),
@@ -328,10 +401,17 @@ struct dynamic_converter<std::set<T>> {
     }
 };
 
+//! \brief Converts dynamic_t to std::tuple.
 template<class... Args>
 struct dynamic_converter<std::tuple<Args...>> {
     typedef std::tuple<Args...> result_type;
 
+    //! Traverses the array stored in \p from. Converts items of the array to <tt>Args...</tt>.\n
+    //! Fails with errors generated by <tt>dynamic_t::to<Args>()...</tt>.\n
+    //! Fails with \p expected_array_t error if <tt>!from.is_array() || from.as_array().size() != sizeof...(Args)</tt>.\n
+    //! \returns Tuple with <tt>from</tt>'s items converted to <tt>Args...</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exception thrown by <tt>dynamic_converter<Args>::convert...</tt>
     template<class Controller>
     static inline
     result_type
@@ -347,9 +427,12 @@ struct dynamic_converter<std::tuple<Args...>> {
         }
     }
 
+    //! \returns \p true if <tt>from.is_array()</tt>, <tt>from.as_array().size() == sizeof...(Args)</tt>
+    //! and all <tt>from</tt>'s items are convertible to the corresponding tuple items.
+    //! Otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_array() && sizeof...(Args) == from.as_array().size()) {
             if (sizeof...(Args) == 0) {
                 return true;
@@ -411,6 +494,7 @@ private:
     };
 };
 
+//! \brief Converts dynamic_t to std::pair.
 template<class First, class Second>
 struct dynamic_converter<std::pair<First, Second>> {
     typedef std::pair<First, Second> result_type;
@@ -423,6 +507,13 @@ struct dynamic_converter<std::pair<First, Second>> {
         return from[Index].to<typename std::tuple_element<Index, result_type>::type>();
     }
 
+    //! Traverses the array stored in \p from. Converts items of the array to \p First and \p Second.\n
+    //! Fails with errors generated by <tt>dynamic_t::to<First>()</tt> and <tt>dynamic_t::to<Second>()</tt>.\n
+    //! Fails with \p expected_array_t error if <tt>!from.is_array() || from.as_array().size() != 2</tt>.\n
+    //! \returns Pair with <tt>from</tt>'s items converted to \p First and \p Second respectively.
+    //! \throws std::bad_alloc
+    //! \throws Any exception thrown by <tt>dynamic_converter<First>::convert</tt>.
+    //! \throws Any exception thrown by <tt>dynamic_converter<Second>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -443,9 +534,12 @@ struct dynamic_converter<std::pair<First, Second>> {
         }
     }
 
+    //! \returns \p true if <tt>from.is_array()</tt>, <tt>from.as_array().size() == 2</tt>
+    //! and <tt>from</tt>'s items are convertible to the corresponding pair items.
+    //! Otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (from.is_array() && from.as_array().size() == 2) {
             return from.as_array()[0].convertible_to<First>() &&
                    from.as_array()[1].convertible_to<Second>();
@@ -455,10 +549,14 @@ struct dynamic_converter<std::pair<First, Second>> {
     }
 };
 
+//! \brief Converts dynamic_t to dynamic_t::object_t.
 template<>
 struct dynamic_converter<dynamic_t::object_t> {
     typedef const dynamic_t::object_t& result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_object_t error if <tt>!from.is_object()</tt>.\n
+    //! \returns <tt>from.as_object()</tt>
     template<class Controller>
     static inline
     result_type
@@ -470,17 +568,22 @@ struct dynamic_converter<dynamic_t::object_t> {
         }
     }
 
+    //! \returns <tt>from.is_object()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_object();
     }
 };
 
+//! \brief Converts dynamic_t to std::map<std::string, dynamic_t>.
 template<>
 struct dynamic_converter<std::map<std::string, dynamic_t>> {
     typedef const std::map<std::string, dynamic_t>& result_type;
 
+    //! Doesn't call any controller's traverse methods.\n
+    //! Fails with \p expected_object_t error if <tt>!from.is_object()</tt>.\n
+    //! \returns <tt>from.as_object()</tt>
     template<class Controller>
     static inline
     result_type
@@ -492,17 +595,25 @@ struct dynamic_converter<std::map<std::string, dynamic_t>> {
         }
     }
 
+    //! \returns <tt>from.is_object()</tt>
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         return from.is_object();
     }
 };
 
+//! \brief Converts dynamic_t to std::map<std::string, T>.
 template<class T>
 struct dynamic_converter<std::map<std::string, T>> {
     typedef std::map<std::string, T> result_type;
 
+    //! Traverses the object stored in \p from. Converts items of the object to \p T.\n
+    //! Fails with errors generated by <tt>dynamic_t::to<T>()</tt>.\n
+    //! Fails with \p expected_object_t error if <tt>!from.is_object()</tt>.\n
+    //! \returns Map of <tt>from</tt>'s key-value pairs where values are converted to \p T.
+    //! \throws std::bad_alloc
+    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -524,9 +635,11 @@ struct dynamic_converter<std::map<std::string, T>> {
         }
     }
 
+    //! \returns \p true if <tt>from.is_object()</tt> and all <tt>from</tt>'s values are
+    //! convertible to \p T, otherwise returns \p false.
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (!from.is_object()) {
             return false;
         }
@@ -543,6 +656,8 @@ struct dynamic_converter<std::map<std::string, T>> {
     }
 };
 
+//! \brief Converts dynamic_t to std::unordered_map<std::string, T>.
+//! \sa dynamic_converter<std::map<std::string, T>>
 template<class T>
 struct dynamic_converter<std::unordered_map<std::string, T>> {
     typedef std::unordered_map<std::string, T> result_type;
@@ -570,7 +685,7 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
 
     static inline
     bool
-    convertible(const dynamic_t& from) {
+    convertible(const dynamic_t& from) KORA_NOEXCEPT {
         if (!from.is_object()) {
             return false;
         }

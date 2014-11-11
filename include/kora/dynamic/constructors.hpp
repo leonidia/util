@@ -35,81 +35,145 @@ KORA_POP_VISIBILITY
 
 namespace kora {
 
-template<class From>
+namespace detail { namespace dynamic {
+
+// Helper traits.
+template<class T>
+struct match_uint_t :
+    std::integral_constant<bool,
+                           std::is_integral<T>::value &&
+                           std::is_unsigned<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::uint_t)>
+{ };
+
+template<class T>
+struct match_int_t :
+    std::integral_constant<bool,
+                           std::is_integral<T>::value &&
+                           std::is_signed<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::int_t)>
+{ };
+
+template<class T>
+struct match_double_t :
+    std::integral_constant<bool,
+                           std::is_floating_point<T>::value &&
+                           sizeof(T) <= sizeof(dynamic_t::double_t)>
+{ };
+
+}} // namespace detail::dynamic
+
+/*!
+ * \brief Converts unsigned integer types to dynamic_t.
+ *
+ * Enabled only for integer types which can be converted to dynamic_t::uint_t without data loss.
+ */
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<SignedInteger>
+#else
+template<class SignedInteger>
 struct dynamic_constructor<
-    From,
-    typename std::enable_if<std::is_integral<From>::value &&
-                            std::is_unsigned<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::uint_t)
-                            >::type
+   SignedInteger,
+   typename std::enable_if<detail::dynamic::match_uint_t<SignedInteger>::value>::type
 >
+#endif
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_uint() == true && to.as_uint() == static_cast<dynamic_t::uint_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) {
+    convert(SignedInteger from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::uint_t>(from);
     }
 };
 
-template<class From>
+/*!
+ * \brief Converts signed integer types to dynamic_t.
+ *
+ * Enabled only for integer types which can be converted to dynamic_t::int_t without data loss.
+ */
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<UnsignedInteger>
+#else
+template<class UnsignedInteger>
 struct dynamic_constructor<
-    From,
-    typename std::enable_if<std::is_integral<From>::value &&
-                            std::is_signed<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::int_t)
-                            >::type
+    UnsignedInteger,
+    typename std::enable_if<detail::dynamic::match_int_t<UnsignedInteger>::value>::type
 >
-{
-    static const bool enable = true;
-
-    static inline
-    void
-    convert(From from, dynamic_t& to) {
-        to = static_cast<dynamic_t::int_t>(from);
-
-    }
-};
-
-#ifdef KORA_NOT_BAD
-template<class From>
-struct dynamic_constructor<
-    From,
-    typename std::enable_if<std::is_enum<From>::value>::type
->
-{
-    static const bool enable = true;
-
-    static inline
-    void
-    convert(const From& from, dynamic_t& to) {
-        to = static_cast<dynamic_t::int_t>(from);
-    }
-};
 #endif
-
-template<class From>
-struct dynamic_constructor<
-    From,
-    typename std::enable_if<std::is_floating_point<From>::value &&
-                            sizeof(From) <= sizeof(dynamic_t::double_t)
-                            >::type
->
 {
     static const bool enable = true;
 
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
     static inline
     void
-    convert(From from, dynamic_t& to) {
+    convert(UnsignedInteger from, dynamic_t& to) KORA_NOEXCEPT {
+        to = static_cast<dynamic_t::int_t>(from);
+
+    }
+};
+
+#if defined(KORA_NOT_BAD) || defined(KORA_DOXYGEN)
+
+/*! Converts enum types to dynamic_t.
+ * \note This specialization is not available on GCC 4.4.
+ */
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<Enum>
+#else
+template<class Enum>
+struct dynamic_constructor<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type>
+#endif
+{
+    static const bool enable = true;
+
+    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
+    static inline
+    void
+    convert(const Enum& from, dynamic_t& to) KORA_NOEXCEPT {
+        to = static_cast<dynamic_t::int_t>(from);
+    }
+};
+
+#endif // defined(KORA_NOT_BAD) || defined(KORA_DOXYGEN)
+
+/*!
+ * \brief Converts floating point types to dynamic_t.
+ *
+ * Enabled only for types which can be converted to dynamic_t::double_t without data loss.
+ */
+#ifdef KORA_DOXYGEN
+template<>
+struct dynamic_constructor<FloatingPoint>
+#else
+template<class FloatingPoint>
+struct dynamic_constructor<
+    FloatingPoint,
+    typename std::enable_if<detail::dynamic::match_double_t<FloatingPoint>::value>::type
+>
+#endif // KORA_DOXYGEN
+{
+    static const bool enable = true;
+
+    //! \post <tt>to.is_double() == true && to.as_double() == static_cast<dynamic_t::double_t>(from)</tt>
+    static inline
+    void
+    convert(FloatingPoint from, dynamic_t& to) KORA_NOEXCEPT {
         to = static_cast<dynamic_t::double_t>(from);
     }
 };
 
+//! \brief Converts string literals to dynamic_t.
 template<size_t N>
 struct dynamic_constructor<char[N]> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
+    //! \throws std::bad_alloc
     static inline
     void
     convert(const char* from, dynamic_t& to) {
@@ -118,10 +182,13 @@ struct dynamic_constructor<char[N]> {
     }
 };
 
+//! \brief Converts C-strings to dynamic_t.
 template<>
 struct dynamic_constructor<const char*> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
+    //! \throws std::bad_alloc
     static inline
     void
     convert(const char* from, dynamic_t& to) {
@@ -130,14 +197,15 @@ struct dynamic_constructor<const char*> {
     }
 };
 
+//! \brief Converts std::vector to dynamic_t.
 template<class T>
-struct dynamic_constructor<
-    std::vector<T>,
-    typename std::enable_if<!std::is_same<T, dynamic_t>::value>::type
->
-{
+struct dynamic_constructor<std::vector<T>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_array() == true && to.as_array().size() == from.size()</tt>
+    //! \post For all <tt>size_t i; i < from.size() ==> to.as_array()[i] == dynamic_t(from[i])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::vector<T>& from, dynamic_t& to) {
@@ -152,10 +220,27 @@ struct dynamic_constructor<
     }
 };
 
+//! \brief Converts std::tuple to dynamic_t.
 template<class... Args>
 struct dynamic_constructor<std::tuple<Args...>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_array() == true && to.as_array().size() == sizeof...(Args)</tt>
+    //! \post For all <tt>size_t i; i < sizeof...(Args) ==> to.as_array()[i] == dynamic_t(std::get<i>(from))</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<Args>())...</tt>
+    static inline
+    void
+    convert(const std::tuple<Args...>& from, dynamic_t& to) {
+        dynamic_t::array_t buffer;
+        buffer.reserve(sizeof...(Args));
+
+        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
+
+        to = std::move(buffer);
+    }
+
+private:
     template<size_t N, size_t I, class... Args2>
     struct copy_tuple_to_vector {
         static inline
@@ -183,23 +268,18 @@ struct dynamic_constructor<std::tuple<Args...>> {
             // Empty.
         }
     };
-
-    static inline
-    void
-    convert(const std::tuple<Args...>& from, dynamic_t& to) {
-        dynamic_t::array_t buffer;
-        buffer.reserve(sizeof...(Args));
-
-        copy_tuple_to_vector<sizeof...(Args), 1, Args...>::convert(from, buffer);
-
-        to = std::move(buffer);
-    }
 };
 
+//! \brief Converts std::map<dynamic_t::string_t, dynamic_t> to dynamic_t.
 template<>
-struct dynamic_constructor<std::map<std::string, dynamic_t>> {
+struct dynamic_constructor<std::map<dynamic_t::string_t, dynamic_t>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == from[key]</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by dynamic_t copy constructor.
     template<class Object>
     static inline
     void
@@ -208,14 +288,16 @@ struct dynamic_constructor<std::map<std::string, dynamic_t>> {
     }
 };
 
+//! \brief Converts std::map<std::string, T> to dynamic_t.
 template<class T>
-struct dynamic_constructor<
-    std::map<std::string, T>,
-    typename std::enable_if<!std::is_same<T, dynamic_t>::value>::type
->
-{
+struct dynamic_constructor<std::map<std::string, T>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == dynamic_t(from[key])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::map<std::string, T>& from, dynamic_t& to) {
@@ -229,10 +311,16 @@ struct dynamic_constructor<
     }
 };
 
+//! \brief Converts std::unordered_map<std::string, T> to dynamic_t.
 template<class T>
 struct dynamic_constructor<std::unordered_map<std::string, T>> {
     static const bool enable = true;
 
+    //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
+    //! \post For all <tt>std::string key; from.count(key) == to.as_object().count(key)</tt>
+    //! \post For all <tt>std::string key; from.count(key) > 0 ==> to.as_object()[key] == dynamic_t(from[key])</tt>
+    //! \throws std::bad_alloc
+    //! \throws Any exceptions thrown by <tt>dynamic_t(std::declval<T>())</tt>
     static inline
     void
     convert(const std::unordered_map<std::string, T>& from, dynamic_t& to) {

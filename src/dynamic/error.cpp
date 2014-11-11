@@ -25,7 +25,7 @@ using namespace kora;
 json_parsing_error_t::json_parsing_error_t(size_t offset, std::string message) :
     std::invalid_argument("parsing error - " + message),
     m_offset(offset),
-    m_message(message)
+    m_message(std::move(message))
 { }
 
 json_parsing_error_t::~json_parsing_error_t() KORA_NOEXCEPT { }

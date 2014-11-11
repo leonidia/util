@@ -25,7 +25,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
-// It's like std::decay, but doesn't convert arrays to pointers.
+/*! Remove references and cv-qualifiers.
+ *
+ * It's like \p std::decay, but doesn't convert arrays to pointers.
+ */
 template<class T>
 struct pristine {
     typedef typename std::remove_cv<
