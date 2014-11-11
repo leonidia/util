@@ -29,6 +29,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "kora/utility/sfinae.hpp"
 #include "kora/utility/stdatomic.hpp"
 #include "kora/utility/type_traits.hpp"
+#include "kora/utility/underlying_type.hpp"
 #include "kora/utility/visibility.hpp"
 
 #endif

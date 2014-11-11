@@ -27,6 +27,7 @@ ADD_EXECUTABLE(kora-tests
     dynamic/dynamic_converter
     dynamic/json
     dynamic/object
+    utility/underlying_type
 )
 
 TARGET_LINK_LIBRARIES(kora-tests
