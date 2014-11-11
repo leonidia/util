@@ -33,6 +33,7 @@ namespace kora {
 
 class config_parser_t {
 public:
+    //! \post <tt>this->root().underlying_object().is_null() == true</tt>
     KORA_API
     config_parser_t() KORA_NOEXCEPT;
 
@@ -47,14 +48,42 @@ public:
     KORA_API
     ~config_parser_t() KORA_NOEXCEPT;
 
+    /*! Create config from a JSON object stored in a file.
+     *
+     * \param path Path to the file with the JSON object.
+     * \returns \p root() after new configuration is parsed and stored in the parser.
+     * \throws config_parser_error_t If the file contains an invalid JSON.
+     * \throws config_parser_error_t If the file contains something after the JSON object.
+     * \throws config_cast_error_t If the file contains a valid JSON,
+     * but not an object (actually it may be only an array).
+     * \throws std::runtime_error If the method failed to open the file.
+     * \throws std::bad_alloc
+     *
+     * \sa parse(std::istream&)
+     */
     KORA_API
     config_t
     open(const std::string &path);
 
+    /*! Create config from a JSON object.
+     *
+     * \param stream The source of the JSON object.
+     * \returns \p root() after new configuration is parsed and stored in the parser.
+     * \throws config_parser_error_t If the stream contains an invalid JSON.
+     * \throws config_parser_error_t If the stream contains something after the JSON object.
+     * \throws config_cast_error_t If the stream contains a valid JSON,
+     * but not an object (actually it may be only an array).
+     * \throws std::bad_alloc
+     * \throws Any exception thrown by \p dynamic_t::from_json(stream).
+     */
     KORA_API
     config_t
     parse(std::istream &stream);
 
+    /*! Get config object.
+     *
+     * \returns config_t with path "<root>" and recently loaded dynamic object.
+     */
     KORA_API
     config_t
     root() const;
