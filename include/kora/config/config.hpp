@@ -259,7 +259,7 @@ public:
     const dynamic_t&
     underlying_object() const KORA_NOEXCEPT;
 
-protected:
+private:
     std::string m_path;
     const dynamic_t &m_value;
 };
