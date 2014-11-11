@@ -28,6 +28,8 @@ KORA_PUSH_VISIBLE
 #include <boost/iostreams/filtering_stream.hpp>
 KORA_POP_VISIBILITY
 
+#include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <sstream>
 
@@ -146,6 +148,11 @@ throw_parser_error(std::string&& config, size_t error_offset, const char *messag
     throw config_parser_error_t(error.str(), message, error_line_number, dash_count + 1);
 }
 
+bool
+isspace_predicate(char c) {
+    return std::isspace(c);
+}
+
 } // namespace
 
 config_t
@@ -177,7 +184,12 @@ config_parser_t::parse(std::istream &stream) {
     }
 
     if (!parsed.is_object()) {
-        throw config_cast_error_t("<root>", "the value must be an object");
+        auto json_start = std::find_if_not(filter.data().begin(), filter.data().end(), &isspace_predicate);
+        size_t offset = json_start - filter.data().begin();
+
+        throw_parser_error(complete_line(std::move(filter.data()), offset, stream),
+                           offset,
+                           "The value must be an object.");
     }
 
     m_root = parsed;
