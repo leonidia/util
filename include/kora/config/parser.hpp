@@ -31,16 +31,36 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace kora {
 
+/*! Creates config_t from JSON objects.
+ * \warning It owns the underlying dynamic_t object of all produced config_t objects and should be alive
+ * while any produced config_t is in use.
+ */
 class config_parser_t {
 public:
     //! \post <tt>this->root().underlying_object().is_null() == true</tt>
     KORA_API
     config_parser_t() KORA_NOEXCEPT;
 
+    /*! Create config from a JSON object stored in a file.
+     *
+     * Actually does the same as the default constructor and then calls method open(const std::string&) with \p path.
+     * \param path Path to the file with the JSON object.
+     * \throws Anything thrown by \p open(path).
+     *
+     * \sa open(const std::string&)
+     */
     KORA_API
     explicit
     config_parser_t(const std::string &path);
 
+    /*! Create config from a JSON object.
+     *
+     * Actually does the same as the default constructor and then calls method parse(std::istream&) with \p stream.
+     * \param stream The source of the JSON object.
+     * \throws Anything thrown by \p parse(stream).
+     *
+     * \sa parse(std::istream&)
+     */
     KORA_API
     explicit
     config_parser_t(std::istream &stream);
@@ -48,14 +68,13 @@ public:
     KORA_API
     ~config_parser_t() KORA_NOEXCEPT;
 
-    /*! Create config from a JSON object stored in a file.
+    /*! Parse config from a JSON object stored in a file.
+     *
+     * \warning Invalidates all config_t objects produced earlier.
      *
      * \param path Path to the file with the JSON object.
      * \returns \p root() after new configuration is parsed and stored in the parser.
-     * \throws config_parser_error_t If the file contains an invalid JSON.
-     * \throws config_parser_error_t If the file contains something after the JSON object.
-     * \throws config_cast_error_t If the file contains a valid JSON,
-     * but not an object (actually it may be only an array).
+     * \throws config_parser_error_t If the file contains anything but a valid JSON object.
      * \throws std::runtime_error If the method failed to open the file.
      * \throws std::bad_alloc
      *
@@ -65,14 +84,13 @@ public:
     config_t
     open(const std::string &path);
 
-    /*! Create config from a JSON object.
+    /*! Parse config from a JSON object.
+     *
+     * \warning Invalidates all config_t objects produced earlier.
      *
      * \param stream The source of the JSON object.
      * \returns \p root() after new configuration is parsed and stored in the parser.
-     * \throws config_parser_error_t If the stream contains an invalid JSON.
-     * \throws config_parser_error_t If the stream contains something after the JSON object.
-     * \throws config_cast_error_t If the stream contains a valid JSON,
-     * but not an object (actually it may be only an array).
+     * \throws config_parser_error_t If the stream contains anything but a valid JSON object.
      * \throws std::bad_alloc
      * \throws Any exception thrown by \p dynamic_t::from_json(stream).
      */
@@ -83,6 +101,7 @@ public:
     /*! Get config object.
      *
      * \returns config_t with path "<root>" and recently loaded dynamic object.
+     * \throws Any exception thrown by constructor of config_t.
      */
     KORA_API
     config_t
