@@ -115,7 +115,7 @@ TEST(DynamicConverter, Dynamic) {
     auto destination = source.to<kora::dynamic_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t."
     );
 
@@ -134,7 +134,7 @@ TEST(DynamicConverter, DynamicBool) {
     auto destination = source.to<kora::dynamic_t::bool_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t::bool_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t::bool_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t::bool_t."
     );
 
@@ -151,7 +151,7 @@ TEST(DynamicConverter, Bool) {
     auto destination = source.to<bool>();
 
     static_assert(
-        std::is_same<bool, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<bool, std::decay<decltype(destination)>::type>::value,
         "Expected result of type bool."
     );
 
@@ -169,7 +169,7 @@ namespace {
             auto destination = source.to<kora::dynamic_t::int_t>();
 
             static_assert(
-                std::is_same<kora::dynamic_t::int_t, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<kora::dynamic_t::int_t, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type kora::dynamic_t::int_t."
             );
 
@@ -182,7 +182,7 @@ namespace {
             auto destination = source.to<kora::dynamic_t::uint_t>();
 
             static_assert(
-                std::is_same<kora::dynamic_t::uint_t, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<kora::dynamic_t::uint_t, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type kora::dynamic_t::uint_t."
             );
 
@@ -195,7 +195,7 @@ namespace {
             auto destination = source.to<kora::dynamic_t::double_t>();
 
             static_assert(
-                std::is_same<kora::dynamic_t::double_t, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<kora::dynamic_t::double_t, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type kora::dynamic_t::double_t."
             );
 
@@ -208,7 +208,7 @@ namespace {
             auto destination = source.to<int>();
 
             static_assert(
-                std::is_same<int, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<int, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type int."
             );
 
@@ -221,7 +221,7 @@ namespace {
             auto destination = source.to<unsigned int>();
 
             static_assert(
-                std::is_same<unsigned int, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<unsigned int, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type unsigned int."
             );
 
@@ -234,7 +234,7 @@ namespace {
             auto destination = source.to<double>();
 
             static_assert(
-                std::is_same<double, typename std::decay<decltype(destination)>::type>::value,
+                std::is_same<double, std::decay<decltype(destination)>::type>::value,
                 "Expected result of type double."
             );
 
@@ -287,7 +287,7 @@ TEST(DynamicConverter, DynamicDouble) {
     auto destination = source.to<kora::dynamic_t::double_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t::double_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t::double_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t::double_t."
     );
 
@@ -304,7 +304,7 @@ TEST(DynamicConverter, Double) {
     auto destination = source.to<double>();
 
     static_assert(
-        std::is_same<double, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<double, std::decay<decltype(destination)>::type>::value,
         "Expected result of type double."
     );
 
@@ -319,7 +319,7 @@ TEST(DynamicConverter, FloatOverflow) {
 }
 
 TEST(DynamicConverter, Enum) {
-    kora::dynamic_t source = const2;
+    kora::dynamic_t source = kora::dynamic_t::int_t(const2);
 
     test_forbidden_casts<test_enum_t>(source);
 
@@ -328,7 +328,7 @@ TEST(DynamicConverter, Enum) {
     auto destination = source.to<test_enum_t>();
 
     static_assert(
-        std::is_same<test_enum_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<test_enum_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type test_enum_t."
     );
 
@@ -336,7 +336,7 @@ TEST(DynamicConverter, Enum) {
 }
 
 TEST(DynamicConverter, EnumClass) {
-    kora::dynamic_t source = test_enum_class_t::const2;
+    kora::dynamic_t source = kora::dynamic_t::int_t(test_enum_class_t::const2);
 
     test_forbidden_casts<test_enum_class_t>(source);
 
@@ -345,7 +345,7 @@ TEST(DynamicConverter, EnumClass) {
     auto destination = source.to<test_enum_class_t>();
 
     static_assert(
-        std::is_same<test_enum_class_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<test_enum_class_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type test_enum_class_t."
     );
 
@@ -362,7 +362,7 @@ TEST(DynamicConverter, DynamicString) {
     auto destination = source.to<kora::dynamic_t::string_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t::string_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t::string_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t::string_t."
     );
 
@@ -379,7 +379,7 @@ TEST(DynamicConverter, StdString) {
     auto destination = source.to<std::string>();
 
     static_assert(
-        std::is_same<std::string, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<std::string, std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::string."
     );
 
@@ -396,7 +396,7 @@ TEST(DynamicConverter, CString) {
     auto destination = source.to<const char*>();
 
     static_assert(
-        std::is_same<const char*, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<const char*, std::decay<decltype(destination)>::type>::value,
         "Expected result of type const char*."
     );
 
@@ -413,7 +413,7 @@ TEST(DynamicConverter, DynamicArray) {
     auto destination = source.to<kora::dynamic_t::array_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t::array_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t::array_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t::array_t."
     );
 
@@ -430,7 +430,7 @@ TEST(DynamicConverter, VectorInt) {
     auto destination = source.to<std::vector<int>>();
 
     static_assert(
-        std::is_same<std::vector<int>, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<std::vector<int>, std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::vector<int>."
     );
 
@@ -447,7 +447,7 @@ TEST(DynamicConverter, SetInt) {
     auto destination = source.to<std::set<int>>();
 
     static_assert(
-        std::is_same<std::set<int>, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<std::set<int>, std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::set<int>."
     );
 
@@ -467,7 +467,7 @@ TEST(DynamicConverter, Tuple) {
     auto destination = source.to<std::tuple<int, std::string>>();
 
     static_assert(
-        std::is_same<std::tuple<int, std::string>, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<std::tuple<int, std::string>, std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::tuple<int, std::string>."
     );
 
@@ -484,7 +484,7 @@ TEST(DynamicConverter, Pair) {
     auto destination = source.to<std::pair<int, std::string>>();
 
     static_assert(
-        std::is_same<std::pair<int, std::string>, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<std::pair<int, std::string>, std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::pair<int, std::string>."
     );
 
@@ -504,7 +504,7 @@ TEST(DynamicConverter, DynamicObject) {
     auto destination = source.to<kora::dynamic_t::object_t>();
 
     static_assert(
-        std::is_same<kora::dynamic_t::object_t, typename std::decay<decltype(destination)>::type>::value,
+        std::is_same<kora::dynamic_t::object_t, std::decay<decltype(destination)>::type>::value,
         "Expected result of type kora::dynamic_t::object_t."
     );
 
@@ -526,7 +526,7 @@ TEST(DynamicConverter, MapStringDynamic) {
 
     static_assert(
         std::is_same<std::map<std::string, kora::dynamic_t>,
-                     typename std::decay<decltype(destination)>::type>::value,
+                     std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::map<std::string, kora::dynamic_t>."
     );
 
@@ -548,7 +548,7 @@ TEST(DynamicConverter, MapStringInt) {
 
     static_assert(
         std::is_same<std::map<std::string, int>,
-                     typename std::decay<decltype(destination)>::type>::value,
+                     std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::map<std::string, int>."
     );
 
@@ -570,7 +570,7 @@ TEST(DynamicConverter, UnorderedMapStringInt) {
 
     static_assert(
         std::is_same<std::unordered_map<std::string, int>,
-                     typename std::decay<decltype(destination)>::type>::value,
+                     std::decay<decltype(destination)>::type>::value,
         "Expected result of type std::unordered_map<std::string, int>."
     );
 
