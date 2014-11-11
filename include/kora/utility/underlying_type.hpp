@@ -101,10 +101,10 @@ struct underlying_type;
 
 template<class Enum>
 struct underlying_type<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type> {
-#if defined(KORA_HAVE_GCC46) && !defined(KORA_HAVE_GCC47)
-    typedef typename detail::underlying_impl<Enum>::type type;
-#elif defined(KORA_HAVE_GCC44)
+#if !defined(KORA_NOT_BAD)
     static_assert(lazy_false<Enum>::value, "Unsupported on GCC 4.4. Suffer.");
+#elif defined(KORA_HAVE_GCC46) && !defined(KORA_HAVE_GCC47)
+    typedef typename detail::underlying_impl<Enum>::type type;
 #else
     typedef typename std::underlying_type<Enum>::type type;
 #endif
