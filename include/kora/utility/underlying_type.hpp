@@ -43,7 +43,7 @@ struct underlying_impl;
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<std::is_signed<T>::value && (sizeof(T) <= sizeof(int))>::type
+    typename std::enable_if<(T(-1) < T(0) && sizeof(T) <= sizeof(int))>::type
 >
 {
     typedef int type;
@@ -52,7 +52,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<std::is_unsigned<T>::value && (sizeof(T) <= sizeof(unsigned int))>::type
+    typename std::enable_if<(T(-1) >= T(0) && sizeof(T) <= sizeof(unsigned int))>::type
 >
 {
     typedef unsigned int type;
@@ -62,7 +62,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<std::is_signed<T>::value && (sizeof(T) > sizeof(int) && sizeof(T) <= sizeof(int64_t))>::type
+    typename std::enable_if<(T(-1) < T(0) && sizeof(T) > sizeof(int) && sizeof(T) <= sizeof(int64_t))>::type
 >
 {
     typedef int64_t type;
@@ -71,7 +71,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<std::is_unsigned<T>::value && (sizeof(T) > sizeof(unsigned int) && sizeof(T) <= sizeof(uint64_t))>::type
+    typename std::enable_if<(T(-1) >= T(0) && sizeof(T) > sizeof(unsigned int) && sizeof(T) <= sizeof(uint64_t))>::type
 >
 {
     typedef uint64_t type;
