@@ -208,25 +208,24 @@ struct dynamic_converter<Enum, typename std::enable_if<std::is_enum<Enum>::value
 {
     typedef Enum result_type;
 
+    //! It tries to convert dynamic_t to the Enum's underlying type retrieved by kora::underlying_type.
+    //! \warning It's UB if the dynamic object stores a number created via not assignment of kora::to_underlying_type(value_of_the_enum_type).
     //! Doesn't call any controller's traverse methods.\n
-    //! Fails with \p expected_int_t error if <tt>!from.is_int()</tt>.\n
-    //! \returns <tt>static_cast<result_type>(from.as_int())</tt>
+    //! Fails with any error produced by <tt>from.to<enum_underlying_type>(controller)</tt>.\n
+    //! \returns <tt>static_cast<result_type>(from.to<enum_underlying_type>())</tt>
+    //! \throws Any exception thrown by <tt>from.to<enum_underlying_type>(controller)</tt>.
     template<class Controller>
     static inline
     result_type
     convert(const dynamic_t& from, Controller& controller) {
-        if (from.is_int()) {
-            return static_cast<result_type>(from.as_int());
-        } else {
-            controller.fail(expected_int_t(), from);
-        }
+        return static_cast<Enum>(from.to<typename kora::underlying_type<Enum>::type>(controller));
     }
 
-    //! \returns <tt>from.is_int()</tt>
+    //! \returns <tt>from.convertible_to<typename kora::underlying_type<Enum>::type>()</tt>
     static inline
     bool
     convertible(const dynamic_t& from) KORA_NOEXCEPT {
-        return from.is_int();
+        return from.convertible_to<typename kora::underlying_type<Enum>::type>();
     }
 };
 

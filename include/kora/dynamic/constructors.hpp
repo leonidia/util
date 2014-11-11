@@ -131,11 +131,13 @@ struct dynamic_constructor<Enum, typename std::enable_if<std::is_enum<Enum>::val
 {
     static const bool enable = true;
 
-    //! \post <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
+    //! Stores in the dynamic_t \p kora::to_underlying_type(from).
+    //! \post If underlying type of Enum is signed then <tt>to.is_int() == true && to.as_int() == static_cast<dynamic_t::int_t>(from)</tt>
+    //! \post If underlying type of Enum is unsigned then <tt>to.is_uint() == true && to.as_uint() == static_cast<dynamic_t::uint_t>(from)</tt>
     static inline
     void
     convert(const Enum& from, dynamic_t& to) KORA_NOEXCEPT {
-        to = static_cast<dynamic_t::int_t>(from);
+        to = kora::to_underlying_type(from);
     }
 };
 

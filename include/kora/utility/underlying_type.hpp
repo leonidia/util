@@ -18,8 +18,8 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef KORA_UTILITY_STDATOMIC_HPP
-#define KORA_UTILITY_STDATOMIC_HPP
+#ifndef KORA_UTILITY_UNDERLYING_TYPE_HPP
+#define KORA_UTILITY_UNDERLYING_TYPE_HPP
 
 #include "kora/utility/platform.hpp"
 

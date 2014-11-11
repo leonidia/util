@@ -64,11 +64,6 @@ namespace {
             }
         }
 
-        if (!std::is_same<Exception, int>::value && !std::is_enum<Exception>::value) {
-            EXPECT_FALSE(source.convertible_to<test_enum_t>());
-            EXPECT_THROW(source.to<test_enum_t>(), std::bad_cast);
-        }
-
         if (!std::is_same<Exception, std::string>::value) {
             EXPECT_FALSE(source.convertible_to<std::string>());
             EXPECT_THROW(source.to<std::string>(), std::bad_cast);
@@ -319,7 +314,7 @@ TEST(DynamicConverter, FloatOverflow) {
 }
 
 TEST(DynamicConverter, Enum) {
-    kora::dynamic_t source = kora::dynamic_t::int_t(const2);
+    kora::dynamic_t source = kora::to_underlying_type(const2);
 
     test_forbidden_casts<test_enum_t>(source);
 
@@ -336,7 +331,7 @@ TEST(DynamicConverter, Enum) {
 }
 
 TEST(DynamicConverter, EnumClass) {
-    kora::dynamic_t source = kora::dynamic_t::int_t(test_enum_class_t::const2);
+    kora::dynamic_t source = kora::to_underlying_type(test_enum_class_t::const2);
 
     test_forbidden_casts<test_enum_class_t>(source);
 
