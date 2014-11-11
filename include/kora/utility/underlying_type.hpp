@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef KORA_UTILITY_UNDERLYING_TYPE_HPP
 #define KORA_UTILITY_UNDERLYING_TYPE_HPP
 
+#include "kora/utility/lazy_false.hpp"
 #include "kora/utility/platform.hpp"
 
 #include <cstdint>
@@ -42,7 +43,7 @@ struct underlying_impl;
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<(T(-1) < T(0) && sizeof(T) <= sizeof(int))>::type
+    typename std::enable_if<std::is_signed<T>::value && (sizeof(T) <= sizeof(int))>::type
 >
 {
     typedef int type;
@@ -51,7 +52,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<(T(-1) >= T(0) && sizeof(T) <= sizeof(unsigned int))>::type
+    typename std::enable_if<std::is_unsigned<T>::value && (sizeof(T) <= sizeof(unsigned int))>::type
 >
 {
     typedef unsigned int type;
@@ -61,7 +62,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<(T(-1) < T(0) && sizeof(T) > sizeof(int) && sizeof(T) <= sizeof(int64_t))>::type
+    typename std::enable_if<std::is_signed<T>::value && (sizeof(T) > sizeof(int) && sizeof(T) <= sizeof(int64_t))>::type
 >
 {
     typedef int64_t type;
@@ -70,7 +71,7 @@ struct underlying_impl<
 template<class T>
 struct underlying_impl<
     T,
-    typename std::enable_if<(T(-1) >= T(0) && sizeof(T) > sizeof(unsigned int) && sizeof(T) <= sizeof(uint64_t))>::type
+    typename std::enable_if<std::is_unsigned<T>::value && (sizeof(T) > sizeof(unsigned int) && sizeof(T) <= sizeof(uint64_t))>::type
 >
 {
     typedef uint64_t type;
@@ -83,6 +84,7 @@ struct underlying_impl<
 
 /*! Provides integer type which can store any value of the enumeration type.
  * It may be undefined for enumerations bigger than 64 bits.
+ * \warning It doesn't work on GCC 4.4.
  *
  * \tparam Enum The enumeration type.
  */
@@ -99,10 +101,12 @@ struct underlying_type;
 
 template<class Enum>
 struct underlying_type<Enum, typename std::enable_if<std::is_enum<Enum>::value>::type> {
-#ifdef KORA_HAVE_GCC47
-    typedef typename std::underlying_type<Enum>::type type;
-#else
+#if defined(KORA_HAVE_GCC46) && !defined(KORA_HAVE_GCC47)
     typedef typename detail::underlying_impl<Enum>::type type;
+#elif defined(KORA_HAVE_GCC44)
+    static_assert(lazy_false<Enum>::value, "Unsupported on GCC 4.4. Suffer.");
+#else
+    typedef typename std::underlying_type<Enum>::type type;
 #endif
 };
 

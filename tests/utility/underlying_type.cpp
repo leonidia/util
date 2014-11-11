@@ -23,134 +23,122 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "kora/utility/underlying_type.hpp"
 
-TEST(UnderlyingType, SignedEnum) {
-    enum test_enum_t {
-        const1 = -1,
-        const2 = 1
-    };
+#ifdef KORA_NOT_BAD
 
-    typedef typename kora::underlying_type<test_enum_t>::type underlying;
+namespace {
+
+enum signed_enum_t {
+    signed_const1 = -1,
+    signed_const2 = 1
+};
+
+enum class signed_enum_class_t {
+    const1 = -1,
+    const2 = 1
+};
+
+enum unsigned_enum_t: unsigned short {
+    unsigned_const1 = 0,
+    unsigned_const2 = 1
+};
+
+enum class unsigned_enum_class_t: unsigned short {
+    const1 = 0,
+    const2 = 1
+};
+
+}
+
+TEST(UnderlyingType, SignedEnum) {
+    typedef kora::underlying_type<signed_enum_t>::type underlying;
 
     static_assert(std::is_integral<underlying>::value, "The underlying type expected to be integral.");
     static_assert(std::is_signed<underlying>::value, "The underlying type expected to be signed.");
 
-    EXPECT_EQ(-1, static_cast<underlying>(const1));
-    EXPECT_EQ(1, static_cast<underlying>(const2));
-    EXPECT_TRUE(static_cast<underlying>(const1) < static_cast<underlying>(const2));
+    EXPECT_EQ(-1, static_cast<underlying>(signed_const1));
+    EXPECT_EQ(1, static_cast<underlying>(signed_const2));
+    EXPECT_TRUE(static_cast<underlying>(signed_const1) < static_cast<underlying>(signed_const2));
 }
 
 TEST(UnderlyingType, SignedEnumClass) {
-    enum class test_enum_t {
-        const1 = -1,
-        const2 = 1
-    };
-
-    typedef typename kora::underlying_type<test_enum_t>::type underlying;
+    typedef kora::underlying_type<signed_enum_class_t>::type underlying;
 
     static_assert(std::is_integral<underlying>::value, "The underlying type expected to be integral.");
     static_assert(std::is_signed<underlying>::value, "The underlying type expected to be signed.");
 
-    EXPECT_EQ(-1, static_cast<underlying>(test_enum_t::const1));
-    EXPECT_EQ(1, static_cast<underlying>(test_enum_t::const2));
-    EXPECT_TRUE(static_cast<underlying>(test_enum_t::const1) < static_cast<underlying>(test_enum_t::const2));
+    EXPECT_EQ(-1, static_cast<underlying>(signed_enum_class_t::const1));
+    EXPECT_EQ(1, static_cast<underlying>(signed_enum_class_t::const2));
+    EXPECT_TRUE(static_cast<underlying>(signed_enum_class_t::const1) < static_cast<underlying>(signed_enum_class_t::const2));
 }
 
 TEST(UnderlyingType, UnsignedEnum) {
-    enum test_enum_t: unsigned short {
-        const1 = 0,
-        const2 = 1
-    };
-
-    typedef typename kora::underlying_type<test_enum_t>::type underlying;
+    typedef kora::underlying_type<unsigned_enum_t>::type underlying;
 
     static_assert(std::is_integral<underlying>::value, "The underlying type expected to be integral.");
     static_assert(std::is_unsigned<underlying>::value, "The underlying type expected to be unsigned.");
 
-    EXPECT_EQ(0, static_cast<underlying>(const1));
-    EXPECT_EQ(1, static_cast<underlying>(const2));
-    EXPECT_TRUE(static_cast<underlying>(const1) < static_cast<underlying>(const2));
+    EXPECT_EQ(0, static_cast<underlying>(unsigned_const1));
+    EXPECT_EQ(1, static_cast<underlying>(unsigned_const2));
+    EXPECT_TRUE(static_cast<underlying>(unsigned_const1) < static_cast<underlying>(unsigned_const2));
 }
 
 TEST(UnderlyingType, UnsignedEnumClass) {
-    enum class test_enum_t: unsigned short {
-        const1 = 0,
-        const2 = 1
-    };
-
-    typedef typename kora::underlying_type<test_enum_t>::type underlying;
+    typedef kora::underlying_type<unsigned_enum_class_t>::type underlying;
 
     static_assert(std::is_integral<underlying>::value, "The underlying type expected to be integral.");
     static_assert(std::is_unsigned<underlying>::value, "The underlying type expected to be unsigned.");
 
-    EXPECT_EQ(0, static_cast<underlying>(test_enum_t::const1));
-    EXPECT_EQ(1, static_cast<underlying>(test_enum_t::const2));
-    EXPECT_TRUE(static_cast<underlying>(test_enum_t::const1) < static_cast<underlying>(test_enum_t::const2));
+    EXPECT_EQ(0, static_cast<underlying>(unsigned_enum_class_t::const1));
+    EXPECT_EQ(1, static_cast<underlying>(unsigned_enum_class_t::const2));
+    EXPECT_TRUE(static_cast<underlying>(unsigned_enum_class_t::const1) < static_cast<underlying>(unsigned_enum_class_t::const2));
 }
 
 TEST(ToUnderlyingType, SignedEnum) {
-    enum test_enum_t {
-        const1 = -1,
-        const2 = 1
-    };
-
-    typedef decltype(kora::to_underlying_type(const1)) result_type;
-    typedef typename kora::underlying_type<test_enum_t>::type expected_type;
+    typedef decltype(kora::to_underlying_type(signed_const1)) result_type;
+    typedef kora::underlying_type<signed_enum_t>::type expected_type;
 
     static_assert(std::is_same<expected_type, result_type>::value,
                   "Wrong type of the result.");
 
-    EXPECT_EQ(-1, kora::to_underlying_type(const1));
-    EXPECT_EQ(1, kora::to_underlying_type(const2));
-    EXPECT_TRUE(kora::to_underlying_type(const1) < kora::to_underlying_type(const2));
+    EXPECT_EQ(-1, kora::to_underlying_type(signed_const1));
+    EXPECT_EQ(1, kora::to_underlying_type(signed_const2));
+    EXPECT_TRUE(kora::to_underlying_type(signed_const1) < kora::to_underlying_type(signed_const2));
 }
 
 TEST(ToUnderlyingType, SignedEnumClass) {
-    enum class test_enum_t {
-        const1 = -1,
-        const2 = 1
-    };
-
-    typedef decltype(kora::to_underlying_type(test_enum_t::const1)) result_type;
-    typedef typename kora::underlying_type<test_enum_t>::type expected_type;
+    typedef decltype(kora::to_underlying_type(signed_enum_class_t::const1)) result_type;
+    typedef kora::underlying_type<signed_enum_class_t>::type expected_type;
 
     static_assert(std::is_same<expected_type, result_type>::value,
                   "Wrong type of the result.");
 
-    EXPECT_EQ(-1, kora::to_underlying_type(test_enum_t::const1));
-    EXPECT_EQ(1, kora::to_underlying_type(test_enum_t::const2));
-    EXPECT_TRUE(kora::to_underlying_type(test_enum_t::const1) < kora::to_underlying_type(test_enum_t::const2));
+    EXPECT_EQ(-1, kora::to_underlying_type(signed_enum_class_t::const1));
+    EXPECT_EQ(1, kora::to_underlying_type(signed_enum_class_t::const2));
+    EXPECT_TRUE(kora::to_underlying_type(signed_enum_class_t::const1) < kora::to_underlying_type(signed_enum_class_t::const2));
 }
 
 TEST(ToUnderlyingType, UnsignedEnum) {
-    enum test_enum_t: unsigned short {
-        const1 = 0,
-        const2 = 1
-    };
-
-    typedef decltype(kora::to_underlying_type(const1)) result_type;
-    typedef typename kora::underlying_type<test_enum_t>::type expected_type;
+    typedef decltype(kora::to_underlying_type(unsigned_const1)) result_type;
+    typedef kora::underlying_type<unsigned_enum_t>::type expected_type;
 
     static_assert(std::is_same<expected_type, result_type>::value,
                   "Wrong type of the result.");
 
-    EXPECT_EQ(0, kora::to_underlying_type(const1));
-    EXPECT_EQ(1, kora::to_underlying_type(const2));
-    EXPECT_TRUE(kora::to_underlying_type(const1) < kora::to_underlying_type(const2));
+    EXPECT_EQ(0, kora::to_underlying_type(unsigned_const1));
+    EXPECT_EQ(1, kora::to_underlying_type(unsigned_const2));
+    EXPECT_TRUE(kora::to_underlying_type(unsigned_const1) < kora::to_underlying_type(unsigned_const2));
 }
 
 TEST(ToUnderlyingType, UnsignedEnumClass) {
-    enum class test_enum_t: unsigned short {
-        const1 = 0,
-        const2 = 1
-    };
-
-    typedef decltype(kora::to_underlying_type(test_enum_t::const1)) result_type;
-    typedef typename kora::underlying_type<test_enum_t>::type expected_type;
+    typedef decltype(kora::to_underlying_type(unsigned_enum_class_t::const1)) result_type;
+    typedef kora::underlying_type<unsigned_enum_class_t>::type expected_type;
 
     static_assert(std::is_same<expected_type, result_type>::value,
                   "Wrong type of the result.");
 
-    EXPECT_EQ(0, kora::to_underlying_type(test_enum_t::const1));
-    EXPECT_EQ(1, kora::to_underlying_type(test_enum_t::const2));
-    EXPECT_TRUE(kora::to_underlying_type(test_enum_t::const1) < kora::to_underlying_type(test_enum_t::const2));
+    EXPECT_EQ(0, kora::to_underlying_type(unsigned_enum_class_t::const1));
+    EXPECT_EQ(1, kora::to_underlying_type(unsigned_enum_class_t::const2));
+    EXPECT_TRUE(kora::to_underlying_type(unsigned_enum_class_t::const1) < kora::to_underlying_type(unsigned_enum_class_t::const2));
 }
+
+#endif // KORA_NOT_BAD
