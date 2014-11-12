@@ -34,15 +34,17 @@ struct requires_type {
     typedef Result type;
 };
 
-/*! SFINAE helper to match on types having required method.
+/*! SFINAE helper to match on types having required member of required type.
  *
  * Use it instead of \p std::enable_if to enable a specialization
- * if the dependent type has method with given name and signature.
+ * if the dependent type has member with given name and type.
  *
  * Usage: <tt>template<class T> struct some_struct<T, typename requires_method<void(T::*)(int, double), T::method_name>::type> { };</tt>
+ *
+ * Usage: <tt>template<class T> struct some_struct<T, typename requires_method<int T::*, T::member_name>::type> { };</tt>
  */
-template<class Method, Method, class Result = void>
-struct requires_method {
+template<class MemberType, MemberType, class Result = void>
+struct requires_member {
     typedef Result type;
 };
 
