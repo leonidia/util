@@ -520,20 +520,6 @@ public:
     dynamic_t
     from_json(std::istream &input);
 
-    /*! Serializes the object into JSON format.
-     *
-     * This method may serialize not only objects and arrays, but any dynamic_t object.
-     * It's not like standard JSON, and you should perform additional checks on yourown
-     * if you want to receive a JSON object or array.
-     *
-     * \param output Stream to write the resulting JSON to.
-     * \throws std::bad_alloc
-     * \throws Any exception thrown by \p output.
-     */
-    KORA_API
-    void
-    to_json(std::ostream &output) const;
-
 private:
     template<class T>
     bool
@@ -586,6 +572,23 @@ operator!=(const dynamic_t& left, const dynamic_t& right) KORA_NOEXCEPT;
 KORA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
+
+/*!\relates dynamic_t
+ *
+ * Serializes dynamic object into unformatted JSON.
+ *
+ * This function may serialize not only objects and arrays, but any dynamic_t object.
+ * It's not like standard JSON, and you should perform additional checks on yourown
+ * if you want to receive a JSON object or array.
+ *
+ * \param value The dynamic object to serialize.
+ * \param output Stream to write the resulting JSON to.
+ * \throws std::bad_alloc
+ * \throws Any exception thrown by \p output.
+ */
+KORA_API
+void
+to_json(const dynamic_t& value, std::ostream& stream);
 
 } // namespace kora
 

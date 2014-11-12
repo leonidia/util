@@ -314,11 +314,11 @@ dynamic_t::from_json(std::istream &input) {
 }
 
 void
-dynamic_t::to_json(std::ostream &output) const {
+kora::to_json(const dynamic_t& value, std::ostream &output) {
     rapidjson_ostream_t rapidjson_stream = &output;
     ostream_writer_t writer = rapidjson_stream;
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
-    this->apply(to_stream_visitor(&writer));
+    value.apply(to_stream_visitor(&writer));
 }
 
 namespace {
@@ -345,7 +345,7 @@ private:
 std::ostream&
 kora::operator<<(std::ostream& stream, const dynamic_t& value) {
     if (value.is_null() || value.is_array() || value.is_object()) {
-        value.to_json(stream);
+        to_json(value, stream);
     } else {
         value.apply(print_vistor_t(stream));
     }
