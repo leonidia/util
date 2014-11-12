@@ -507,23 +507,6 @@ public:
     typename dynamic::converter<typename pristine<T>::type>::result_type
     to() const;
 
-public:
-    /*! Creates dynamic object from JSON.
-     *
-     * This function doesn't require the input stream to contain only one JSON object.
-     * It reads one JSON object with surrounding spaces and leaves other data untouched.
-     *
-     * \param input Stream containing the JSON.
-     * \returns Constructed dynamic object.
-     * \throws json_parsing_error_t
-     * \throws std::bad_alloc
-     * \throws Any exception thrown by \p input.
-     */
-    KORA_API
-    static
-    dynamic_t
-    from_json(std::istream &input);
-
 private:
     template<class T>
     bool
@@ -577,28 +560,9 @@ KORA_API
 std::ostream&
 operator<<(std::ostream& stream, const dynamic_t& value);
 
-/*!\relates dynamic_t
- *
- * Serializes dynamic object into unformatted JSON.
- *
- * This function may serialize not only objects and arrays, but any dynamic_t object.
- * It's not like standard JSON, and you should perform additional checks on yourown
- * if you want to receive a JSON object or array.
- *
- * \param value The dynamic object to serialize.
- * \param output Stream to write the resulting JSON to.
- * \throws std::bad_alloc
- * \throws Any exception thrown by \p output.
- */
-KORA_API
-void
-to_json(const dynamic_t& value, std::ostream& stream);
-
 } // namespace kora
 
 #include "kora/dynamic/dynamic.inl"
 #include "kora/dynamic/object.hpp"
-#include "kora/dynamic/constructors.hpp"
-#include "kora/dynamic/converters.hpp"
 
 #endif

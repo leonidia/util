@@ -18,7 +18,9 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kora/dynamic.hpp"
+#include "kora/dynamic/constructors.hpp"
+#include "kora/dynamic/error.hpp"
+#include "kora/dynamic/json.hpp"
 
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
@@ -48,7 +50,7 @@ struct json_to_dynamic_reader_t {
 
     void
     Uint(unsigned v) {
-        m_stack.emplace(dynamic_t::uint_t(v));
+        m_stack.emplace(v);
     }
 
     void
@@ -58,7 +60,7 @@ struct json_to_dynamic_reader_t {
 
     void
     Uint64(uint64_t v) {
-        m_stack.emplace(dynamic_t::uint_t(v));
+        m_stack.emplace(v);
     }
 
     void
@@ -288,7 +290,7 @@ private:
 } // namespace
 
 dynamic_t
-dynamic_t::from_json(std::istream &input) {
+kora::dynamic::from_json(std::istream &input) {
     rapidjson::MemoryPoolAllocator<> json_allocator;
     rapidjson::Reader json_reader(&json_allocator);
     rapidjson_istream_t json_stream(&input);

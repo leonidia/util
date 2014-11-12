@@ -21,7 +21,7 @@
 #ifndef KORA_DYNAMIC_CONSTRUCTORS_HPP
 #define KORA_DYNAMIC_CONSTRUCTORS_HPP
 
-#include "kora/dynamic/error.hpp"
+#include "kora/dynamic/dynamic.hpp"
 #include "kora/utility.hpp"
 
 KORA_PUSH_VISIBLE

@@ -21,6 +21,7 @@
 #ifndef KORA_DYNAMIC_CONVERTERS_HPP
 #define KORA_DYNAMIC_CONVERTERS_HPP
 
+#include "kora/dynamic/dynamic.hpp"
 #include "kora/dynamic/error.hpp"
 #include "kora/utility.hpp"
 

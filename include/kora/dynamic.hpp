@@ -21,7 +21,10 @@
 #ifndef KORA_DYNAMIC_HPP
 #define KORA_DYNAMIC_HPP
 
+#include "kora/dynamic/constructors.hpp"
+#include "kora/dynamic/converters.hpp"
 #include "kora/dynamic/dynamic.hpp"
 #include "kora/dynamic/error.hpp"
+#include "kora/dynamic/json.hpp"
 
 #endif

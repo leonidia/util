@@ -19,6 +19,7 @@
 */
 
 #include "kora/dynamic/dynamic.hpp"
+#include "kora/dynamic/error.hpp"
 
 using namespace kora;
 
@@ -110,7 +111,7 @@ struct equals_visitor:
         if (m_other.is_uint()) {
             return v == m_other.as_uint();
         } else if (m_other.is_int()) {
-            return m_other.as_int() >= 0 && v == m_other.to<dynamic_t::uint_t>();
+            return m_other.as_int() >= 0 && v == static_cast<dynamic_t::uint_t>(m_other.as_int());
         } else {
             return m_other.is_double() && dynamic_t::double_t(v) == m_other.as_double();
         }
