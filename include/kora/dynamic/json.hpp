@@ -45,6 +45,23 @@ KORA_API
 void
 to_json(const dynamic_t& value, std::ostream& stream);
 
+/*!\relatesalso dynamic_t
+ *
+ * Serializes dynamic object into human-readable JSON.
+ *
+ * It works exactly as to_json(const dynamic_t&, std::ostream&) except of the formating.
+ *
+ * \param value The dynamic object to serialize.
+ * \param output Stream to write the resulting JSON to.
+ * \throws std::bad_alloc
+ * \throws Any exception thrown by \p output.
+ *
+ * \sa to_json(const dynamic_t&, std::ostream&)
+ */
+KORA_API
+void
+to_pretty_json(const dynamic_t& value, std::ostream& stream, size_t indent = 4);
+
 namespace dynamic {
 
 /*!\relatesalso kora::dynamic_t

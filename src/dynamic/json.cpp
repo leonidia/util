@@ -24,6 +24,7 @@
 
 #include <rapidjson/reader.h>
 #include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 
 #include <algorithm>
 #include <stack>
@@ -221,12 +222,14 @@ private:
     std::ostream *m_backend;
 };
 
-typedef rapidjson::Writer<rapidjson_ostream_t> ostream_writer_t;
+typedef rapidjson::Writer<rapidjson_ostream_t> ostream_simple_writer_t;
+typedef rapidjson::PrettyWriter<rapidjson_ostream_t> ostream_pretty_writer_t;
 
+template<class Writer>
 struct to_stream_visitor:
     public boost::static_visitor<>
 {
-    to_stream_visitor(ostream_writer_t *writer) :
+    to_stream_visitor(Writer *writer) :
         m_writer(writer)
     { }
 
@@ -284,7 +287,7 @@ struct to_stream_visitor:
     }
 
 private:
-    ostream_writer_t *m_writer;
+    Writer *m_writer;
 };
 
 } // namespace
@@ -318,9 +321,18 @@ kora::dynamic::from_json(std::istream &input) {
 void
 kora::to_json(const dynamic_t& value, std::ostream &output) {
     rapidjson_ostream_t rapidjson_stream = &output;
-    ostream_writer_t writer = rapidjson_stream;
+    ostream_simple_writer_t writer = rapidjson_stream;
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
-    value.apply(to_stream_visitor(&writer));
+    value.apply(to_stream_visitor<ostream_simple_writer_t>(&writer));
+}
+
+void
+kora::to_pretty_json(const dynamic_t& value, std::ostream &output, size_t indent) {
+    rapidjson_ostream_t rapidjson_stream = &output;
+    ostream_pretty_writer_t writer = rapidjson_stream;
+    writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
+    writer.SetIndent(' ', indent);
+    value.apply(to_stream_visitor<ostream_pretty_writer_t>(&writer));
 }
 
 namespace {
