@@ -33,9 +33,9 @@ KORA_POP_VISIBILITY
 #include <utility>
 #include <unordered_map>
 
-namespace kora {
+namespace kora { namespace dynamic {
 
-namespace detail { namespace dynamic {
+namespace detail {
 
 // Helper traits.
 template<class T>
@@ -61,7 +61,7 @@ struct match_double_t :
                            sizeof(T) <= sizeof(dynamic_t::double_t)>
 { };
 
-}} // namespace detail::dynamic
+} // namespace detail
 
 /*!
  * \brief Converts unsigned integer types to dynamic_t.
@@ -70,12 +70,12 @@ struct match_double_t :
  */
 #ifdef KORA_DOXYGEN
 template<>
-struct dynamic_constructor<SignedInteger>
+struct constructor<SignedInteger>
 #else
 template<class SignedInteger>
-struct dynamic_constructor<
+struct constructor<
    SignedInteger,
-   typename std::enable_if<detail::dynamic::match_uint_t<SignedInteger>::value>::type
+   typename std::enable_if<detail::match_uint_t<SignedInteger>::value>::type
 >
 #endif
 {
@@ -96,12 +96,12 @@ struct dynamic_constructor<
  */
 #ifdef KORA_DOXYGEN
 template<>
-struct dynamic_constructor<UnsignedInteger>
+struct constructor<UnsignedInteger>
 #else
 template<class UnsignedInteger>
-struct dynamic_constructor<
+struct constructor<
     UnsignedInteger,
-    typename std::enable_if<detail::dynamic::match_int_t<UnsignedInteger>::value>::type
+    typename std::enable_if<detail::match_int_t<UnsignedInteger>::value>::type
 >
 #endif
 {
@@ -123,12 +123,12 @@ struct dynamic_constructor<
  */
 #ifdef KORA_DOXYGEN
 template<>
-struct dynamic_constructor<FloatingPoint>
+struct constructor<FloatingPoint>
 #else
 template<class FloatingPoint>
-struct dynamic_constructor<
+struct constructor<
     FloatingPoint,
-    typename std::enable_if<detail::dynamic::match_double_t<FloatingPoint>::value>::type
+    typename std::enable_if<detail::match_double_t<FloatingPoint>::value>::type
 >
 #endif // KORA_DOXYGEN
 {
@@ -144,7 +144,7 @@ struct dynamic_constructor<
 
 //! \brief Converts string literals to dynamic_t.
 template<size_t N>
-struct dynamic_constructor<char[N]> {
+struct constructor<char[N]> {
     static const bool enable = true;
 
     //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
@@ -159,7 +159,7 @@ struct dynamic_constructor<char[N]> {
 
 //! \brief Converts C-strings to dynamic_t.
 template<>
-struct dynamic_constructor<const char*> {
+struct constructor<const char*> {
     static const bool enable = true;
 
     //! \post <tt>to.is_string() == true && to.as_string() == dynamic_t::string_t(from)</tt>
@@ -174,7 +174,7 @@ struct dynamic_constructor<const char*> {
 
 //! \brief Converts std::vector to dynamic_t.
 template<class T>
-struct dynamic_constructor<std::vector<T>> {
+struct constructor<std::vector<T>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_array() == true && to.as_array().size() == from.size()</tt>
@@ -197,7 +197,7 @@ struct dynamic_constructor<std::vector<T>> {
 
 //! \brief Converts std::tuple to dynamic_t.
 template<class... Args>
-struct dynamic_constructor<std::tuple<Args...>> {
+struct constructor<std::tuple<Args...>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_array() == true && to.as_array().size() == sizeof...(Args)</tt>
@@ -247,7 +247,7 @@ private:
 
 //! \brief Converts std::map<dynamic_t::string_t, dynamic_t> to dynamic_t.
 template<>
-struct dynamic_constructor<std::map<dynamic_t::string_t, dynamic_t>> {
+struct constructor<std::map<dynamic_t::string_t, dynamic_t>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
@@ -265,7 +265,7 @@ struct dynamic_constructor<std::map<dynamic_t::string_t, dynamic_t>> {
 
 //! \brief Converts std::map<std::string, T> to dynamic_t.
 template<class T>
-struct dynamic_constructor<std::map<std::string, T>> {
+struct constructor<std::map<std::string, T>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
@@ -288,7 +288,7 @@ struct dynamic_constructor<std::map<std::string, T>> {
 
 //! \brief Converts std::unordered_map<std::string, T> to dynamic_t.
 template<class T>
-struct dynamic_constructor<std::unordered_map<std::string, T>> {
+struct constructor<std::unordered_map<std::string, T>> {
     static const bool enable = true;
 
     //! \post <tt>to.is_object() == true && to.as_object().size() == from.size()</tt>
@@ -309,6 +309,6 @@ struct dynamic_constructor<std::unordered_map<std::string, T>> {
     }
 };
 
-} // namespace kora
+}} // namespace kora::dynamic
 
 #endif

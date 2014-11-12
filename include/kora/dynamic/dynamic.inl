@@ -57,34 +57,34 @@ struct default_conversion_controller_t {
 template<class T>
 dynamic_t::dynamic_t(
     T&& from,
-    typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type*
+    typename std::enable_if<dynamic::constructor<typename pristine<T>::type>::enable>::type*
 ) :
     m_value(null_t())
 {
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
+    dynamic::constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
 }
 
 template<class T>
-typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
+typename std::enable_if<dynamic::constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
 dynamic_t::operator=(T&& from) {
-    dynamic_constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
+    dynamic::constructor<typename pristine<T>::type>::convert(std::forward<T>(from), *this);
     return *this;
 }
 
 template<class T>
 bool
 dynamic_t::convertible_to() const KORA_NOEXCEPT {
-    return dynamic_converter<typename pristine<T>::type>::convertible(*this);
+    return dynamic::converter<typename pristine<T>::type>::convertible(*this);
 }
 
 template<class T, class Controller>
-typename dynamic_converter<typename pristine<T>::type>::result_type
+typename dynamic::converter<typename pristine<T>::type>::result_type
 dynamic_t::to(Controller&& controller) const {
-    return dynamic_converter<typename pristine<T>::type>::convert(*this, controller);
+    return dynamic::converter<typename pristine<T>::type>::convert(*this, controller);
 }
 
 template<class T>
-typename dynamic_converter<typename pristine<T>::type>::result_type
+typename dynamic::converter<typename pristine<T>::type>::result_type
 dynamic_t::to() const {
     return this->to<T>(detail::dynamic::default_conversion_controller_t());
 }

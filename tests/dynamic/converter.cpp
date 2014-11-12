@@ -534,10 +534,10 @@ namespace {
 
 } // namespace
 
-namespace kora {
+namespace kora { namespace dynamic {
 
     template<>
-    struct dynamic_converter<test_tag_t> {
+    struct converter<test_tag_t> {
         typedef int result_type;
 
         template<class Controller>
@@ -558,7 +558,7 @@ namespace kora {
         }
     };
 
-} // namespace kora
+}} // namespace kora::dynamic
 
 TEST(DynamicConverter, CustomConverter) {
     auto conversion_result = kora::dynamic_t(kora::dynamic_t::int_t(-5)).to<test_tag_t>();

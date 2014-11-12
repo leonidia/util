@@ -23,8 +23,8 @@ LINK_DIRECTORIES(
 ADD_EXECUTABLE(kora-tests
     config
     dynamic/dynamic
-    dynamic/dynamic_constructor
-    dynamic/dynamic_converter
+    dynamic/constructor
+    dynamic/converter
     dynamic/json
     dynamic/object
     utility/lazy_false
