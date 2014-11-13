@@ -21,6 +21,7 @@
 #ifndef KORA_DYNAMIC_CONVERTERS_HPP
 #define KORA_DYNAMIC_CONVERTERS_HPP
 
+#include "kora/dynamic/dynamic.hpp"
 #include "kora/dynamic/error.hpp"
 #include "kora/utility.hpp"
 
@@ -33,11 +34,11 @@ KORA_POP_VISIBILITY
 #include <unordered_map>
 #include <set>
 
-namespace kora {
+namespace kora { namespace dynamic {
 
 //! \brief Converts dynamic_t to dynamic_t. It's here for convenience.
 template<>
-struct dynamic_converter<dynamic_t> {
+struct converter<dynamic_t> {
     typedef const dynamic_t& result_type;
 
     //! Doesn't call the controller. Never fails.
@@ -59,7 +60,7 @@ struct dynamic_converter<dynamic_t> {
 
 //! \brief Converts dynamic_t to bool and dynamic_t::bool_t (they are the same now).
 template<>
-struct dynamic_converter<bool> {
+struct converter<bool> {
     typedef bool result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -87,10 +88,10 @@ struct dynamic_converter<bool> {
 //! \brief Converts dynamic_t to integral types.
 #ifdef KORA_DOXYGEN
 template<>
-struct dynamic_converter<Integral>
+struct converter<Integral>
 #else
 template<class Integral>
-struct dynamic_converter<
+struct converter<
     Integral,
     typename std::enable_if<std::is_integral<Integral>::value>::type
 >
@@ -143,10 +144,10 @@ struct dynamic_converter<
 //! \brief Converts dynamic_t to floating point types.
 #ifdef KORA_DOXYGEN
 template<>
-struct dynamic_converter<FloatingPoint>
+struct converter<FloatingPoint>
 #else
 template<class FloatingPoint>
-struct dynamic_converter<
+struct converter<
     FloatingPoint,
     typename std::enable_if<std::is_floating_point<FloatingPoint>::value>::type
 >
@@ -199,7 +200,7 @@ struct dynamic_converter<
 
 //! \brief Converts dynamic_t to std::string and to dynamic_t::string_t (they are the same now).
 template<>
-struct dynamic_converter<std::string> {
+struct converter<std::string> {
     typedef const std::string& result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -226,7 +227,7 @@ struct dynamic_converter<std::string> {
 
 //! \brief Converts dynamic_t to C-string.
 template<>
-struct dynamic_converter<const char*> {
+struct converter<const char*> {
     typedef const char *result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -253,7 +254,7 @@ struct dynamic_converter<const char*> {
 
 //! \brief Converts dynamic_t to std::vector<dynamic_t> and dynamic_t::array_t (they are the same now).
 template<>
-struct dynamic_converter<std::vector<dynamic_t>> {
+struct converter<std::vector<dynamic_t>> {
     typedef const std::vector<dynamic_t>& result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -280,7 +281,7 @@ struct dynamic_converter<std::vector<dynamic_t>> {
 
 //! \brief Converts dynamic_t to std::vector.
 template<class T>
-struct dynamic_converter<std::vector<T>> {
+struct converter<std::vector<T>> {
     typedef std::vector<T> result_type;
 
     //! Traverses the array stored in \p from. Converts items of the array to \p T.\n
@@ -288,7 +289,7 @@ struct dynamic_converter<std::vector<T>> {
     //! Fails with \p expected_array_t error if <tt>!from.is_array()</tt>.\n
     //! \returns Vector of <tt>from</tt>'s items converted to \p T.
     //! \throws std::bad_alloc
-    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
+    //! \throws Any exception thrown by <tt>converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -325,7 +326,7 @@ struct dynamic_converter<std::vector<T>> {
 
 //! \brief Converts dynamic_t to std::set.
 template<class T>
-struct dynamic_converter<std::set<T>> {
+struct converter<std::set<T>> {
     typedef std::set<T> result_type;
 
     //! Traverses the array stored in \p from. Converts items of the array to \p T.\n
@@ -333,7 +334,7 @@ struct dynamic_converter<std::set<T>> {
     //! Fails with \p expected_array_t error if <tt>!from.is_array()</tt>.\n
     //! \returns Set of <tt>from</tt>'s items converted to \p T.
     //! \throws std::bad_alloc
-    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
+    //! \throws Any exception thrown by <tt>converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -370,7 +371,7 @@ struct dynamic_converter<std::set<T>> {
 
 //! \brief Converts dynamic_t to std::tuple.
 template<class... Args>
-struct dynamic_converter<std::tuple<Args...>> {
+struct converter<std::tuple<Args...>> {
     typedef std::tuple<Args...> result_type;
 
     //! Traverses the array stored in \p from. Converts items of the array to <tt>Args...</tt>.\n
@@ -378,7 +379,7 @@ struct dynamic_converter<std::tuple<Args...>> {
     //! Fails with \p expected_array_t error if <tt>!from.is_array() || from.as_array().size() != sizeof...(Args)</tt>.\n
     //! \returns Tuple with <tt>from</tt>'s items converted to <tt>Args...</tt>
     //! \throws std::bad_alloc
-    //! \throws Any exception thrown by <tt>dynamic_converter<Args>::convert...</tt>
+    //! \throws Any exception thrown by <tt>converter<Args>::convert...</tt>
     template<class Controller>
     static inline
     result_type
@@ -463,7 +464,7 @@ private:
 
 //! \brief Converts dynamic_t to std::pair.
 template<class First, class Second>
-struct dynamic_converter<std::pair<First, Second>> {
+struct converter<std::pair<First, Second>> {
     typedef std::pair<First, Second> result_type;
 
     template<size_t Index, class Controller>
@@ -479,8 +480,8 @@ struct dynamic_converter<std::pair<First, Second>> {
     //! Fails with \p expected_array_t error if <tt>!from.is_array() || from.as_array().size() != 2</tt>.\n
     //! \returns Pair with <tt>from</tt>'s items converted to \p First and \p Second respectively.
     //! \throws std::bad_alloc
-    //! \throws Any exception thrown by <tt>dynamic_converter<First>::convert</tt>.
-    //! \throws Any exception thrown by <tt>dynamic_converter<Second>::convert</tt>.
+    //! \throws Any exception thrown by <tt>converter<First>::convert</tt>.
+    //! \throws Any exception thrown by <tt>converter<Second>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -518,7 +519,7 @@ struct dynamic_converter<std::pair<First, Second>> {
 
 //! \brief Converts dynamic_t to dynamic_t::object_t.
 template<>
-struct dynamic_converter<dynamic_t::object_t> {
+struct converter<dynamic_t::object_t> {
     typedef const dynamic_t::object_t& result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -545,7 +546,7 @@ struct dynamic_converter<dynamic_t::object_t> {
 
 //! \brief Converts dynamic_t to std::map<std::string, dynamic_t>.
 template<>
-struct dynamic_converter<std::map<std::string, dynamic_t>> {
+struct converter<std::map<std::string, dynamic_t>> {
     typedef const std::map<std::string, dynamic_t>& result_type;
 
     //! Doesn't call any controller's traverse methods.\n
@@ -572,7 +573,7 @@ struct dynamic_converter<std::map<std::string, dynamic_t>> {
 
 //! \brief Converts dynamic_t to std::map<std::string, T>.
 template<class T>
-struct dynamic_converter<std::map<std::string, T>> {
+struct converter<std::map<std::string, T>> {
     typedef std::map<std::string, T> result_type;
 
     //! Traverses the object stored in \p from. Converts items of the object to \p T.\n
@@ -580,7 +581,7 @@ struct dynamic_converter<std::map<std::string, T>> {
     //! Fails with \p expected_object_t error if <tt>!from.is_object()</tt>.\n
     //! \returns Map of <tt>from</tt>'s key-value pairs where values are converted to \p T.
     //! \throws std::bad_alloc
-    //! \throws Any exception thrown by <tt>dynamic_converter<T>::convert</tt>.
+    //! \throws Any exception thrown by <tt>converter<T>::convert</tt>.
     template<class Controller>
     static inline
     result_type
@@ -624,9 +625,9 @@ struct dynamic_converter<std::map<std::string, T>> {
 };
 
 //! \brief Converts dynamic_t to std::unordered_map<std::string, T>.
-//! \sa dynamic_converter<std::map<std::string, T>>
+//! \sa converter<std::map<std::string, T>>
 template<class T>
-struct dynamic_converter<std::unordered_map<std::string, T>> {
+struct converter<std::unordered_map<std::string, T>> {
     typedef std::unordered_map<std::string, T> result_type;
 
     template<class Controller>
@@ -669,6 +670,6 @@ struct dynamic_converter<std::unordered_map<std::string, T>> {
     }
 };
 
-} // namespace kora
+}} // namespace kora::dynamic
 
 #endif

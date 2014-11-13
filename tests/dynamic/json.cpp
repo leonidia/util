@@ -25,6 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <boost/lexical_cast.hpp>
 
+#include <functional>
 #include <sstream>
 
 namespace {
@@ -166,7 +167,7 @@ TEST(DynamicJson, ObjectParsing) {
 
     std::istringstream input(object_json);
 
-    check_parsed_object(kora::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 
 }
 
@@ -184,14 +185,14 @@ TEST(DynamicJson, ArrayParsing) {
 
     std::istringstream input(array_json);
 
-    check_parsed_array(kora::dynamic_t::from_json(input));
+    check_parsed_array(kora::dynamic::read_json(input));
 }
 
 namespace {
     void
     check_parsing_error(const std::string& data) {
         std::istringstream input(data);
-        EXPECT_THROW(kora::dynamic_t::from_json(input), kora::json_parsing_error_t);
+        EXPECT_THROW(kora::dynamic::read_json(input), kora::json_parsing_error_t);
     }
 }
 
@@ -218,63 +219,100 @@ TEST(DynamicJson, GarbageIsBadJson) {
     check_parsing_error("fdkjfj!@#j");
 }
 
-TEST(DynamicJson, ValuesToJson) {
-    std::ostringstream output;
+namespace {
 
-    kora::dynamic_t().to_json(output);
-    EXPECT_EQ("null", output.str());
-
-    output.str("");
-    kora::dynamic_t(true).to_json(output);
-    EXPECT_EQ("true", output.str());
-
-    output.str("");
-    kora::dynamic_t(false).to_json(output);
-    EXPECT_EQ("false", output.str());
-
-    output.str("");
-    kora::dynamic_t(5).to_json(output);
-    EXPECT_EQ("5", output.str());
-
-    output.str("");
-    kora::dynamic_t(-5).to_json(output);
-    EXPECT_EQ("-5", output.str());
-
-    output.str("");
-    kora::dynamic_t(25.2).to_json(output);
-    EXPECT_EQ("25.2", output.str());
-
-    output.str("");
-    kora::dynamic_t(-25.2).to_json(output);
-    EXPECT_EQ("-25.2", output.str());
-
-    output.str("");
-    kora::dynamic_t("xd").to_json(output);
-    EXPECT_EQ("\"xd\"", output.str());
-
-    output.str("");
-    kora::dynamic_t(kora::dynamic_t::array_t()).to_json(output);
-    EXPECT_EQ("[]", output.str());
-
-    output.str("");
-    kora::dynamic_t(kora::dynamic_t::object_t()).to_json(output);
-    EXPECT_EQ("{}", output.str());
+void
+test_simple_values_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
+    EXPECT_EQ("null", serializer(kora::dynamic_t()));
+    EXPECT_EQ("true", serializer(kora::dynamic_t(true)));
+    EXPECT_EQ("false", serializer(kora::dynamic_t(false)));
+    EXPECT_EQ("5", serializer(kora::dynamic_t(5)));
+    EXPECT_EQ("-5", serializer(kora::dynamic_t(-5)));
+    EXPECT_EQ("25.2", serializer(kora::dynamic_t(25.2)));
+    EXPECT_EQ("-25.2", serializer(kora::dynamic_t(-25.2)));
+    EXPECT_EQ("\"xd\"", serializer(kora::dynamic_t("xd")));
+    EXPECT_EQ("[]", serializer(kora::dynamic_t(kora::dynamic_t::array_t())));
+    EXPECT_EQ("{}", serializer(kora::dynamic_t(kora::dynamic_t::object_t())));
 }
 
-TEST(DynamicJson, ObjectToJson) {
-    std::ostringstream output;
-    construct_object().to_json(output);
-
-    std::istringstream input(output.str());
-    check_parsed_object(kora::dynamic_t::from_json(input));
+void
+test_object_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
+    std::istringstream input(serializer(construct_object()));
+    check_parsed_object(kora::dynamic::read_json(input));
 }
 
-TEST(DynamicJson, ArrayToJson) {
-    std::ostringstream output;
-    construct_array().to_json(output);
+void
+test_array_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
+    std::istringstream input(serializer(construct_array()));
+    check_parsed_array(kora::dynamic::read_json(input));
+}
 
-    std::istringstream input(output.str());
-    check_parsed_array(kora::dynamic_t::from_json(input));
+void
+test_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
+    test_simple_values_serialization(serializer);
+    test_object_serialization(serializer);
+    test_array_serialization(serializer);
+}
+
+std::string
+write_json_serializer(const kora::dynamic_t& value) {
+    std::ostringstream output;
+    kora::write_json(output, value);
+    return output.str();
+}
+
+std::string
+write_pretty_json_serializer(const kora::dynamic_t& value) {
+    std::ostringstream output;
+    kora::write_pretty_json(output, value);
+    return output.str();
+}
+
+std::string
+to_json_serializer(const kora::dynamic_t& value) {
+    return kora::to_json(value);
+}
+
+std::string
+to_pretty_json_serializer(const kora::dynamic_t& value) {
+    return kora::to_pretty_json(value);
+}
+
+} // namespace
+
+TEST(DynamicJson, SimpleJsonToStream) {
+    test_serialization(&write_json_serializer);
+    return;
+}
+
+TEST(DynamicJson, PrettyJsonToStream) {
+    test_serialization(&write_pretty_json_serializer);
+
+    std::ostringstream output;
+
+    kora::dynamic_t::object_t object_with_key;
+    object_with_key["key"] = 1337;
+
+    kora::write_pretty_json(output, kora::dynamic_t(object_with_key), 7);
+    EXPECT_EQ("{\n       \"key\": 1337\n}", output.str());
+
+    return;
+}
+
+TEST(DynamicJson, SimpleJsonToString) {
+    test_serialization(&to_json_serializer);
+    return;
+}
+
+TEST(DynamicJson, PrettyJsonToString) {
+    test_serialization(&to_pretty_json_serializer);
+
+    kora::dynamic_t::object_t object_with_key;
+    object_with_key["key"] = 1337;
+
+    EXPECT_EQ("{\n       \"key\": 1337\n}",
+              kora::to_pretty_json(kora::dynamic_t(object_with_key), 7));
+    return;
 }
 
 TEST(DynamicJson, ValuesToStream) {
@@ -325,7 +363,7 @@ TEST(DynamicJson, ObjectToStream) {
     output << construct_object();
 
     std::istringstream input(output.str());
-    check_parsed_object(kora::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 }
 
 TEST(DynamicJson, ArrayToStream) {
@@ -333,12 +371,12 @@ TEST(DynamicJson, ArrayToStream) {
     output << construct_array();
 
     std::istringstream input(output.str());
-    check_parsed_array(kora::dynamic_t::from_json(input));
+    check_parsed_array(kora::dynamic::read_json(input));
 }
 
 TEST(DynamicJson, BoostLexicalCast) {
     std::string serialized = boost::lexical_cast<std::string>(construct_object());
 
     std::istringstream input(serialized);
-    check_parsed_object(kora::dynamic_t::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 }

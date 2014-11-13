@@ -35,6 +35,8 @@ namespace kora {
 
 class dynamic_t;
 
+namespace dynamic {
+
 /*! Trait class to convert data types to dynamic_t.
  *
  * It's called from constructors and assignment operators of dynamic_t
@@ -49,7 +51,7 @@ class dynamic_t;
  * \tparam From The type being converted to dynamic_t.
  */
 template<class From, class = void>
-struct dynamic_constructor {
+struct constructor {
     //! This constant should be \p true to enable the specialization.
     static const bool enable = false;
 
@@ -72,10 +74,10 @@ struct dynamic_constructor {
  * The second template argument may be used to do the SFINAE magic.
  *
  * \tparam To The type passed to method dynamic_t::to() as the first template argument.
- * \sa dynamic_converter<bool>
+ * \sa dynamic::converter<bool>
  */
 template<class To, class = void>
-struct dynamic_converter {
+struct converter {
     /*! Performs conversion of dynamic_t to the result type.
      *
      * It's provided with a user-defined "controller" which performs error handling.
@@ -110,6 +112,8 @@ struct dynamic_converter {
     bool
     convertible(const dynamic_t& from) KORA_NOEXCEPT;
 };
+
+} // namespace dynamic
 
 /*! Recursive data structure to store JSON-like data.
  *
@@ -240,13 +244,13 @@ public:
 
     /*! Construct dynamic object from an arbitrary type.
      *
-     * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to construct the object.\n
+     * It uses <tt>dynamic::constructor<typename pristine<T>::type></tt> to construct the object.\n
      * This constructor participates in overload resolution only if
-     * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
+     * <tt>dynamic::constructor<typename pristine<T>::type>::enable == true</tt>.
      *
-     * \throws Any exception thrown by dynamic_constructor.
+     * \throws Any exception thrown by dynamic::constructor.
      *
-     * \sa dynamic_constructor
+     * \sa dynamic::constructor
      */
 #ifdef KORA_DOXYGEN
     template<class T>
@@ -255,7 +259,7 @@ public:
     template<class T>
     dynamic_t(
         T&& from,
-        typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable>::type* = 0
+        typename std::enable_if<dynamic::constructor<typename pristine<T>::type>::enable>::type* = 0
     );
 #endif
 
@@ -318,13 +322,13 @@ public:
     /*! Assigns value of an arbitrary type to the dynamic object.
      * \fn template<class T> dynamic_t& operator=(T&& from)
      *
-     * It uses <tt>dynamic_constructor<typename pristine<T>::type></tt> to perform the conversion.\n
+     * It uses <tt>dynamic::constructor<typename pristine<T>::type></tt> to perform the conversion.\n
      * This operator participates in overload resolution only if
-     * <tt>dynamic_constructor<typename pristine<T>::type>::enable == true</tt>.
+     * <tt>dynamic::constructor<typename pristine<T>::type>::enable == true</tt>.
      *
-     * \throws Any exception thrown by dynamic_constructor.
+     * \throws Any exception thrown by dynamic::constructor.
      *
-     * \sa dynamic_constructor
+     * \sa dynamic::constructor
      */
 #ifdef KORA_DOXYGEN
     template<class T>
@@ -332,7 +336,7 @@ public:
     operator=(T&& from);
 #else
     template<class T>
-    typename std::enable_if<dynamic_constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
+    typename std::enable_if<dynamic::constructor<typename pristine<T>::type>::enable, dynamic_t&>::type
     operator=(T&& from);
 #endif
 
@@ -455,13 +459,13 @@ public:
 
     /*! Checks whether the conversion of the object to a type is possible.
      *
-     * It uses dynamic_converter::convertible() to perform the check.\n
-     * Specialization being used: <tt>dynamic_converter<typename pristine<T>::type></tt>
+     * It uses dynamic::converter::convertible() to perform the check.\n
+     * Specialization being used: <tt>dynamic::converter<typename pristine<T>::type></tt>
      *
-     * \tparam T Type determining dynamic_converter.
+     * \tparam T Type determining dynamic::converter.
      * \returns \p true if the conversion is possible and \p false otherwise.
      *
-     * \sa dynamic_converter
+     * \sa dynamic::converter
      */
     template<class T>
     bool
@@ -469,70 +473,39 @@ public:
 
     /*! Converts the object to an arbitrary type.
      *
-     * It uses <tt>dynamic_converter<typename pristine<T>::type></tt> to perform the conversion.
+     * It uses <tt>dynamic::converter<typename pristine<T>::type></tt> to perform the conversion.
      *
-     * \tparam T Type determining dynamic_converter.
+     * \tparam T Type determining dynamic::converter.
      * \tparam Controller Type of the controller.
-     * \param controller Object handling conversion errors. Forwarded to the underlying dynamic_converter.
-     * \returns Result of conversion returned by dynamic_converter.
-     * \throws Any exceptions thrown by dynamic_converter and by the controller.
+     * \param controller Object handling conversion errors. Forwarded to the underlying dynamic::converter.
+     * \returns Result of conversion returned by dynamic::converter.
+     * \throws Any exceptions thrown by dynamic::converter and by the controller.
      *
-     * \sa dynamic_converter
+     * \sa dynamic::converter
      *
      * \todo Provide example of a controller.
      */
     template<class T, class Controller>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     to(Controller&& controller) const;
 
     /*! Converts the object to an arbitrary type.
      *
      * It's the same as the previous function, but always uses controller
      * which ignores any information about the traversed object structure and
-     * just throws errors generated by dynamic_converter.
+     * just throws errors generated by dynamic::converter.
      *
-     * \sa dynamic_converter
-     * \tparam T Type determining dynamic_converter.
-     * \returns Result of conversion returned by dynamic_converter.
-     * \throws Any exceptions thrown by dynamic_converter.
-     * \throws Any errors passed to the controller by dynamic_converter.
+     * \sa dynamic::converter
+     * \tparam T Type determining dynamic::converter.
+     * \returns Result of conversion returned by dynamic::converter.
+     * \throws Any exceptions thrown by dynamic::converter.
+     * \throws Any errors passed to the controller by dynamic::converter.
      *
-     * \sa dynamic_converter
+     * \sa dynamic::converter
      */
     template<class T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     to() const;
-
-public:
-    /*! Creates dynamic object from JSON.
-     *
-     * This function doesn't require the input stream to contain only one JSON object.
-     * It reads one JSON object with surrounding spaces and leaves other data untouched.
-     *
-     * \param input Stream containing the JSON.
-     * \returns Constructed dynamic object.
-     * \throws json_parsing_error_t
-     * \throws std::bad_alloc
-     * \throws Any exception thrown by \p input.
-     */
-    KORA_API
-    static
-    dynamic_t
-    from_json(std::istream &input);
-
-    /*! Serializes the object into JSON format.
-     *
-     * This method may serialize not only objects and arrays, but any dynamic_t object.
-     * It's not like standard JSON, and you should perform additional checks on yourown
-     * if you want to receive a JSON object or array.
-     *
-     * \param output Stream to write the resulting JSON to.
-     * \throws std::bad_alloc
-     * \throws Any exception thrown by \p output.
-     */
-    KORA_API
-    void
-    to_json(std::ostream &output) const;
 
 private:
     template<class T>
@@ -591,7 +564,5 @@ operator<<(std::ostream& stream, const dynamic_t& value);
 
 #include "kora/dynamic/dynamic.inl"
 #include "kora/dynamic/object.hpp"
-#include "kora/dynamic/constructors.hpp"
-#include "kora/dynamic/converters.hpp"
 
 #endif

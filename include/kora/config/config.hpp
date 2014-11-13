@@ -173,7 +173,7 @@ public:
      * \throws config_cast_error_t if the object stored by the key can't be converted to \p T.
      */
     template <typename T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     at(const std::string &name, const T &default_value) const {
         if (!has(name)) {
             return default_value;
@@ -190,7 +190,7 @@ public:
      * \throws config_access_error_t if the underlying object doesn't contain the key.
      */
     template <typename T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     at(const std::string &name) const {
         return at(name).to<T>();
     }
@@ -214,7 +214,7 @@ public:
      * \throws config_cast_error_t if the object stored by the index can't be converted to \p T.
      */
     template <typename T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     at(size_t index, const T &default_value) const {
         if (index >= this->to<dynamic_t::array_t>().size()) {
             return default_value;
@@ -231,7 +231,7 @@ public:
      * \throws config_access_error_t if <tt>size() >= index</tt>.
      */
     template <typename T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     at(size_t index) const {
         return at(index).to<T>();
     }
@@ -240,12 +240,12 @@ public:
      *
      * It call dynamic_t::to() method for the underlying object to perform the conversion.
      *
-     * \tparam T Type determining dynamic_converter.
+     * \tparam T Type determining dynamic::converter.
      * \returns Result of the conversion returned by dynamic_t::to().
      * \throws config_cast_error_t If the underlying object is not convertible to the result type.
      */
     template <typename T>
-    typename dynamic_converter<typename pristine<T>::type>::result_type
+    typename dynamic::converter<typename pristine<T>::type>::result_type
     to() const {
         return m_value.to<T>(detail::config_conversion_controller_t(m_path));
     }

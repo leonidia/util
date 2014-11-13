@@ -201,10 +201,10 @@ namespace {
 
 } // namespace
 
-namespace kora {
+namespace kora { namespace dynamic {
 
     template<>
-    struct dynamic_constructor<test_struct_t> {
+    struct constructor<test_struct_t> {
         static const bool enable = true;
 
         static inline
@@ -214,7 +214,7 @@ namespace kora {
         }
     };
 
-} // namespace kora
+}} // namespace kora::dynamic
 
 TEST(DynamicConstructor, CustomConstructor) {
     kora::dynamic_t constructed = test_struct_t {1337, ">_>"};

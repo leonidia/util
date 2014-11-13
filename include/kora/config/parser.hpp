@@ -92,7 +92,7 @@ public:
      * \returns \p root() after new configuration is parsed and stored in the parser.
      * \throws config_parser_error_t If the stream contains anything but a valid JSON object.
      * \throws std::bad_alloc
-     * \throws Any exception thrown by \p dynamic_t::from_json(stream).
+     * \throws Any exception thrown by \p kora::dynamic::read_json(stream).
      */
     KORA_API
     config_t
