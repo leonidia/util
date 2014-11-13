@@ -43,7 +43,7 @@ namespace kora {
  */
 KORA_API
 void
-to_json(const dynamic_t& value, std::ostream& stream);
+to_json(const dynamic_t& value, std::ostream& output);
 
 /*!\relatesalso dynamic_t
  *
@@ -53,6 +53,7 @@ to_json(const dynamic_t& value, std::ostream& stream);
  *
  * \param value The dynamic object to serialize.
  * \param output Stream to write the resulting JSON to.
+ * \param indent Number of spaces in one indentation level.
  * \throws std::bad_alloc
  * \throws Any exception thrown by \p output.
  *
@@ -60,7 +61,7 @@ to_json(const dynamic_t& value, std::ostream& stream);
  */
 KORA_API
 void
-to_pretty_json(const dynamic_t& value, std::ostream& stream, size_t indent = 4);
+to_pretty_json(const dynamic_t& value, std::ostream& output, size_t indent = 4);
 
 namespace dynamic {
 
