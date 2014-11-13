@@ -36,14 +36,14 @@ namespace kora {
  * It's not like standard JSON, and you should perform additional checks on yourown
  * if you want to receive a JSON object or array.
  *
- * \param value The dynamic object to serialize.
  * \param output Stream to write the resulting JSON to.
+ * \param value The dynamic object to serialize.
  * \throws std::bad_alloc
  * \throws Any exception thrown by \p output.
  */
 KORA_API
 void
-to_json(const dynamic_t& value, std::ostream& output);
+write_json(std::ostream& output, const dynamic_t& value);
 
 /*!\relatesalso dynamic_t
  *
@@ -51,8 +51,8 @@ to_json(const dynamic_t& value, std::ostream& output);
  *
  * It works exactly as to_json(const dynamic_t&, std::ostream&) except of the formating.
  *
- * \param value The dynamic object to serialize.
  * \param output Stream to write the resulting JSON to.
+ * \param value The dynamic object to serialize.
  * \param indent Number of spaces in one indentation level.
  * \throws std::bad_alloc
  * \throws Any exception thrown by \p output.
@@ -61,7 +61,7 @@ to_json(const dynamic_t& value, std::ostream& output);
  */
 KORA_API
 void
-to_pretty_json(const dynamic_t& value, std::ostream& output, size_t indent = 4);
+write_pretty_json(std::ostream& output, const dynamic_t& value, size_t indent = 4);
 
 namespace dynamic {
 

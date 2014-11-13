@@ -221,49 +221,49 @@ TEST(DynamicJson, GarbageIsBadJson) {
 TEST(DynamicJson, ValuesToJson) {
     std::ostringstream output;
 
-    kora::to_json(kora::dynamic_t(), output);
+    kora::write_json(output, kora::dynamic_t());
     EXPECT_EQ("null", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(true), output);
+    kora::write_json(output, kora::dynamic_t(true));
     EXPECT_EQ("true", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(false), output);
+    kora::write_json(output, kora::dynamic_t(false));
     EXPECT_EQ("false", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(5), output);
+    kora::write_json(output, kora::dynamic_t(5));
     EXPECT_EQ("5", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(-5), output);
+    kora::write_json(output, kora::dynamic_t(-5));
     EXPECT_EQ("-5", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(25.2), output);
+    kora::write_json(output, kora::dynamic_t(25.2));
     EXPECT_EQ("25.2", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(-25.2), output);
+    kora::write_json(output, kora::dynamic_t(-25.2));
     EXPECT_EQ("-25.2", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t("xd"), output);
+    kora::write_json(output, kora::dynamic_t("xd"));
     EXPECT_EQ("\"xd\"", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(kora::dynamic_t::array_t()), output);
+    kora::write_json(output, kora::dynamic_t(kora::dynamic_t::array_t()));
     EXPECT_EQ("[]", output.str());
 
     output.str("");
-    kora::to_json(kora::dynamic_t(kora::dynamic_t::object_t()), output);
+    kora::write_json(output, kora::dynamic_t(kora::dynamic_t::object_t()));
     EXPECT_EQ("{}", output.str());
 }
 
 TEST(DynamicJson, ObjectToJson) {
     std::ostringstream output;
-    kora::to_json(construct_object(), output);
+    kora::write_json(output, construct_object());
 
     std::istringstream input(output.str());
     check_parsed_object(kora::dynamic::from_json(input));
@@ -271,7 +271,7 @@ TEST(DynamicJson, ObjectToJson) {
 
 TEST(DynamicJson, ArrayToJson) {
     std::ostringstream output;
-    kora::to_json(construct_array(), output);
+    kora::write_json(output, construct_array());
 
     std::istringstream input(output.str());
     check_parsed_array(kora::dynamic::from_json(input));
@@ -280,55 +280,55 @@ TEST(DynamicJson, ArrayToJson) {
 TEST(DynamicJson, ValuesToPrettyJson) {
     std::ostringstream output;
 
-    kora::to_pretty_json(kora::dynamic_t(), output);
+    kora::write_pretty_json(output, kora::dynamic_t());
     EXPECT_EQ("null", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(true), output);
+    kora::write_pretty_json(output, kora::dynamic_t(true));
     EXPECT_EQ("true", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(false), output);
+    kora::write_pretty_json(output, kora::dynamic_t(false));
     EXPECT_EQ("false", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(5), output);
+    kora::write_pretty_json(output, kora::dynamic_t(5));
     EXPECT_EQ("5", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(-5), output);
+    kora::write_pretty_json(output, kora::dynamic_t(-5));
     EXPECT_EQ("-5", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(25.2), output);
+    kora::write_pretty_json(output, kora::dynamic_t(25.2));
     EXPECT_EQ("25.2", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(-25.2), output);
+    kora::write_pretty_json(output, kora::dynamic_t(-25.2));
     EXPECT_EQ("-25.2", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t("xd"), output);
+    kora::write_pretty_json(output, kora::dynamic_t("xd"));
     EXPECT_EQ("\"xd\"", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(kora::dynamic_t::array_t()), output);
+    kora::write_pretty_json(output, kora::dynamic_t(kora::dynamic_t::array_t()));
     EXPECT_EQ("[]", output.str());
 
     output.str("");
-    kora::to_pretty_json(kora::dynamic_t(kora::dynamic_t::object_t()), output);
+    kora::write_pretty_json(output, kora::dynamic_t(kora::dynamic_t::object_t()));
     EXPECT_EQ("{}", output.str());
 
     output.str("");
     kora::dynamic_t::object_t object_with_key;
     object_with_key["key"] = 1337;
-    kora::to_pretty_json(kora::dynamic_t(object_with_key), output, 7);
+    kora::write_pretty_json(output, kora::dynamic_t(object_with_key), 7);
     EXPECT_EQ("{\n       \"key\": 1337\n}", output.str());
 }
 
 TEST(DynamicJson, ObjectToPrettyJson) {
     std::ostringstream output;
-    kora::to_pretty_json(construct_object(), output);
+    kora::write_pretty_json(output, construct_object());
 
     std::istringstream input(output.str());
     check_parsed_object(kora::dynamic::from_json(input));
@@ -336,7 +336,7 @@ TEST(DynamicJson, ObjectToPrettyJson) {
 
 TEST(DynamicJson, ArrayToPrettyJson) {
     std::ostringstream output;
-    kora::to_pretty_json(construct_array(), output);
+    kora::write_pretty_json(output, construct_array());
 
     std::istringstream input(output.str());
     check_parsed_array(kora::dynamic::from_json(input));

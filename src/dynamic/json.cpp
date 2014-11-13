@@ -319,7 +319,7 @@ kora::dynamic::from_json(std::istream &input) {
 }
 
 void
-kora::to_json(const dynamic_t& value, std::ostream &output) {
+kora::write_json(std::ostream &output, const dynamic_t& value) {
     rapidjson_ostream_t rapidjson_stream = &output;
     ostream_simple_writer_t writer = rapidjson_stream;
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
@@ -327,7 +327,7 @@ kora::to_json(const dynamic_t& value, std::ostream &output) {
 }
 
 void
-kora::to_pretty_json(const dynamic_t& value, std::ostream &output, size_t indent) {
+kora::write_pretty_json(std::ostream &output, const dynamic_t& value, size_t indent) {
     rapidjson_ostream_t rapidjson_stream = &output;
     ostream_pretty_writer_t writer = rapidjson_stream;
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
@@ -359,7 +359,7 @@ private:
 std::ostream&
 kora::operator<<(std::ostream& stream, const dynamic_t& value) {
     if (value.is_null() || value.is_array() || value.is_object()) {
-        to_json(value, stream);
+        write_json(stream, value);
     } else {
         value.apply(print_vistor_t(stream));
     }
