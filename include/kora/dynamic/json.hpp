@@ -63,6 +63,38 @@ KORA_API
 void
 write_pretty_json(std::ostream& output, const dynamic_t& value, size_t indent = 4);
 
+/*!\relatesalso dynamic_t
+ *
+ * Serializes dynamic object into unformatted JSON.
+ *
+ * It does the same as write_json(std::ostream&, const dynamic_t&),
+ * but stores the JSON in the string which returns.
+ *
+ * \param value The dynamic object to serialize.
+ * \returns The resulting JSON stored in a string.
+ * \throws std::bad_alloc
+ *
+ * \sa write_json(std::ostream&, const dynamic_t&)
+ */
+KORA_API
+std::string
+to_json(const dynamic_t& value);
+
+/*!\relatesalso dynamic_t
+ *
+ * Serializes dynamic object into human-readable JSON.
+ *
+ * \param value The dynamic object to serialize.
+ * \returns The resulting JSON stored in a string.
+ * \throws std::bad_alloc
+ *
+ * \sa to_json(const dynamic_t&)
+ * \sa write_pretty_json(std::ostream&, const dynamic_t&, size_t)
+ */
+KORA_API
+std::string
+to_pretty_json(const dynamic_t& value, size_t indent = 4);
+
 namespace dynamic {
 
 /*!\relatesalso kora::dynamic_t

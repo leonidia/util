@@ -28,6 +28,7 @@
 
 #include <algorithm>
 #include <stack>
+#include <sstream>
 
 using namespace kora;
 
@@ -333,6 +334,20 @@ kora::write_pretty_json(std::ostream &output, const dynamic_t& value, size_t ind
     writer.SetFlags(rapidjson::kSerializeAnyValueFlag);
     writer.SetIndent(' ', indent);
     value.apply(to_stream_visitor<ostream_pretty_writer_t>(&writer));
+}
+
+std::string
+kora::to_json(const dynamic_t& value) {
+    std::ostringstream output;
+    write_json(output, value);
+    return output.str();
+}
+
+std::string
+kora::to_pretty_json(const dynamic_t& value, size_t indent) {
+    std::ostringstream output;
+    write_pretty_json(output, value, indent);
+    return output.str();
 }
 
 namespace {
