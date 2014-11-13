@@ -326,6 +326,22 @@ TEST(DynamicJson, ValuesToPrettyJson) {
     EXPECT_EQ("{\n       \"key\": 1337\n}", output.str());
 }
 
+TEST(DynamicJson, ObjectToPrettyJson) {
+    std::ostringstream output;
+    kora::to_pretty_json(construct_object(), output);
+
+    std::istringstream input(output.str());
+    check_parsed_object(kora::dynamic::from_json(input));
+}
+
+TEST(DynamicJson, ArrayToPrettyJson) {
+    std::ostringstream output;
+    kora::to_pretty_json(construct_array(), output);
+
+    std::istringstream input(output.str());
+    check_parsed_array(kora::dynamic::from_json(input));
+}
+
 TEST(DynamicJson, ValuesToStream) {
     std::ostringstream output;
 
