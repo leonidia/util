@@ -294,7 +294,7 @@ private:
 } // namespace
 
 dynamic_t
-kora::dynamic::from_json(std::istream &input) {
+kora::dynamic::read_json(std::istream &input) {
     rapidjson::MemoryPoolAllocator<> json_allocator;
     rapidjson::Reader json_reader(&json_allocator);
     rapidjson_istream_t json_stream(&input);

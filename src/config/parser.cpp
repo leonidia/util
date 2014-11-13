@@ -165,7 +165,7 @@ config_parser_t::parse(std::istream &stream) {
     proxy_stream.push(boost::ref(stream));
 
     try {
-        parsed = kora::dynamic::from_json(proxy_stream);
+        parsed = kora::dynamic::read_json(proxy_stream);
     } catch (const kora::json_parsing_error_t& e) {
         throw_parser_error(complete_line(std::move(filter.data()), e.offset(), stream),
                            e.offset(),

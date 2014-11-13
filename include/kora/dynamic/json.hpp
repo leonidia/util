@@ -112,7 +112,7 @@ namespace dynamic {
  */
 KORA_API
 dynamic_t
-from_json(std::istream &input);
+read_json(std::istream &input);
 
 } // namespace dynamic
 

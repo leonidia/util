@@ -167,7 +167,7 @@ TEST(DynamicJson, ObjectParsing) {
 
     std::istringstream input(object_json);
 
-    check_parsed_object(kora::dynamic::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 
 }
 
@@ -185,14 +185,14 @@ TEST(DynamicJson, ArrayParsing) {
 
     std::istringstream input(array_json);
 
-    check_parsed_array(kora::dynamic::from_json(input));
+    check_parsed_array(kora::dynamic::read_json(input));
 }
 
 namespace {
     void
     check_parsing_error(const std::string& data) {
         std::istringstream input(data);
-        EXPECT_THROW(kora::dynamic::from_json(input), kora::json_parsing_error_t);
+        EXPECT_THROW(kora::dynamic::read_json(input), kora::json_parsing_error_t);
     }
 }
 
@@ -238,13 +238,13 @@ test_simple_values_serialization(std::function<std::string(const kora::dynamic_t
 void
 test_object_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
     std::istringstream input(serializer(construct_object()));
-    check_parsed_object(kora::dynamic::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 }
 
 void
 test_array_serialization(std::function<std::string(const kora::dynamic_t&)> serializer) {
     std::istringstream input(serializer(construct_array()));
-    check_parsed_array(kora::dynamic::from_json(input));
+    check_parsed_array(kora::dynamic::read_json(input));
 }
 
 void
@@ -363,7 +363,7 @@ TEST(DynamicJson, ObjectToStream) {
     output << construct_object();
 
     std::istringstream input(output.str());
-    check_parsed_object(kora::dynamic::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 }
 
 TEST(DynamicJson, ArrayToStream) {
@@ -371,12 +371,12 @@ TEST(DynamicJson, ArrayToStream) {
     output << construct_array();
 
     std::istringstream input(output.str());
-    check_parsed_array(kora::dynamic::from_json(input));
+    check_parsed_array(kora::dynamic::read_json(input));
 }
 
 TEST(DynamicJson, BoostLexicalCast) {
     std::string serialized = boost::lexical_cast<std::string>(construct_object());
 
     std::istringstream input(serialized);
-    check_parsed_object(kora::dynamic::from_json(input));
+    check_parsed_object(kora::dynamic::read_json(input));
 }
