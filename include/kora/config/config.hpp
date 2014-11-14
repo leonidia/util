@@ -256,6 +256,7 @@ public:
     path() const KORA_NOEXCEPT;
 
     //! \returns Underlying dynamic_t object which this config_t provides access to.
+    KORA_API
     const dynamic_t&
     underlying_object() const KORA_NOEXCEPT;
 

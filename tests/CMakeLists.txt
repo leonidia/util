@@ -22,6 +22,7 @@ LINK_DIRECTORIES(
 
 ADD_EXECUTABLE(kora-tests
     config
+    config/config
     dynamic/dynamic
     dynamic/constructor
     dynamic/converter
