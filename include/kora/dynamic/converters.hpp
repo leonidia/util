@@ -301,7 +301,7 @@ struct converter<std::vector<T>> {
             controller.start_array(from);
             for (size_t i = 0; i < array.size(); ++i) {
                 controller.item(i);
-                result.emplace_back(array[i].to<T>());
+                result.emplace_back(array[i].to<T>(controller));
             }
             controller.finish_array();
 
@@ -346,7 +346,7 @@ struct converter<std::set<T>> {
             controller.start_array(from);
             for (size_t i = 0; i < array.size(); ++i) {
                 controller.item(i);
-                result.insert(array[i].to<T>());
+                result.insert(array[i].to<T>(controller));
             }
             controller.finish_array();
 
@@ -435,7 +435,7 @@ private:
         typename std::tuple_element<Index, result_type>::type
         control_and_convert(const dynamic_t::array_t& from, Controller& controller) {
             controller.item(Index);
-            return from[Index].to<typename std::tuple_element<Index, result_type>::type>();
+            return from[Index].to<typename std::tuple_element<Index, result_type>::type>(controller);
         }
 
         template<class Controller>
@@ -472,7 +472,7 @@ struct converter<std::pair<First, Second>> {
     typename std::tuple_element<Index, result_type>::type
     control_and_convert(const dynamic_t::array_t& from, Controller& controller) {
         controller.item(Index);
-        return from[Index].to<typename std::tuple_element<Index, result_type>::type>();
+        return from[Index].to<typename std::tuple_element<Index, result_type>::type>(controller);
     }
 
     //! Traverses the array stored in \p from. Converts items of the array to \p First and \p Second.\n
@@ -593,7 +593,7 @@ struct converter<std::map<std::string, T>> {
             controller.start_object(from);
             for (auto it = object.begin(); it != object.end(); ++it) {
                 controller.item(it->first);
-                result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+                result.insert(typename result_type::value_type(it->first, it->second.to<T>(controller)));
             }
             controller.finish_object();
 
@@ -641,7 +641,7 @@ struct converter<std::unordered_map<std::string, T>> {
             controller.start_object(from);
             for (auto it = object.begin(); it != object.end(); ++it) {
                 controller.item(it->first);
-                result.insert(typename result_type::value_type(it->first, it->second.to<T>()));
+                result.insert(typename result_type::value_type(it->first, it->second.to<T>(controller)));
             }
             controller.finish_object();
 

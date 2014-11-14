@@ -791,3 +791,7 @@ TEST(DynamicConverter, ErrorController) {
     EXPECT_THROW((kora::dynamic_t(ill_formed_object).to<std::map<std::string, double>>(error_controller)),
                  kora::bad_cast_t);
 }
+
+// TODO: Write test for controller traversing more complex object.
+// I've just found a bug: converters of complex objects didn't pass the controller to recursive calls of method to().
+// Maybe I should even test this case for each converter.
