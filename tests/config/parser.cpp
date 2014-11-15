@@ -21,9 +21,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
 
-#include "kora/config.hpp"
+#include "kora/config/parser.hpp"
 
-TEST(Config, NumericTest) {
+TEST(ConfigParser, DefaultConstructor) {
+    kora::config_parser_t parser;
+    EXPECT_TRUE(parser.root().underlying_object().is_null());
+}
+
+TEST(ConfigParser, NumericTest) {
     std::string json =
             "{\n"
             "    \"short_min\": -32768,\n"
@@ -44,18 +49,18 @@ TEST(Config, NumericTest) {
 
     kora::config_t config = parser.root();
 
-    GTEST_ASSERT_EQ(config.at<short>("short_min"), std::numeric_limits<short>::min());
-    GTEST_ASSERT_EQ(config.at<short>("short_max"), std::numeric_limits<short>::max());
-    GTEST_ASSERT_EQ(config.at<unsigned short>("ushort_min"), std::numeric_limits<unsigned short>::min());
-    GTEST_ASSERT_EQ(config.at<unsigned short>("ushort_max"), std::numeric_limits<unsigned short>::max());
-    GTEST_ASSERT_EQ(config.at<int64_t>("int64_min"), std::numeric_limits<int64_t>::min());
-    GTEST_ASSERT_EQ(config.at<int64_t>("int64_max"), std::numeric_limits<int64_t>::max());
-    GTEST_ASSERT_EQ(config.at<uint64_t>("uint64_min"), std::numeric_limits<uint64_t>::min());
-    GTEST_ASSERT_EQ(config.at<uint64_t>("uint64_max"), std::numeric_limits<uint64_t>::max());
+    GTEST_ASSERT_EQ(std::numeric_limits<short>::min(), config.at<short>("short_min"));
+    GTEST_ASSERT_EQ(std::numeric_limits<short>::max(), config.at<short>("short_max"));
+    GTEST_ASSERT_EQ(std::numeric_limits<unsigned short>::min(), config.at<unsigned short>("ushort_min"));
+    GTEST_ASSERT_EQ(std::numeric_limits<unsigned short>::max(), config.at<unsigned short>("ushort_max"));
+    GTEST_ASSERT_EQ(std::numeric_limits<int64_t>::min(), config.at<int64_t>("int64_min"));
+    GTEST_ASSERT_EQ(std::numeric_limits<int64_t>::max(), config.at<int64_t>("int64_max"));
+    GTEST_ASSERT_EQ(std::numeric_limits<uint64_t>::min(), config.at<uint64_t>("uint64_min"));
+    GTEST_ASSERT_EQ(std::numeric_limits<uint64_t>::max(), config.at<uint64_t>("uint64_max"));
 }
 
 
-TEST(Config, ParseErrorTest) {
+TEST(ConfigParser, ParsingError1) {
     std::string json =
             "{\n"
             "    \"short_min\": -32768,\n"
@@ -81,7 +86,7 @@ TEST(Config, ParseErrorTest) {
     }
 }
 
-TEST(Config, ParseErrorTest_2) {
+TEST(ConfigParser, ParsingError2) {
     std::string json = "s{\n";
 
     std::istringstream stream(json);
@@ -97,7 +102,7 @@ TEST(Config, ParseErrorTest_2) {
     }
 }
 
-TEST(Config, ParseErrorTest_3) {
+TEST(ConfigParser, ParsingError3) {
     std::string json = "{s\n";
 
     std::istringstream stream(json);
@@ -110,5 +115,45 @@ TEST(Config, ParseErrorTest_3) {
     } catch (kora::config_parser_error_t &error) {
         GTEST_ASSERT_EQ(1, error.line_number());
         GTEST_ASSERT_EQ(2, error.column_number());
+    }
+}
+
+TEST(ConfigParser, AnythingAfterConfigIsNotAllowed) {
+    std::string json =
+            "{\n"
+            "    \"key1\": -1,\n"
+            "    \"key2\": true\n"
+            "}garbage\n"
+    ;
+
+    std::istringstream stream(json);
+
+    kora::config_parser_t parser;
+    try {
+        parser.parse(stream);
+        FAIL();
+    } catch (kora::config_parser_error_t &error) {
+        ASSERT_EQ(4, error.line_number());
+        ASSERT_EQ(2, error.column_number());
+    }
+}
+
+TEST(ConfigParser, ConfigMustBeAnObject) {
+    std::string json =
+            "  [\n"
+            "      -1,\n"
+            "      true\n"
+            "  ]\n"
+    ;
+
+    std::istringstream stream(json);
+
+    kora::config_parser_t parser;
+    try {
+        parser.parse(stream);
+        FAIL();
+    } catch (kora::config_parser_error_t &error) {
+        ASSERT_EQ(1, error.line_number());
+        ASSERT_EQ(3, error.column_number());
     }
 }

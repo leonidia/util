@@ -63,7 +63,12 @@ namespace {
 class logging_filter_t {
 public:
     typedef char char_type;
-    struct category: boost::iostreams::input_filter_tag, boost::iostreams::multichar_tag { };
+
+    struct category:
+        boost::iostreams::input_filter_tag,
+        boost::iostreams::multichar_tag,
+        boost::iostreams::optimally_buffered_tag
+    { };
 
     std::string&
     data() {
@@ -82,6 +87,11 @@ public:
 
             return result;
         }
+    }
+
+    std::streamsize
+    optimal_buffer_size() const {
+        return 0;
     }
 
 private:
