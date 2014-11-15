@@ -27,6 +27,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "kora/utility.hpp"
 
 #include <istream>
+#include <memory>
 #include <string>
 
 namespace kora {
@@ -40,6 +41,12 @@ public:
     //! \post <tt>this->root().underlying_object().is_null() == true</tt>
     KORA_API
     config_parser_t() KORA_NOEXCEPT;
+
+    /*!
+     * \throws std::bad_alloc.
+     */
+    KORA_API
+    config_parser_t(const config_parser_t &other);
 
     /*! Create config from a JSON object stored in a file.
      *
@@ -67,6 +74,13 @@ public:
 
     KORA_API
     ~config_parser_t() KORA_NOEXCEPT;
+
+    /*!
+     * \throws std::bad_alloc.
+     */
+    KORA_API
+    config_parser_t&
+    operator=(const config_parser_t &other);
 
     /*! Parse config from a JSON object stored in a file.
      *
@@ -108,7 +122,9 @@ public:
     root() const;
 
 private:
-    dynamic_t m_root;
+    class implementation_t;
+
+    std::unique_ptr<implementation_t> m_impl;
 };
 
 } // namespace kora

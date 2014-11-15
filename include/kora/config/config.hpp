@@ -31,6 +31,7 @@ KORA_PUSH_VISIBLE
 #include <boost/variant.hpp>
 KORA_POP_VISIBILITY
 
+#include <memory>
 #include <type_traits>
 #include <vector>
 
@@ -138,6 +139,9 @@ public:
 
     KORA_API
     config_t(config_t&& other) KORA_NOEXCEPT;
+
+    KORA_API
+    ~config_t() KORA_NOEXCEPT;
 
     //! \returns Size of the underlying string, array or object.
     //! \throws config_cast_error_t if the underlying object is not a string, an array, or an object.
@@ -247,7 +251,7 @@ public:
     template <typename T>
     typename dynamic::converter<typename pristine<T>::type>::result_type
     to() const {
-        return m_value.to<T>(detail::config_conversion_controller_t(m_path));
+        return this->underlying_object().to<T>(detail::config_conversion_controller_t(path()));
     }
 
     //! \returns Path to the object in the original config.
@@ -261,8 +265,9 @@ public:
     underlying_object() const KORA_NOEXCEPT;
 
 private:
-    std::string m_path;
-    const dynamic_t &m_value;
+    class implementation_t;
+
+    std::unique_ptr<implementation_t> m_impl;
 };
 
 /*!

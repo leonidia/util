@@ -117,15 +117,21 @@ config_conversion_controller_t::buildup_path() const {
     return path.str();
 }
 
+class config_t::implementation_t {
+public:
+    std::string path;
+    const dynamic_t &data;
+};
+
 config_t::config_t(const std::string &path, const dynamic_t &value) :
-    m_path(path),
-    m_value(value)
+    m_impl(new config_t::implementation_t{path, value})
 { }
 
 config_t::config_t(config_t&& other) KORA_NOEXCEPT :
-    m_path(std::move(other.m_path)),
-    m_value(other.m_value)
+    m_impl(std::move(other.m_impl))
 { }
+
+config_t::~config_t() KORA_NOEXCEPT { }
 
 bool
 config_t::has(const std::string &name) const {
@@ -136,25 +142,25 @@ config_t::has(const std::string &name) const {
 
 config_t
 config_t::at(const std::string &name) const {
-    const std::string path = m_path + "." + name;
+    const std::string path = this->path() + "." + name;
 
     if (!has(name)) {
         throw config_access_error_t(path, "the value is missed");
     }
 
-    return config_t(path, m_value.as_object().find(name)->second);
+    return config_t(path, underlying_object().as_object().find(name)->second);
 }
 
 size_t
 config_t::size() const {
-    if (m_value.is_string()) {
-        return m_value.as_string().size();
-    } else if (m_value.is_array()) {
-        return m_value.as_array().size();
-    } else if (m_value.is_object()) {
-        return m_value.as_object().size();
+    if (underlying_object().is_string()) {
+        return underlying_object().as_string().size();
+    } else if (underlying_object().is_array()) {
+        return underlying_object().as_array().size();
+    } else if (underlying_object().is_object()) {
+        return underlying_object().as_object().size();
     } else {
-        throw config_cast_error_t(m_path, "the value expected to be a string, an array or an object");
+        throw config_cast_error_t(path(), "the value expected to be a string, an array or an object");
     }
 }
 
@@ -162,7 +168,7 @@ config_t
 config_t::at(size_t index) const {
     const auto &array = this->to<dynamic_t::array_t>();
 
-    const std::string path = m_path + "[" + boost::lexical_cast<std::string>(index) + "]";
+    const std::string path = this->path() + "[" + boost::lexical_cast<std::string>(index) + "]";
 
     if (index >= array.size()) {
         throw config_access_error_t(path, "the value is missed");
@@ -173,10 +179,10 @@ config_t::at(size_t index) const {
 
 const std::string&
 config_t::path() const KORA_NOEXCEPT {
-    return m_path;
+    return m_impl->path;
 }
 
 const dynamic_t&
 config_t::underlying_object() const KORA_NOEXCEPT {
-    return m_value;
+    return m_impl->data;
 }

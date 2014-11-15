@@ -35,7 +35,16 @@ KORA_POP_VISIBILITY
 
 using namespace kora;
 
+class config_parser_t::implementation_t {
+public:
+    dynamic_t root;
+};
+
 config_parser_t::config_parser_t() KORA_NOEXCEPT { }
+
+config_parser_t::config_parser_t(const config_parser_t &other) {
+    *this = other;
+}
 
 config_parser_t::config_parser_t(const std::string &path) {
     open(path);
@@ -46,6 +55,17 @@ config_parser_t::config_parser_t(std::istream &stream) {
 }
 
 config_parser_t::~config_parser_t() KORA_NOEXCEPT { }
+
+config_parser_t&
+config_parser_t::operator=(const config_parser_t &other) {
+    if (other.m_impl) {
+        m_impl.reset(new config_parser_t::implementation_t(*other.m_impl));
+    } else {
+        m_impl.reset();
+    }
+
+    return *this;
+}
 
 config_t
 config_parser_t::open(const std::string &path) {
@@ -167,7 +187,7 @@ isspace_predicate(char c) {
 
 config_t
 config_parser_t::parse(std::istream &stream) {
-    dynamic_t parsed;
+    std::unique_ptr<config_parser_t::implementation_t> new_data(new config_parser_t::implementation_t);
 
     logging_filter_t filter;
     boost::iostreams::filtering_istream proxy_stream;
@@ -175,7 +195,7 @@ config_parser_t::parse(std::istream &stream) {
     proxy_stream.push(boost::ref(stream));
 
     try {
-        parsed = kora::dynamic::read_json(proxy_stream);
+        new_data->root = kora::dynamic::read_json(proxy_stream);
     } catch (const kora::json_parsing_error_t& e) {
         throw_parser_error(complete_line(std::move(filter.data()), e.offset(), stream),
                            e.offset(),
@@ -193,7 +213,7 @@ config_parser_t::parse(std::istream &stream) {
                            "The input shouldn't contain anything after the root object.");
     }
 
-    if (!parsed.is_object()) {
+    if (!new_data->root.is_object()) {
         auto json_start = std::find_if_not(filter.data().begin(), filter.data().end(), &isspace_predicate);
         size_t offset = json_start - filter.data().begin();
 
@@ -202,14 +222,18 @@ config_parser_t::parse(std::istream &stream) {
                            "The value must be an object.");
     }
 
-    m_root = parsed;
+    m_impl = std::move(new_data);
 
     return root();
 }
 
 config_t
 config_parser_t::root() const {
-    return config_t("<root>", m_root);
+    if (m_impl) {
+        return config_t("<root>", m_impl->root);
+    } else {
+        return config_t("<root>", dynamic_t::null);
+    }
 }
 
 std::ostream&

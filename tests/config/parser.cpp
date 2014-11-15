@@ -28,6 +28,57 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 TEST(ConfigParser, DefaultConstructor) {
     kora::config_parser_t parser;
     EXPECT_TRUE(parser.root().underlying_object().is_null());
+    EXPECT_EQ("<root>", parser.root().path());
+}
+
+TEST(ConfigParser, CopyConstructor1) {
+    kora::config_parser_t parser1;
+
+    kora::config_parser_t parser2(parser1);
+    EXPECT_TRUE(parser2.root().underlying_object().is_null());
+    EXPECT_EQ("<root>", parser2.root().path());
+}
+
+TEST(ConfigParser, CopyConstructor2) {
+    kora::config_parser_t parser1;
+
+    std::string json = "{\"key\": 43}";
+
+    std::istringstream stream(json);
+    parser1.parse(stream);
+
+    EXPECT_EQ(43, parser1.root().at<int>("key"));
+
+    kora::config_parser_t parser2(parser1);
+    EXPECT_EQ(parser1.root().underlying_object(), parser2.root().underlying_object());
+    EXPECT_EQ("<root>", parser2.root().path());
+}
+
+TEST(ConfigParser, CopyAssignment1) {
+    kora::config_parser_t parser1;
+
+    kora::config_parser_t parser2;
+    parser2 = parser1;
+
+    EXPECT_TRUE(parser2.root().underlying_object().is_null());
+    EXPECT_EQ("<root>", parser2.root().path());
+}
+
+TEST(ConfigParser, CopyAssignment2) {
+    kora::config_parser_t parser1;
+
+    std::string json = "{\"key\": 43}";
+
+    std::istringstream stream(json);
+    parser1.parse(stream);
+
+    EXPECT_EQ(43, parser1.root().at<int>("key"));
+
+    kora::config_parser_t parser2;
+    parser2 = parser1;
+    
+    EXPECT_EQ(parser1.root().underlying_object(), parser2.root().underlying_object());
+    EXPECT_EQ("<root>", parser2.root().path());
 }
 
 namespace {
@@ -51,6 +102,8 @@ namespace {
         parse(json, parser);
 
         kora::config_t config = parser.root();
+
+        EXPECT_EQ("<root>", config.path());
 
         ASSERT_EQ(std::numeric_limits<short>::min(), config.at<short>("short_min"));
         ASSERT_EQ(std::numeric_limits<short>::max(), config.at<short>("short_max"));
@@ -79,6 +132,8 @@ namespace {
         parse(json, parser);
 
         kora::config_t config = parser.root();
+
+        EXPECT_EQ("<root>", config.path());
 
         ASSERT_EQ(1337, config.at<int>("int_key"));
         ASSERT_EQ("@_@", config.at<std::string>("string_key"));
