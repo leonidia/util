@@ -75,6 +75,98 @@ namespace {
 
 } // namespace
 
+namespace {
+
+    kora::dynamic_t
+    get_array_of_maps() {
+        return std::vector<std::map<std::string, int>>(2);
+    }
+
+    kora::dynamic_t
+    get_pair_with_first_map() {
+        return std::tuple<std::map<std::string, int>, int>(std::map<std::string, int>(), 13);
+    }
+
+    kora::dynamic_t
+    get_pair_with_second_map() {
+        return std::tuple<int, std::map<std::string, int>>(13, std::map<std::string, int>());
+    }
+
+    kora::dynamic_t
+    get_map_of_arrays() {
+        std::map<std::string, std::vector<int>> result;
+        result["key"] = std::vector<int>(3, 4);
+        return result;
+    }
+
+    class conroller_recursive_call_success_t { };
+
+    struct test_array_visiting_t {
+        void
+        start_array(const kora::dynamic_t&) {
+            throw conroller_recursive_call_success_t();
+        }
+
+        void
+        finish_array() { }
+
+        void
+        item(size_t) { }
+
+        void
+        start_object(const kora::dynamic_t&) { }
+
+        void
+        finish_object() { }
+
+        void
+        item(const std::string &) { }
+
+        template<class Exception>
+        KORA_NORETURN
+        void
+        fail(const Exception&, const kora::dynamic_t&) const {
+            // FAIL() cannot be used here because it tries to return void (why?)
+            // and this whould be bad noreturn function.
+            ADD_FAILURE();
+            std::terminate();
+        }
+    };
+
+    struct test_map_visiting_t {
+        void
+        start_array(const kora::dynamic_t&) { }
+
+        void
+        finish_array() { }
+
+        void
+        item(size_t) { }
+
+        void
+        start_object(const kora::dynamic_t&) {
+            throw conroller_recursive_call_success_t();
+        }
+
+        void
+        finish_object() { }
+
+        void
+        item(const std::string &) { }
+
+        template<class Exception>
+        KORA_NORETURN
+        void
+        fail(const Exception&, const kora::dynamic_t&) const {
+            // FAIL() cannot be used here because it tries to return void (why?)
+            // and this whould be bad noreturn function.
+            ADD_FAILURE();
+            std::terminate();
+        }
+    };
+
+} // namespace
+
 TEST(DynamicConverter, Null) {
     test_forbidden_casts<kora::dynamic_t::null_t>(kora::dynamic_t());
 }
@@ -363,7 +455,7 @@ TEST(DynamicConverter, DynamicArray) {
     EXPECT_EQ(kora::dynamic_t::array_t(3, 4), destination);
 }
 
-TEST(DynamicConverter, VectorInt) {
+TEST(DynamicConverter, VectorT) {
     kora::dynamic_t source = std::vector<int>(3, 4);
 
     test_forbidden_casts<std::vector<int>>(source);
@@ -380,7 +472,14 @@ TEST(DynamicConverter, VectorInt) {
     EXPECT_EQ(std::vector<int>(3, 4), destination);
 }
 
-TEST(DynamicConverter, SetInt) {
+TEST(DynamicConverter, VectorTCallsController) {
+    typedef std::vector<std::map<std::string, int>> destination_type;
+
+    EXPECT_THROW(get_array_of_maps().to<destination_type>(test_map_visiting_t()),
+                 conroller_recursive_call_success_t);
+}
+
+TEST(DynamicConverter, SetT) {
     kora::dynamic_t source = std::vector<int>(3, 4);
 
     test_forbidden_casts<std::vector<int>>(source);
@@ -400,6 +499,13 @@ TEST(DynamicConverter, SetInt) {
     EXPECT_EQ(pattern, destination);
 }
 
+TEST(DynamicConverter, SetTCallsController) {
+    typedef std::set<std::map<std::string, int>> destination_type;
+
+    EXPECT_THROW(get_array_of_maps().to<destination_type>(test_map_visiting_t()),
+                 conroller_recursive_call_success_t);
+}
+
 TEST(DynamicConverter, Tuple) {
     kora::dynamic_t source = std::tuple<int, std::string>(3, "@_@");
 
@@ -417,6 +523,22 @@ TEST(DynamicConverter, Tuple) {
     EXPECT_EQ((std::tuple<int, std::string>(3, "@_@")), destination);
 }
 
+TEST(DynamicConverter, TupleCallsController) {
+    {
+        typedef std::tuple<std::map<std::string, int>, int> destination_type;
+
+        EXPECT_THROW(get_pair_with_first_map().to<destination_type>(test_map_visiting_t()),
+                     conroller_recursive_call_success_t);
+    }
+
+    {
+        typedef std::tuple<int, std::map<std::string, int>> destination_type;
+
+        EXPECT_THROW(get_pair_with_second_map().to<destination_type>(test_map_visiting_t()),
+                     conroller_recursive_call_success_t);
+    }
+}
+
 TEST(DynamicConverter, Pair) {
     kora::dynamic_t source = std::tuple<int, std::string>(3, "@_@");
 
@@ -432,6 +554,22 @@ TEST(DynamicConverter, Pair) {
     );
 
     EXPECT_EQ((std::pair<int, std::string>(3, "@_@")), destination);
+}
+
+TEST(DynamicConverter, PairCallsController) {
+    {
+        typedef std::pair<std::map<std::string, int>, int> destination_type;
+
+        EXPECT_THROW(get_pair_with_first_map().to<destination_type>(test_map_visiting_t()),
+                     conroller_recursive_call_success_t);
+    }
+
+    {
+        typedef std::pair<int, std::map<std::string, int>> destination_type;
+
+        EXPECT_THROW(get_pair_with_second_map().to<destination_type>(test_map_visiting_t()),
+                     conroller_recursive_call_success_t);
+    }
 }
 
 TEST(DynamicConverter, DynamicObject) {
@@ -477,7 +615,7 @@ TEST(DynamicConverter, MapStringDynamic) {
     EXPECT_EQ("._____.", destination["key2"]);
 }
 
-TEST(DynamicConverter, MapStringInt) {
+TEST(DynamicConverter, MapStringT) {
     kora::dynamic_t source = kora::dynamic_t::empty_object;
 
     source.as_object()["key1"] = 1337;
@@ -499,7 +637,14 @@ TEST(DynamicConverter, MapStringInt) {
     EXPECT_EQ(-5, destination["key2"]);
 }
 
-TEST(DynamicConverter, UnorderedMapStringInt) {
+TEST(DynamicConverter, MapStringTCallsController) {
+    typedef std::map<std::string, std::vector<int>> destination_type;
+
+    EXPECT_THROW(get_map_of_arrays().to<destination_type>(test_array_visiting_t()),
+                 conroller_recursive_call_success_t);
+}
+
+TEST(DynamicConverter, UnorderedMapStringT) {
     kora::dynamic_t source = kora::dynamic_t::empty_object;
 
     source.as_object()["key1"] = 1337;
@@ -519,6 +664,13 @@ TEST(DynamicConverter, UnorderedMapStringInt) {
 
     EXPECT_EQ(1337, destination["key1"]);
     EXPECT_EQ(-5, destination["key2"]);
+}
+
+TEST(DynamicConverter, UnorderedMapStringTCallsController) {
+    typedef std::unordered_map<std::string, std::vector<int>> destination_type;
+
+    EXPECT_THROW(get_map_of_arrays().to<destination_type>(test_array_visiting_t()),
+                 conroller_recursive_call_success_t);
 }
 
 namespace {
@@ -791,7 +943,3 @@ TEST(DynamicConverter, ErrorController) {
     EXPECT_THROW((kora::dynamic_t(ill_formed_object).to<std::map<std::string, double>>(error_controller)),
                  kora::bad_cast_t);
 }
-
-// TODO: Write test for controller traversing more complex object.
-// I've just found a bug: converters of complex objects didn't pass the controller to recursive calls of method to().
-// Maybe I should even test this case for each converter.
