@@ -235,10 +235,3 @@ config_parser_t::root() const {
         return config_t("<root>", dynamic_t::null);
     }
 }
-
-std::ostream&
-kora::operator<<(std::ostream& stream, const config_t& value) {
-    stream << value.underlying_object();
-
-    return stream;
-}

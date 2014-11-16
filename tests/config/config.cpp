@@ -247,3 +247,176 @@ TEST(Config, To) {
         EXPECT_EQ("[1]", error.path());
     }
 }
+
+TEST(Config, EqualityConfigDynamic) {
+    kora::dynamic_t underlying = kora::dynamic_t::object_t();
+
+    underlying.as_object()["key0"] = kora::dynamic_t::null;
+    underlying.as_object()["key1"] = 5;
+    underlying.as_object()["key2"] = true;
+    underlying.as_object()["key3"] = "~:{";
+
+    kora::config_t config("", underlying);
+
+    EXPECT_TRUE(config == underlying);
+    EXPECT_FALSE(config == 5);
+    EXPECT_FALSE(config == kora::dynamic_t::null);
+
+    EXPECT_TRUE(config.at("key0") == kora::dynamic_t::null);
+    EXPECT_FALSE(config.at("key0") == true);
+    EXPECT_FALSE(config.at("key0") == 5);
+
+    EXPECT_TRUE(config.at("key1") == 5);
+    EXPECT_FALSE(config.at("key1") == 25);
+    EXPECT_FALSE(config.at("key1") == true);
+    EXPECT_FALSE(config.at("key1") == kora::dynamic_t::null);
+
+    EXPECT_TRUE(config.at("key2") == true);
+    EXPECT_FALSE(config.at("key2") == false);
+    EXPECT_FALSE(config.at("key2") == 1);
+    EXPECT_FALSE(config.at("key2") == kora::dynamic_t::null);
+
+    EXPECT_TRUE(config.at("key3") == "~:{");
+    EXPECT_FALSE(config.at("key3") == "~:<");
+    EXPECT_FALSE(config.at("key3") == 1);
+    EXPECT_FALSE(config.at("key3") == kora::dynamic_t::null);
+}
+
+TEST(Config, EqualityDynamicConfig) {
+    kora::dynamic_t underlying = kora::dynamic_t::object_t();
+
+    underlying.as_object()["key0"] = kora::dynamic_t::null;
+    underlying.as_object()["key1"] = 5;
+    underlying.as_object()["key2"] = true;
+    underlying.as_object()["key3"] = "~:{";
+
+    kora::config_t config("", underlying);
+
+    EXPECT_TRUE(underlying == config);
+    EXPECT_FALSE(5 == config);
+    EXPECT_FALSE(kora::dynamic_t::null == config);
+
+    EXPECT_TRUE(kora::dynamic_t::null == config.at("key0"));
+    EXPECT_FALSE(true == config.at("key0"));
+    EXPECT_FALSE(5 == config.at("key0"));
+
+    EXPECT_TRUE(5 == config.at("key1"));
+    EXPECT_FALSE(25 == config.at("key1"));
+    EXPECT_FALSE(true == config.at("key1"));
+    EXPECT_FALSE(kora::dynamic_t::null == config.at("key1"));
+
+    EXPECT_TRUE(true == config.at("key2"));
+    EXPECT_FALSE(false == config.at("key2"));
+    EXPECT_FALSE(1 == config.at("key2"));
+    EXPECT_FALSE(kora::dynamic_t::null == config.at("key2"));
+
+    EXPECT_TRUE("~:{" == config.at("key3"));
+    EXPECT_FALSE("~:<" == config.at("key3"));
+    EXPECT_FALSE(1 == config.at("key3"));
+    EXPECT_FALSE(kora::dynamic_t::null == config.at("key3"));
+}
+
+TEST(Config, InequalityConfigDynamic) {
+    kora::dynamic_t underlying = kora::dynamic_t::object_t();
+
+    underlying.as_object()["key0"] = kora::dynamic_t::null;
+    underlying.as_object()["key1"] = 5;
+    underlying.as_object()["key2"] = true;
+    underlying.as_object()["key3"] = "~:{";
+
+    kora::config_t config("", underlying);
+
+    EXPECT_FALSE(config != underlying);
+    EXPECT_TRUE(config != 5);
+    EXPECT_TRUE(config != kora::dynamic_t::null);
+
+    EXPECT_FALSE(config.at("key0") != kora::dynamic_t::null);
+    EXPECT_TRUE(config.at("key0") != true);
+    EXPECT_TRUE(config.at("key0") != 5);
+
+    EXPECT_FALSE(config.at("key1") != 5);
+    EXPECT_TRUE(config.at("key1") != 25);
+    EXPECT_TRUE(config.at("key1") != true);
+    EXPECT_TRUE(config.at("key1") != kora::dynamic_t::null);
+
+    EXPECT_FALSE(config.at("key2") != true);
+    EXPECT_TRUE(config.at("key2") != false);
+    EXPECT_TRUE(config.at("key2") != 1);
+    EXPECT_TRUE(config.at("key2") != kora::dynamic_t::null);
+
+    EXPECT_FALSE(config.at("key3") != "~:{");
+    EXPECT_TRUE(config.at("key3") != "~:<");
+    EXPECT_TRUE(config.at("key3") != 1);
+    EXPECT_TRUE(config.at("key3") != kora::dynamic_t::null);
+}
+
+TEST(Config, InequalityDynamicConfig) {
+    kora::dynamic_t underlying = kora::dynamic_t::object_t();
+
+    underlying.as_object()["key0"] = kora::dynamic_t::null;
+    underlying.as_object()["key1"] = 5;
+    underlying.as_object()["key2"] = true;
+    underlying.as_object()["key3"] = "~:{";
+
+    kora::config_t config("", underlying);
+
+    EXPECT_FALSE(underlying != config);
+    EXPECT_TRUE(5 != config);
+    EXPECT_TRUE(kora::dynamic_t::null != config);
+
+    EXPECT_FALSE(kora::dynamic_t::null != config.at("key0"));
+    EXPECT_TRUE(true != config.at("key0"));
+    EXPECT_TRUE(5 != config.at("key0"));
+
+    EXPECT_FALSE(5 != config.at("key1"));
+    EXPECT_TRUE(25 != config.at("key1"));
+    EXPECT_TRUE(true != config.at("key1"));
+    EXPECT_TRUE(kora::dynamic_t::null != config.at("key1"));
+
+    EXPECT_FALSE(true != config.at("key2"));
+    EXPECT_TRUE(false != config.at("key2"));
+    EXPECT_TRUE(1 != config.at("key2"));
+    EXPECT_TRUE(kora::dynamic_t::null != config.at("key2"));
+
+    EXPECT_FALSE("~:{" != config.at("key3"));
+    EXPECT_TRUE("~:<" != config.at("key3"));
+    EXPECT_TRUE(1 != config.at("key3"));
+    EXPECT_TRUE(kora::dynamic_t::null != config.at("key3"));
+}
+
+TEST(Config, Output) {
+    kora::dynamic_t underlying = kora::dynamic_t::object_t();
+
+    underlying.as_object()["key0"] = kora::dynamic_t::null;
+    underlying.as_object()["key1"] = 5;
+    underlying.as_object()["key2"] = true;
+    underlying.as_object()["key3"] = "~:{";
+
+    kora::config_t config("", underlying);
+
+    std::ostringstream stream;
+
+    {
+        stream << config;
+
+        std::istringstream json_stream(stream.str());
+        auto parsed = kora::dynamic::read_json(json_stream);
+        EXPECT_EQ(underlying, parsed);
+    }
+
+    stream.str("");
+    stream << config.at("key0");
+    EXPECT_EQ("null", stream.str());
+
+    stream.str("");
+    stream << config.at("key1");
+    EXPECT_EQ("5", stream.str());
+
+    stream.str("");
+    stream << config.at("key2");
+    EXPECT_EQ("1", stream.str());
+
+    stream.str("");
+    stream << config.at("key3");
+    EXPECT_EQ("~:{", stream.str());
+}

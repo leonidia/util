@@ -270,6 +270,22 @@ private:
     std::unique_ptr<implementation_t> m_impl;
 };
 
+KORA_API
+bool
+operator==(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT;
+
+KORA_API
+bool
+operator==(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT;
+
+KORA_API
+bool
+operator!=(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT;
+
+KORA_API
+bool
+operator!=(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT;
+
 /*!
  * \relates config_t
  * Prints the value stored in the underlying dynamic_t object.
