@@ -360,7 +360,9 @@ public:
     typename std::decay<Visitor>::type::result_type
     apply(Visitor&& visitor);
 
-    //! \overload
+    /*! \overload
+     * \sa apply(Visitor&&)
+     */
     template<class Visitor>
     typename std::decay<Visitor>::type::result_type
     apply(Visitor&& visitor) const;

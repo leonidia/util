@@ -43,6 +43,8 @@ public:
     config_parser_t() KORA_NOEXCEPT;
 
     /*!
+     * \post <tt>this->root().underlying_object() == other.root().underlying_object()</tt>
+     * \post <tt>this->root().path() == other.root().path()</tt>
      * \throws std::bad_alloc.
      */
     KORA_API
