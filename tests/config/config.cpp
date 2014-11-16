@@ -103,6 +103,28 @@ TEST(Config, AtKey) {
     EXPECT_THROW(config.at("key2"), kora::config_access_error_t);
 }
 
+TEST(Config, AtKeyOperator) {
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::null)["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::bool_t(true))["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::int_t(2))["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::uint_t(3))["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::double_t(4))["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "=^._.^=")["key"], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::array_t(3, 4))["key"], kora::config_cast_error_t);
+
+
+    kora::dynamic_t underlying_object = kora::dynamic_t::object_t();
+
+    underlying_object.as_object()["key1"] = 5;
+
+    kora::config_t config("", underlying_object);
+
+    EXPECT_EQ(5, config["key1"].underlying_object());
+    EXPECT_EQ(".key1", config["key1"].path());
+
+    EXPECT_THROW(config["key2"], kora::config_access_error_t);
+}
+
 TEST(Config, AtKeyWithDefault) {
     EXPECT_THROW(kora::config_t("", kora::dynamic_t::null).at("key", 0), kora::config_cast_error_t);
     EXPECT_THROW(kora::config_t("", kora::dynamic_t::bool_t(true)).at("key", 0), kora::config_cast_error_t);
@@ -170,6 +192,25 @@ TEST(Config, AtIndex) {
     EXPECT_EQ("[0]", config.at(0).path());
     EXPECT_EQ(4, config.at(2).underlying_object());
     EXPECT_THROW(config.at(3).underlying_object(), kora::config_access_error_t);
+}
+
+TEST(Config, AtIndexOperator) {
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::null)[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::bool_t(true))[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::int_t(2))[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::uint_t(3))[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::double_t(4))[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "=^._.^=")[0], kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::object_t())[0], kora::config_cast_error_t);
+
+
+    kora::dynamic_t underlying_object = kora::dynamic_t::array_t(3, 4);
+    kora::config_t config("", underlying_object);
+
+    EXPECT_EQ(4, config[0].underlying_object());
+    EXPECT_EQ("[0]", config[0].path());
+    EXPECT_EQ(4, config[2].underlying_object());
+    EXPECT_THROW(config[3].underlying_object(), kora::config_access_error_t);
 }
 
 TEST(Config, AtIndexWithDefault) {

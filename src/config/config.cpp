@@ -151,6 +151,11 @@ config_t::at(const std::string &name) const {
     return config_t(path, underlying_object().as_object().find(name)->second);
 }
 
+config_t
+config_t::operator[](const std::string &name) const {
+    return at(name);
+}
+
 size_t
 config_t::size() const {
     if (underlying_object().is_string()) {
@@ -175,6 +180,11 @@ config_t::at(size_t index) const {
     }
 
     return config_t(path, array[index]);
+}
+
+config_t
+config_t::operator[](size_t index) const {
+    return at(index);
 }
 
 const std::string&

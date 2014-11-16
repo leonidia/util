@@ -168,6 +168,14 @@ public:
     config_t
     at(const std::string &name) const;
 
+    /*! \overload
+     *
+     * \sa at(const std::string &) const
+     */
+    KORA_API
+    config_t
+    operator[](const std::string &name) const;
+
     /*! Access an item of the underlying object by key.
      * \param name The key.
      * \param default_value Value to return if the object doesn't contain the key.
@@ -208,6 +216,14 @@ public:
     KORA_API
     config_t
     at(size_t index) const;
+
+    /*! \overload
+     *
+     * \sa at(size_t) const
+     */
+    KORA_API
+    config_t
+    operator[](size_t index) const;
 
     /*! Access an item of the underlying array by index.
      * \param index The index.
