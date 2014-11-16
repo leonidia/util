@@ -119,6 +119,11 @@ config_conversion_controller_t::buildup_path() const {
 
 class config_t::implementation_t {
 public:
+    implementation_t(const std::string &path, const dynamic_t &data) :
+        path(path),
+        data(data)
+    { }
+
     std::string path;
     const dynamic_t &data;
 };
