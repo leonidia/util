@@ -202,28 +202,6 @@ config_t::underlying_object() const KORA_NOEXCEPT {
     return m_impl->data;
 }
 
-bool
-kora::operator==(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT {
-    return left == right.underlying_object();
-}
-
-bool
-kora::operator==(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT {
-    // Use the operator above.
-    return right == left;
-}
-
-bool
-kora::operator!=(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT {
-    return !(left == right);
-}
-
-bool
-kora::operator!=(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT {
-    // Use the operator above.
-    return right != left;
-}
-
 std::ostream&
 kora::operator<<(std::ostream& stream, const config_t& value) {
     stream << value.underlying_object();

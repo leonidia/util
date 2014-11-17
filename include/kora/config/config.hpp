@@ -288,46 +288,6 @@ private:
 
 /*!
  * \relates config_t
- * Compares underlying value of config_t with other dynamic object.
- *
- * \param left The dynamic object.
- * \param right The config.
- * \returns <tt>left == right.underlying_object()</tt>
- */
-KORA_API
-bool
-operator==(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT;
-
-/*!
- * \relates config_t
- * \overload
- *
- * \sa operator==(const dynamic_t &, const config_t &)
- */
-KORA_API
-bool
-operator==(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT;
-
-/*!
- * \relates config_t
- *
- * \sa operator==(const dynamic_t &, const config_t &)
- */
-KORA_API
-bool
-operator!=(const dynamic_t &left, const config_t &right) KORA_NOEXCEPT;
-
-/*!
- * \relates config_t
- *
- * \sa operator==(const dynamic_t &, const config_t &)
- */
-KORA_API
-bool
-operator!=(const config_t &left, const dynamic_t &right) KORA_NOEXCEPT;
-
-/*!
- * \relates config_t
  * Prints the value stored in the underlying dynamic_t object.
  *
  * \param stream Stream to print to.
