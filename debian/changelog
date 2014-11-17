@@ -1,3 +1,11 @@
+kora-util (1.1.0-rc1) unstable; urgency=low
+
+  * The Json API has been notably changed. Serialization to pretty-foramted json is now supported.
+  * Almost all parts of config_t are tested now.
+  * config_t now has subscript operators.
+
+ -- Andrey Goryachev <bugsbunny@yandex-team.ru>  Tue, 18 Nov 2014 00:18:48 +0400
+
 kora-util (1.0.1-1) unstable; urgency=low
 
   * A lot of tests.
