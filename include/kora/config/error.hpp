@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #define KORA_CONFIG_ERROR_HPP
 
 #include "kora/utility.hpp"
+#include "kora/dynamic/error.hpp"
 
 #include <exception>
 #include <string>
@@ -130,6 +131,18 @@ private:
     std::string m_parse_error;
     size_t m_line_number;
     size_t m_column_number;
+};
+
+//! The time is expected to be represented as a number or a string with the format ^\d+(ns|us|ms|s|m|h)$.
+class KORA_API config_time_parse_error_t :
+    public bad_cast_t
+{
+public:
+    ~config_time_parse_error_t() KORA_NOEXCEPT;
+
+    virtual
+    const char*
+    what() const KORA_NOEXCEPT;
 };
 
 } // namespace kora

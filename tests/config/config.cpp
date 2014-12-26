@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <gtest/gtest.h>
 
 #include "kora/config/config.hpp"
+#include "kora/config/converters.hpp"
+#include "kora/config/error.hpp"
 
 TEST(Config, Constructor1) {
     kora::dynamic_t underlying_object = kora::dynamic_t::object_t();
@@ -325,3 +327,52 @@ TEST(Config, Output) {
     stream << config.at("key3");
     EXPECT_EQ("~:{", stream.str());
 }
+
+TEST(Config, AtChrono) {
+    EXPECT_EQ(std::chrono::nanoseconds(1000000000), kora::config_t("", kora::dynamic_t::int_t(1000000000)).to<std::chrono::nanoseconds>());
+    EXPECT_EQ(std::chrono::nanoseconds(1000000000), kora::config_t("", "1000000000ns").to<std::chrono::nanoseconds>());
+    EXPECT_EQ(std::chrono::nanoseconds(1000000000), kora::config_t("", "1000000us").to<std::chrono::nanoseconds>());
+    EXPECT_EQ(std::chrono::nanoseconds(1000000000), kora::config_t("", "1000ms").to<std::chrono::nanoseconds>());
+    EXPECT_EQ(std::chrono::nanoseconds(1000000000), kora::config_t("", "1s").to<std::chrono::nanoseconds>());
+
+    EXPECT_EQ(std::chrono::microseconds(1000000), kora::config_t("", kora::dynamic_t::int_t(1000000)).to<std::chrono::microseconds>());
+    EXPECT_EQ(std::chrono::microseconds(1000000), kora::config_t("", "1000000000ns").to<std::chrono::microseconds>());
+    EXPECT_EQ(std::chrono::microseconds(1000000), kora::config_t("", "1000000us").to<std::chrono::microseconds>());
+    EXPECT_EQ(std::chrono::microseconds(1000000), kora::config_t("", "1000ms").to<std::chrono::microseconds>());
+    EXPECT_EQ(std::chrono::microseconds(1000000), kora::config_t("", "1s").to<std::chrono::microseconds>());
+
+    EXPECT_EQ(std::chrono::milliseconds(1000), kora::config_t("", kora::dynamic_t::int_t(1000)).to<std::chrono::milliseconds>());
+    EXPECT_EQ(std::chrono::milliseconds(1000), kora::config_t("", "1000000000ns").to<std::chrono::milliseconds>());
+    EXPECT_EQ(std::chrono::milliseconds(1000), kora::config_t("", "1000000us").to<std::chrono::milliseconds>());
+    EXPECT_EQ(std::chrono::milliseconds(1000), kora::config_t("", "1000ms").to<std::chrono::milliseconds>());
+    EXPECT_EQ(std::chrono::milliseconds(1000), kora::config_t("", "1s").to<std::chrono::milliseconds>());
+
+    EXPECT_EQ(std::chrono::seconds(1), kora::config_t("", kora::dynamic_t::int_t(1)).to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(1), kora::config_t("", "1000000000ns").to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(1), kora::config_t("", "1000000us").to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(1), kora::config_t("", "1000ms").to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(1), kora::config_t("", "1s").to<std::chrono::seconds>());
+
+    EXPECT_EQ(std::chrono::seconds(3600), kora::config_t("", kora::dynamic_t::int_t(3600)).to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(3600), kora::config_t("", "3600s").to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(3600), kora::config_t("", "60m").to<std::chrono::seconds>());
+    EXPECT_EQ(std::chrono::seconds(3600), kora::config_t("", "1h").to<std::chrono::seconds>());
+
+    EXPECT_EQ(std::chrono::minutes(60), kora::config_t("", kora::dynamic_t::int_t(60)).to<std::chrono::minutes>());
+    EXPECT_EQ(std::chrono::minutes(60), kora::config_t("", "3600s").to<std::chrono::minutes>());
+    EXPECT_EQ(std::chrono::minutes(60), kora::config_t("", "60m").to<std::chrono::minutes>());
+    EXPECT_EQ(std::chrono::minutes(60), kora::config_t("", "1h").to<std::chrono::minutes>());
+
+    EXPECT_EQ(std::chrono::hours(1), kora::config_t("", kora::dynamic_t::int_t(1)).to<std::chrono::hours>());
+    EXPECT_EQ(std::chrono::hours(1), kora::config_t("", "3600s").to<std::chrono::hours>());
+    EXPECT_EQ(std::chrono::hours(1), kora::config_t("", "60m").to<std::chrono::hours>());
+    EXPECT_EQ(std::chrono::hours(1), kora::config_t("", "1h").to<std::chrono::hours>());
+
+    EXPECT_THROW(kora::config_t("", kora::dynamic_t::bool_t(true)).to<std::chrono::seconds>(), kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "1sm").to<std::chrono::seconds>(), kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "1").to<std::chrono::seconds>(), kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "1s1").to<std::chrono::seconds>(), kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "s1s").to<std::chrono::seconds>(), kora::config_cast_error_t);
+    EXPECT_THROW(kora::config_t("", "s").to<std::chrono::seconds>(), kora::config_cast_error_t);
+}
+
