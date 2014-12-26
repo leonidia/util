@@ -138,11 +138,18 @@ class KORA_API config_time_parse_error_t :
     public bad_cast_t
 {
 public:
+    //! \post this->what() returns message + help
+    //! \param message Error description
+    explicit
+    config_time_parse_error_t(std::string message);
+
     ~config_time_parse_error_t() KORA_NOEXCEPT;
 
     virtual
     const char*
     what() const KORA_NOEXCEPT;
+private:
+    std::string m_message;
 };
 
 } // namespace kora

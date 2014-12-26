@@ -48,8 +48,12 @@ struct converter<std::chrono::duration<Rep, Period>> {
 
             try {
                 rep = stoll(string, &pos);
-            } catch (...) {
-                controller.fail(config_time_parse_error_t(), from);
+            } catch (const std::invalid_argument &ex) {
+                controller.fail(config_time_parse_error_t(
+                            std::string("invalid_argument: ") + ex.what()), from);
+            } catch (const std::out_of_range &ex) {
+                controller.fail(config_time_parse_error_t(
+                            std::string("out_of_range: ") + ex.what()), from);
             }
 
             auto suffix = string.substr(pos);
@@ -78,9 +82,9 @@ struct converter<std::chrono::duration<Rep, Period>> {
                 return std::chrono::duration_cast<result_type>(std::chrono::hours(rep));
             }
 
-            controller.fail(config_time_parse_error_t(), from);
+            controller.fail(config_time_parse_error_t("invalid suffix"), from);
         } else {
-            controller.fail(config_time_parse_error_t(), from);
+            controller.fail(config_time_parse_error_t("invalid type"), from);
         }
     }
 

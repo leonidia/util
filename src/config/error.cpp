@@ -91,9 +91,16 @@ config_parser_error_t::column_number() const KORA_NOEXCEPT {
     return m_column_number;
 }
 
+config_time_parse_error_t::config_time_parse_error_t(std::string message) :
+    m_message(std::move(message))
+{
+    m_message += "; the time is expected to be represented as a number or a string "
+            "with the format ^\\d+(ns|us|ms|s|m|h)$";
+}
+
 const char*
 config_time_parse_error_t::what() const KORA_NOEXCEPT {
-    return "the time is expected to be represented as a number or a string with the format ^\\d+(ns|us|ms|s|m|h)$";
+    return m_message.c_str();
 }
 
 config_time_parse_error_t::~config_time_parse_error_t() KORA_NOEXCEPT { }
