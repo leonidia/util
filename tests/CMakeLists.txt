@@ -29,6 +29,7 @@ ADD_EXECUTABLE(kora-tests
     dynamic/json
     dynamic/object
     utility/lazy_false
+    utility/make_unique
     utility/noexcept
     utility/noreturn
     utility/nullptr
