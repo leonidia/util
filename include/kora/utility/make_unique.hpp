@@ -48,25 +48,28 @@ struct is_array_of_known_bound<T[N]> : std::true_type {};
 
 } // namespace detail
 
-//! This function shall not participate in overload resolution unless T is not an array.
+//! Constructs a non-array type T. The arguments are passed to the constructor of T.
+//! The function does not participate in the overload resolution if T is an array type.
 //! \param args list of arguments with which an instance of T will be constructed
-//! \return std::unique_ptr<T>(new T(std::forward<Args>(args)...))
+//! \returns std::unique_ptr<T>(new T(std::forward<Args>(args)...))
 template<typename T, typename... Args>
 typename std::enable_if<!std::is_array<T>::value, std::unique_ptr<T>>::type
 make_unique(Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 
-//! This function shall not participate in overload resolution unless T is an array of unknown bound.
+//! Constructs an array of unknown bound T.
+//! The function does not participate in the overload resolution unless T is an array of unknown bound.
 //! \param size the size of the array to construct
-//! return std::unique_ptr<T>(new typename std::remove_extent<T>::type[size]())
+//! returns std::unique_ptr<T>(new typename std::remove_extent<T>::type[size]())
 template<typename T>
 typename std::enable_if<detail::is_array_of_unknown_bound<T>::value, std::unique_ptr<T>>::type
 make_unique(std::size_t size) {
     return std::unique_ptr<T>(new typename std::remove_extent<T>::type[size]());
 }
 
-//! This function shall not participate in overload resolution unless T is an array of known bound.
+//! Construction of arrays of known bound is disallowed.
+//! The function does not participate in the overload resolution unless T is an array of known bound.
 template<typename T, typename... Args>
 typename std::enable_if<detail::is_array_of_known_bound<T>::value>::type
 make_unique(Args&&...) = delete;
