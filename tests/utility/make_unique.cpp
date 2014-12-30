@@ -74,6 +74,18 @@ TEST(MakeUnique, TheAbilityToCreate) {
     EXPECT_EQ(can_create_unique_ptr<test_struct_t[5]>::value, false);
 }
 
+TEST(MakeUnique, CreatingOfUniquePtr) {
+	{
+		auto a = kora::make_unique<test_struct_t>();
+		EXPECT_EQ(static_cast<bool>(a), true);
+	}
+
+	{
+		auto a = kora::make_unique<test_struct_t[]>(5);
+		EXPECT_EQ(static_cast<bool>(a), true);
+	}
+}
+
 TEST(MakeUnique, CorrectUniquePtrVersion) {
     {
         auto a = kora::make_unique<test_struct_t>();
