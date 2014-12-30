@@ -25,10 +25,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace {
 
-struct a_t {
-    a_t() : x(0), y(0) { }
-    a_t(int x_) : x(x_), y(0) { }
-    a_t(int x_, int y_) : x(x_), y(y_) { }
+struct test_struct_t {
+    test_struct_t() : x(0), y(0) { }
+    test_struct_t(int x_) : x(x_), y(0) { }
+    test_struct_t(int x_, int y_) : x(x_), y(y_) { }
 
     int x;
     int y;
@@ -68,47 +68,47 @@ unique_ptr_version(T& t, stub<decltype(t[0])> * = 0) {
 
 } // namespace
 
-TEST(MakeUnique, Creation) {
-    EXPECT_EQ(can_create_unique_ptr<a_t>::value, true);
-    EXPECT_EQ(can_create_unique_ptr<a_t[]>::value, true);
-    EXPECT_EQ(can_create_unique_ptr<a_t[5]>::value, false);
+TEST(MakeUnique, TheAbilityToCreate) {
+    EXPECT_EQ(can_create_unique_ptr<test_struct_t>::value, true);
+    EXPECT_EQ(can_create_unique_ptr<test_struct_t[]>::value, true);
+    EXPECT_EQ(can_create_unique_ptr<test_struct_t[5]>::value, false);
 }
 
-TEST(MakeUnique, CorrectUnique) {
+TEST(MakeUnique, CorrectUniquePtrVersion) {
     {
-        auto a = kora::make_unique<a_t>();
+        auto a = kora::make_unique<test_struct_t>();
         EXPECT_EQ(unique_ptr_version(a), single_object_version);
     }
 
     {
-        auto a = kora::make_unique<a_t[]>(1);
+        auto a = kora::make_unique<test_struct_t[]>(1);
         EXPECT_EQ(unique_ptr_version(a), array_version);
     }
 }
 
-TEST(MakeUnique, UniqueObject) {
+TEST(MakeUnique, UniquePtrSingleObjectVersion) {
     {
-        auto a = kora::make_unique<a_t>();
+        auto a = kora::make_unique<test_struct_t>();
         EXPECT_EQ(a->x, 0);
         EXPECT_EQ(a->y, 0);
     }
 
     {
-        auto a = kora::make_unique<a_t>(42);
+        auto a = kora::make_unique<test_struct_t>(42);
         EXPECT_EQ(a->x, 42);
         EXPECT_EQ(a->y, 0);
     }
 
     {
-        auto a = kora::make_unique<a_t>(42, 34);
+        auto a = kora::make_unique<test_struct_t>(42, 34);
         EXPECT_EQ(a->x, 42);
         EXPECT_EQ(a->y, 34);
     }
 }
 
-TEST(MakeUnique, UniqueArray) {
+TEST(MakeUnique, UniquePtrArrayVersion) {
     {
-        auto a = kora::make_unique<a_t[]>(5);
+        auto a = kora::make_unique<test_struct_t[]>(5);
         EXPECT_EQ(a[1].x, 0);
     }
 }
