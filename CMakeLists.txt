@@ -3,6 +3,10 @@ PROJECT(KORA-UTIL)
 
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
+IF(APPLE)
+    SET(CMAKE_MACOSX_RPATH ON)
+ENDIF()
+
 OPTION(ENABLE_TESTING "Enable testing" ON)
 OPTION(BUILD_DOC "Generate Doxygen documentation" ON)
 
@@ -73,5 +77,5 @@ IF(BUILD_DOC)
             COMMENT "Building documentation"
             SOURCE doc/Doxyfile.in
         )
-    endif()
-endif()
+    ENDIF()
+ENDIF()
