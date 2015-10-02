@@ -51,14 +51,11 @@ SET_TARGET_PROPERTIES(kora-tests PROPERTIES
     COMPILE_FLAGS "-std=c++0x -W -Wall -Werror -Wextra -pedantic"
 )
 
-# Allow target called "test".
-IF(POLICY CMP0037)
-    CMAKE_POLICY(PUSH)
-    CMAKE_POLICY(SET CMP0037 OLD)
-ENDIF()
+ADD_TEST(NAME kora-tests COMMAND kora-tests)
 
-ADD_CUSTOM_TARGET(test COMMAND kora-tests)
-
-IF(POLICY CMP0037)
-    CMAKE_POLICY(POP)
-ENDIF()
+ADD_CUSTOM_COMMAND(
+    TARGET kora-tests
+    COMMENT "Running unit tests"
+    POST_BUILD COMMAND ctest --output-on-failure -R kora-tests
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
