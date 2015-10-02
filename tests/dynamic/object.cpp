@@ -99,3 +99,12 @@ TEST(DynamicObject, Indexing) {
     EXPECT_EQ(5, const_obj["key"]);
     ASSERT_THROW(const_obj["key2"], std::out_of_range);
 }
+
+TEST(DynamicObject, AtRvalue) {
+    kora::dynamic_t::object_t obj1;
+    obj1["key"] = 5;
+
+    const auto& obj2 = obj1.at("unknown", kora::dynamic_t::object_t());
+
+    EXPECT_EQ(kora::dynamic_t::object_t(), obj2);
+}

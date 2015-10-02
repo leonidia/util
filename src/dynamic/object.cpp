@@ -44,6 +44,17 @@ dynamic_t::object_t::at(const std::string& key, const dynamic_t& default_) const
     }
 }
 
+dynamic_t
+dynamic_t::object_t::at(const std::string& key, dynamic_t&& default_) const {
+    const auto it = find(key);
+
+    if (it == end()) {
+        return default_;
+    } else {
+        return it->second;
+    }
+}
+
 const dynamic_t&
 dynamic_t::object_t::operator[](const std::string& key) const {
     return at(key);
