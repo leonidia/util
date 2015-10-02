@@ -86,7 +86,7 @@ public:
      */
     KORA_API
     dynamic_t&
-    at(const std::string& key, dynamic_t& default_) KORA_NOEXCEPT;
+    at(const std::string& key, dynamic_t& default_);
 
     /*! Get value by key.
      *
@@ -96,7 +96,7 @@ public:
      */
     KORA_API
     const dynamic_t&
-    at(const std::string& key, const dynamic_t& default_) const KORA_NOEXCEPT;
+    at(const std::string& key, const dynamic_t& default_) const;
 
     /*! Get the copy of value by key if it exists in the collection, default value otherwise.
      *

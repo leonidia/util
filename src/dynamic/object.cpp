@@ -23,7 +23,7 @@
 using namespace kora;
 
 dynamic_t&
-dynamic_t::object_t::at(const std::string& key, dynamic_t& default_) KORA_NOEXCEPT {
+dynamic_t::object_t::at(const std::string& key, dynamic_t& default_) {
     auto it = find(key);
 
     if (it == end()) {
@@ -34,7 +34,7 @@ dynamic_t::object_t::at(const std::string& key, dynamic_t& default_) KORA_NOEXCE
 }
 
 const dynamic_t&
-dynamic_t::object_t::at(const std::string& key, const dynamic_t& default_) const KORA_NOEXCEPT {
+dynamic_t::object_t::at(const std::string& key, const dynamic_t& default_) const {
     auto it = find(key);
 
     if (it == end()) {
