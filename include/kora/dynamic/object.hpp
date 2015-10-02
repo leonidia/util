@@ -98,6 +98,16 @@ public:
     const dynamic_t&
     at(const std::string& key, const dynamic_t& default_) const KORA_NOEXCEPT;
 
+    /*! Get the copy of value by key if it exists in the collection, default value otherwise.
+     *
+     * \param[in] key The key to search in the object.
+     * \param[in] default_ The rvalue to return in case if the object doesn't contain the key.
+     * \returns Value stored by the key or \p default_ if the object doesn't contain the key.
+     */
+    KORA_API
+    dynamic_t
+    at(const std::string& key, dynamic_t&& default_) const;
+
     using base_type::operator[];
 
     /*! Get value by key.
