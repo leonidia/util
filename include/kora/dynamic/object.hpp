@@ -28,8 +28,8 @@ namespace kora {
 /*! Type to store unordered associative arrays in dynamic_t (object in terms of JSON).
  *
  * Keys are strings, values are dynamic_t objects.
- * It's guaranteed to have API backward compatible with std::map<std::string, dynamic_t>
- * except that the order of the keys is not defined and user-provided allocators aren't supported.
+ * It's like std::map, but may be replaced with unordered_map later, so you only guarenteed to have
+ * intersection of their APIs :) Therefore keys order is unspecified, iterators may invalidate, etc.
  */
 class dynamic_t::object_t :
     public std::map<std::string, dynamic_t>
