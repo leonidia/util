@@ -1,3 +1,12 @@
+kora-util (1.1.0-rc2) unstable; urgency=low
+
+  * Converter from dynamic_t to std::chrono.
+  * New function kora::make_unique.
+  * Kind of API breakage: Another method at() of object_t which solves some problems with temporary objects lifetimes.
+  * API breakage: All object_t::at methods are not noexcept now.
+
+ -- Andrey Goryachev <andrey.goryachev@gmail.com>  Tue, 6 Oct 2015 00:55:23 +0400
+
 kora-util (1.1.0-rc1) unstable; urgency=low
 
   * The Json API has been notably changed. Serialization to pretty-foramted json is now supported.
