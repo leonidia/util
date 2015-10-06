@@ -1,3 +1,9 @@
+kora-util (2.0.0) unstable; urgency=low
+
+  * Release. Yay!
+
+ -- Andrey Goryachev <andrey.goryachev@gmail.com>  Tue, 6 Oct 2015 11:51:19 +0400
+
 kora-util (1.1.0-rc2) unstable; urgency=low
 
   * Converter from dynamic_t to std::chrono.
