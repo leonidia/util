@@ -943,3 +943,25 @@ TEST(DynamicConverter, ErrorController) {
     EXPECT_THROW((kora::dynamic_t(ill_formed_object).to<std::map<std::string, double>>(error_controller)),
                  kora::bad_cast_t);
 }
+
+TEST(DynamicConverter, DynamicObjectIsNotConvertibleToMapIfAnyNonFirstItemIsNotConvertible) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = "string value";
+    source.as_object()["key2"] = "string value";
+
+    source.as_object().begin()->second = 10;
+
+    ASSERT_FALSE((source.convertible_to<std::map<std::string, int>>()));
+}
+
+TEST(DynamicConverter, DynamicObjectIsNotConvertibleToUnorderedMapIfAnyNonFirstItemIsNotConvertible) {
+    kora::dynamic_t source = kora::dynamic_t::empty_object;
+
+    source.as_object()["key1"] = "string value";
+    source.as_object()["key2"] = "string value";
+
+    source.as_object().begin()->second = 10;
+
+    ASSERT_FALSE((source.convertible_to<std::unordered_map<std::string, int>>()));
+}
