@@ -1,3 +1,9 @@
+kora-util (1.1.0) unstable; urgency=low
+
+  * Fixed a bug in dynamic_t::convertible_to<std::map<std::string, T>> and dynamic_t::convertible_to<std::unordered_map<std::string, T>>.
+
+ -- Andrey Goryachev <andrey.goryachev@gmail.com>  Wed, 7 Oct 2015 01:16:14 +0400
+
 kora-util (1.1.0-rc1) unstable; urgency=low
 
   * The Json API has been notably changed. Serialization to pretty-foramted json is now supported.
